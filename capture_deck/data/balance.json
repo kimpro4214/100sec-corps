@@ -1,0 +1,83 @@
+{
+  "player": { "hp": 70, "energy": 3, "draw": 5 },
+  "skip_heal": 7,
+  "battle_tiers": [1, 1, 2, 2, 3],
+  "enemy_choices": 2,
+  "start_deck": ["strike", "strike", "strike", "strike", "guard", "guard", "guard", "guard", "smash", "focus", "first_aid"],
+  "cards": {
+    "strike": { "name": "타격", "cost": 1, "effects": [{ "type": "damage", "value": 6 }] },
+    "guard": { "name": "방어", "cost": 1, "effects": [{ "type": "block", "value": 5 }] },
+    "smash": { "name": "강타", "cost": 2, "effects": [{ "type": "damage", "value": 11 }] },
+    "focus": { "name": "집중", "cost": 0, "effects": [{ "type": "draw", "value": 2 }] },
+    "first_aid": { "name": "응급처치", "cost": 1, "exhaust": true, "effects": [{ "type": "heal", "value": 5 }] },
+    "fleas": { "name": "벼룩", "cost": -1, "effects": [], "desc": "사용 불가" },
+
+    "rat_swarm": {
+      "name": "쥐떼 습격", "cost": 0,
+      "effects": [{ "type": "damage", "value": 3, "hits": 2 }],
+      "drawback": [{ "type": "add_junk", "card": "fleas" }]
+    },
+    "sticky_film": {
+      "name": "끈끈한 막", "cost": 1,
+      "effects": [{ "type": "block", "value": 11 }],
+      "drawback": [{ "type": "next_draw_penalty", "value": 1 }]
+    },
+    "venom_fang": {
+      "name": "독니", "cost": 1,
+      "effects": [{ "type": "poison", "value": 7 }],
+      "drawback": [{ "type": "self_poison", "value": 2 }]
+    },
+    "mad_prayer": {
+      "name": "광기의 기도", "cost": 1,
+      "effects": [{ "type": "strength", "value": 3 }],
+      "drawback": [{ "type": "self_damage", "value": 3 }]
+    },
+    "blood_pact": {
+      "name": "피의 계약", "cost": 1,
+      "effects": [{ "type": "damage", "value": 13 }, { "type": "heal", "value": 4 }],
+      "drawback": [{ "type": "max_hp_loss", "value": 2 }]
+    },
+    "stone_heart": {
+      "name": "돌의 심장", "cost": 2,
+      "effects": [{ "type": "block", "value": 18 }, { "type": "damage", "value": 9 }],
+      "drawback": [{ "type": "discard_random", "value": 2 }]
+    }
+  },
+  "enemies": {
+    "rats": {
+      "name": "들쥐 떼", "tier": 1, "hp": 26, "capture_card": "rat_swarm",
+      "pattern": [{ "type": "attack", "value": 3, "hits": 2 }, { "type": "attack", "value": 7 }]
+    },
+    "slime": {
+      "name": "이끼 슬라임", "tier": 1, "hp": 34, "capture_card": "sticky_film",
+      "pattern": [{ "type": "attack", "value": 6 }, { "type": "block", "value": 7 }, { "type": "attack", "value": 9 }]
+    },
+    "spider": {
+      "name": "독거미", "tier": 2, "hp": 42, "capture_card": "venom_fang",
+      "pattern": [{ "type": "poison", "value": 3 }, { "type": "attack", "value": 8 }, { "type": "attack", "value": 5, "hits": 2 }]
+    },
+    "zealot": {
+      "name": "광신도", "tier": 2, "hp": 46, "capture_card": "mad_prayer",
+      "pattern": [{ "type": "strength", "value": 2 }, { "type": "attack", "value": 7 }, { "type": "attack", "value": 10 }]
+    },
+    "vampire": {
+      "name": "흡혈 기사", "tier": 3, "hp": 62, "capture_card": "blood_pact",
+      "pattern": [{ "type": "drain", "value": 10 }, { "type": "block", "value": 9 }, { "type": "attack", "value": 6, "hits": 2 }]
+    },
+    "golem": {
+      "name": "골렘", "tier": 3, "hp": 74, "capture_card": "stone_heart",
+      "pattern": [{ "type": "block", "value": 12 }, { "type": "attack", "value": 16 }, { "type": "attack", "value": 9 }]
+    }
+  },
+  "boss": {
+    "id": "collector", "name": "심연의 수집가", "hp": 155, "bonus_damage_per_capture": 1,
+    "desc": "포획한 카드 1장마다 공격 피해 +1",
+    "pattern": [
+      { "type": "attack", "value": 11 },
+      { "type": "attack", "value": 6, "hits": 2 },
+      { "type": "poison", "value": 4 },
+      { "type": "block", "value": 14 },
+      { "type": "strength", "value": 2 }
+    ]
+  }
+}
