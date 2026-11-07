@@ -5,8 +5,8 @@
   "boss_at": 70,
   "round_heal_ratio": 0.6,
   "arena": { "w": 1500, "h": 1000 },
-  "player": { "hp": 100, "speed": 215, "radius": 14, "pickup_radius": 75, "contact_invuln": 0.4 },
-  "xp": { "base": 6, "per_level": 3 },
+  "player": { "hp": 100, "speed": 215, "radius": 14, "pickup_radius": 100, "contact_invuln": 0.4 },
+  "xp": { "base": 6, "per_level": 2 },
   "awaken_min_round": 2,
   "awaken_scaling_mult": 2.5,
   "max_levels": { "main": 5, "sub": 2, "trait": 3, "upgrade": 5 },
@@ -55,6 +55,11 @@
     "might": { "name": "힘", "desc": "모든 피해 +15%", "value": 0.15 },
     "haste": { "name": "가속", "desc": "재사용 대기시간 -8%", "value": 0.08 },
     "vitality": { "name": "활력", "desc": "최대 체력 +25, 즉시 회복", "value": 25 }
+  },
+  "items": {
+    "interval": 16, "life": 18, "radius": 16, "min_distance": 180, "max_distance": 480, "ghost_drop_chance": 0.3,
+    "magnet": { "name": "자석", "weight": 1.0, "speed": 900 },
+    "potion": { "name": "포션", "weight": 1.0, "heal_ratio": 0.25 }
   },
   "enemies": {
     "grunt": { "name": "병사", "hp": 16, "speed": 80, "radius": 12, "contact": 7, "xp": 1 },

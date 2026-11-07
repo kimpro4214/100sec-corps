@@ -50,6 +50,13 @@ class Strike:
 class Gem:
 	var pos := Vector2.ZERO
 	var value := 1
+	var attracted := false
+
+
+class Pickup:
+	var kind := ""
+	var pos := Vector2.ZERO
+	var life := 0.0
 
 
 const WEAPON_IDS := ["bolt", "aura", "lightning"]
@@ -87,6 +94,9 @@ var enemies: Array[Enemy] = []
 var projectiles: Array[Projectile] = []
 var strikes: Array[Strike] = []
 var gems: Array[Gem] = []
+var pickups: Array[Pickup] = []
+var pickup_timer := 0.0
+var pickups_taken := 0
 var awaken_round := 0
 var past_builds: Array = []
 var ghost_queue: Array = []
@@ -130,6 +140,7 @@ func _init(balance: Dictionary, run_seed: int, main_id: String) -> void:
 		"upgrades": {"might": 0, "haste": 0, "vitality": 0},
 	}
 	build.weapons[main_id] = 1
+	pickup_timer = float(data.items.interval)
 	timers = {"bolt": 0.0, "aura": 0.0, "lightning": 0.0}
 
 
@@ -332,6 +343,7 @@ func step(move_dir: Vector2) -> void:
 	_update_projectiles()
 	_update_strikes()
 	_remove_dead()
+	_update_pickups()
 	_collect_gems()
 	if hp <= 0.0:
 		state = "lost"
@@ -858,6 +870,8 @@ func _remove_dead() -> void:
 		if enemy.kind == "ghost":
 			ghost_kills += 1
 			ghost_ttk_total += time - enemy.born
+			if rng.randf() < float(data.items.ghost_drop_chance):
+				_add_pickup(enemy.pos)
 		elif enemy.kind == "boss":
 			boss_dead = true
 			boss_log.append({"round": round_index, "fight_time": time - enemy.born, "in_time": round_time <= float(data.round_seconds)})
@@ -870,13 +884,55 @@ func _remove_dead() -> void:
 
 func _collect_gems() -> void:
 	var radius_sq := float(data.player.pickup_radius) * float(data.player.pickup_radius)
+	var magnet_step := float(data.items.magnet.speed) * tick
 	var remaining: Array[Gem] = []
 	for gem in gems:
+		if gem.attracted:
+			gem.pos = gem.pos.move_toward(player_pos, magnet_step)
 		if gem.pos.distance_squared_to(player_pos) <= radius_sq:
 			_gain_xp(gem.value)
 		else:
 			remaining.append(gem)
 	gems = remaining
+
+
+func _update_pickups() -> void:
+	var items: Dictionary = data.items
+	pickup_timer -= tick
+	if pickup_timer <= 0.0:
+		pickup_timer = float(items.interval)
+		var distance := rng.randf_range(float(items.min_distance), float(items.max_distance))
+		_add_pickup(_clamp_to_arena(player_pos + Vector2.from_angle(rng.randf() * TAU) * distance))
+	var reach := float(items.radius) + float(data.player.radius)
+	var remaining: Array[Pickup] = []
+	for item in pickups:
+		item.life -= tick
+		if item.pos.distance_to(player_pos) <= reach:
+			_use_pickup(item.kind)
+		elif item.life > 0.0:
+			remaining.append(item)
+	pickups = remaining
+
+
+func _add_pickup(pos: Vector2) -> void:
+	var items: Dictionary = data.items
+	var magnet_weight := float(items.magnet.weight)
+	var roll := rng.randf() * (magnet_weight + float(items.potion.weight))
+	var item := Pickup.new()
+	item.kind = "magnet" if roll < magnet_weight else "potion"
+	item.pos = pos
+	item.life = float(items.life)
+	pickups.append(item)
+
+
+func _use_pickup(kind: String) -> void:
+	pickups_taken += 1
+	if kind == "magnet":
+		for gem in gems:
+			gem.attracted = true
+	else:
+		hp = minf(max_hp, hp + max_hp * float(data.items.potion.heal_ratio))
+	_event({"type": "pickup", "kind": kind, "name": data.items[kind].name})
 
 
 func _gain_xp(amount: int) -> void:
@@ -957,6 +1013,7 @@ func _finish_round() -> void:
 	enemies = []
 	projectiles = []
 	strikes = []
+	pickups = []
 	ghost_queue = []
 	round_summary = {"round": round_index, "in_time": in_time, "fight_time": boss_log[-1].fight_time}
 	_event({"type": "round_clear", "round": round_index})
