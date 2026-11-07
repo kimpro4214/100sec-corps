@@ -131,6 +131,10 @@ func _survivor_move(bot: String, sim) -> Vector2:
 			nearest_gem = gem.pos - pos
 	if nearest_gem != Vector2.ZERO:
 		move += nearest_gem.normalized() * 0.7
+	for item in sim.pickups:
+		var want := 1.5 if item.kind == "magnet" else (4.0 if sim.hp < sim.max_hp * 0.6 else 0.5)
+		if pos.distance_to(item.pos) < 500.0:
+			move += (item.pos - pos).normalized() * want
 	var center := Vector2(float(sim.data.arena.w), float(sim.data.arena.h)) * 0.5
 	move += (center - pos) / center.length() * 1.2
 	return move.normalized() if move != Vector2.ZERO else Vector2.ZERO
