@@ -561,14 +561,23 @@ func _spawn_enemies() -> void:
 func _add_minion(pos: Vector2) -> void:
 	var spawn: Dictionary = data.spawn
 	var runner_chance := float(spawn.runner_chance) + float(spawn.runner_chance_per_round) * (round_index - 1)
-	var kind := "runner" if rng.randf() < runner_chance else "grunt"
+	var roll := rng.randf()
+	var kind := "grunt"
+	if roll < runner_chance:
+		kind = "runner"
+	elif roll < runner_chance + float(spawn.swarmling_chance):
+		kind = "swarmling"
+	_add_enemy(kind, pos)
+
+
+func _add_enemy(kind: String, pos: Vector2) -> void:
 	var def: Dictionary = data.enemies[kind]
 	var enemy := Enemy.new()
 	enemy.kind = kind
 	enemy.label = def.name
 	enemy.pos = pos
 	enemy.prev = pos
-	enemy.max_hp = float(def.hp) * (1.0 + float(spawn.hp_per_round) * (round_index - 1))
+	enemy.max_hp = float(def.hp) * (1.0 + float(data.spawn.hp_per_round) * (round_index - 1))
 	enemy.hp = enemy.max_hp
 	enemy.speed = float(def.speed)
 	enemy.radius = float(def.radius)

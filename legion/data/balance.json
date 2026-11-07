@@ -63,11 +63,13 @@
   },
   "enemies": {
     "grunt": { "name": "병사", "hp": 16, "speed": 80, "radius": 12, "contact": 7, "xp": 1 },
-    "runner": { "name": "추적자", "hp": 8, "speed": 135, "radius": 9, "contact": 5, "xp": 1 }
+    "runner": { "name": "추적자", "hp": 8, "speed": 135, "radius": 9, "contact": 5, "xp": 1 },
+    "swarmling": { "name": "잔챙이", "hp": 5, "speed": 105, "radius": 8, "contact": 3, "xp": 1 },
+    "brute": { "name": "돌격병", "hp": 110, "speed": 62, "radius": 22, "contact": 14, "xp": 6 }
   },
   "spawn": {
     "base_rate": 1.0, "rate_per_round": 0.45, "ramp_per_second": 0.012, "boss_rate_mult": 0.5,
-    "runner_chance": 0.15, "runner_chance_per_round": 0.05,
+    "swarmling_chance": 0.35, "runner_chance": 0.15, "runner_chance_per_round": 0.05,
     "hp_per_round": 0.35, "distance": 560, "max_enemies": 110
   },
   "ghost": {
