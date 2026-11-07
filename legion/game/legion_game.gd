@@ -13,6 +13,8 @@ const COLOR_RUNNER := Color("f2a541")
 const COLOR_GEM := Color("7ee081")
 const COLOR_HOSTILE := Color("ff5d8f")
 const COLOR_BOSS := Color("d7263d")
+const COLOR_AWAKEN := Color("ffe066")
+const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 
 var data: Dictionary
 var sim
@@ -21,6 +23,7 @@ var camera := Vector2.ZERO
 var effects: Array = []
 var banner_time := 0.0
 
+var start_panel: PanelContainer
 var hud: Label
 var build_label: Label
 var banner: Label
@@ -39,14 +42,44 @@ func _ready() -> void:
 
 
 func _start_run() -> void:
-	sim = LegionSim.new(data, randi())
-	sim.record_events = true
-	acc = 0.0
+	sim = null
 	effects = []
+	hud.text = ""
+	build_label.text = ""
 	end_panel.hide()
 	choice_panel.hide()
 	summary_panel.hide()
+	banner.hide()
+	start_panel.show()
+	queue_redraw()
+
+
+func _begin_run(main_id: String) -> void:
+	sim = LegionSim.new(data, randi(), main_id)
+	sim.record_events = true
+	acc = 0.0
+	start_panel.hide()
 	_show_banner("이동: WASD / 방향키   70초에 군단장이 등장합니다")
+
+
+func _build_start_panel(root: Control) -> void:
+	start_panel = _centered_panel(root)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	start_panel.add_child(box)
+	var title := Label.new()
+	title.text = "메인 무기를 고르세요 (1, 2, 3)\n레벨 업 선택지가 이 무기 위주로 나옵니다"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+	for i in MAIN_WEAPONS.size():
+		var weapon: Dictionary = data.weapons[MAIN_WEAPONS[i]]
+		var button := Button.new()
+		button.text = "%d. %s (%s)\n%s\n5레벨 각성: %s - %s" % [
+			i + 1, weapon.name, data.ghost.behaviors[MAIN_WEAPONS[i]].name, weapon.desc, weapon.awaken.name, weapon.awaken.desc,
+		]
+		button.custom_minimum_size = Vector2(460, 84)
+		button.pressed.connect(_begin_run.bind(MAIN_WEAPONS[i]))
+		box.add_child(button)
 
 
 func _build_ui() -> void:
@@ -72,6 +105,8 @@ func _build_ui() -> void:
 	banner.position.y = 124
 	banner.add_theme_font_size_override("font_size", 26)
 	root.add_child(banner)
+
+	_build_start_panel(root)
 
 	choice_panel = _centered_panel(root)
 	choice_box = VBoxContainer.new()
@@ -126,6 +161,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.physical_keycode == KEY_ESCAPE:
 		_to_menu()
+	elif sim == null:
+		var main_index: int = event.physical_keycode - KEY_1
+		if main_index >= 0 and main_index < MAIN_WEAPONS.size():
+			_begin_run(MAIN_WEAPONS[main_index])
 	elif not sim.pending_choices.is_empty():
 		var index: int = event.physical_keycode - KEY_1
 		if index >= 0 and index < sim.pending_choices.size():
@@ -135,6 +174,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if sim == null:
+		return
 	acc += delta
 	while acc >= sim.tick:
 		acc -= sim.tick
@@ -173,6 +214,10 @@ func _consume_events() -> void:
 		match event.type:
 			"aura":
 				effects.append({"kind": "ring", "pos": event.pos, "radius": event.radius, "time": 0.2, "max": 0.2, "color": COLOR_HOSTILE if event.hostile else COLOR_PLAYER})
+			"burst":
+				effects.append({"kind": "ring", "pos": event.pos, "radius": event.radius, "time": 0.2, "max": 0.2, "color": COLOR_AWAKEN})
+			"awaken":
+				_show_banner("각성! %s" % event.name)
 			"lightning":
 				effects.append({"kind": "bolt", "pos": event.pos, "radius": event.radius, "time": 0.25, "max": 0.25, "color": Color.WHITE})
 			"ghost":
@@ -220,13 +265,25 @@ func _update_hud() -> void:
 
 func _build_text(target_build: Dictionary) -> String:
 	var parts: Array = []
+	var main_id: String = target_build.main
+	if sim.is_awakened(target_build):
+		parts.append("각성 %s" % data.weapons[main_id].awaken.name)
+	else:
+		parts.append("%s %d" % [data.weapons[main_id].name, int(target_build.weapons[main_id])])
 	for weapon_id in sim.WEAPON_IDS:
-		if int(target_build.weapons[weapon_id]) > 0:
+		if weapon_id != main_id and int(target_build.weapons[weapon_id]) > 0:
 			parts.append("%s %d" % [data.weapons[weapon_id].name, int(target_build.weapons[weapon_id])])
+	for trait_id in data.traits:
+		if int(target_build.traits[trait_id]) > 0:
+			parts.append("%s %d" % [data.traits[trait_id].name, int(target_build.traits[trait_id])])
 	for upgrade_id in sim.UPGRADE_IDS:
 		if int(target_build.upgrades[upgrade_id]) > 0:
 			parts.append("%s %d" % [data.upgrades[upgrade_id].name, int(target_build.upgrades[upgrade_id])])
 	return " / ".join(parts)
+
+
+func _preview_text(preview: Dictionary) -> String:
+	return "%s%s, 체력 %d" % ["각성한 " if preview.awakened else "", preview.behavior, int(preview.hp)]
 
 
 func _show_choices() -> void:
@@ -242,11 +299,17 @@ func _show_choices() -> void:
 		var def: Dictionary = sim.option_def(option_id)
 		var preview: Dictionary = sim.ghost_preview(option_id)
 		var button := Button.new()
-		button.text = "%d. %s  Lv%d → %d\n%s\n과거의 나: %s, 체력 %d" % [
-			i + 1, def.name, sim.option_level(option_id), sim.option_level(option_id) + 1, def.desc,
-			preview.behavior, int(preview.hp),
+		var label: String = def.name
+		var desc: String = def.desc
+		if sim.is_awakening_option(option_id):
+			label = "각성! %s → %s" % [def.name, def.awaken.name]
+			desc = def.awaken.desc
+		button.text = "%d. %s  Lv%d → %d\n%s\n과거의 나: %s" % [
+			i + 1, label, sim.option_level(option_id), sim.option_level(option_id) + 1, desc, _preview_text(preview),
 		]
-		button.custom_minimum_size = Vector2(400, 78)
+		button.custom_minimum_size = Vector2(440, 78)
+		if sim.is_awakening_option(option_id):
+			button.add_theme_color_override("font_color", COLOR_AWAKEN)
 		button.pressed.connect(_choose.bind(i))
 		choice_box.add_child(button)
 	choice_panel.show()
@@ -263,8 +326,8 @@ func _show_summary() -> void:
 	var summary: Dictionary = sim.round_summary
 	var preview: Dictionary = sim.ghost_preview("")
 	var bonus := "제한 시간 안에 처치! 보너스 레벨 업 획득" if summary.in_time else "제한 시간 초과: 보너스 없음"
-	summary_label.text = "라운드 %d 돌파!\n군단장 처치 %d초   %s\n\n이번 빌드\n%s\n\n다음 라운드에 돌아오는 과거의 나\n%s, 체력 %d" % [
-		summary.round, int(summary.fight_time), bonus, _build_text(sim.build), preview.behavior, int(preview.hp),
+	summary_label.text = "라운드 %d 돌파!\n군단장 처치 %d초   %s\n\n이번 빌드\n%s\n\n다음 라운드에 돌아오는 과거의 나\n%s" % [
+		summary.round, int(summary.fight_time), bonus, _build_text(sim.build), _preview_text(preview),
 	]
 	summary_panel.show()
 
@@ -284,6 +347,9 @@ func _show_end() -> void:
 
 func _draw() -> void:
 	var view := get_viewport_rect().size
+	if sim == null:
+		draw_rect(Rect2(Vector2.ZERO, view), COLOR_BG)
+		return
 	var alpha: float = clampf(acc / sim.tick, 0.0, 1.0)
 	var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
 	camera = player - view * 0.5
@@ -293,8 +359,9 @@ func _draw() -> void:
 	for gem in sim.gems:
 		draw_circle(gem.pos, 4.0, COLOR_GEM)
 	for strike in sim.strikes:
-		draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, COLOR_HOSTILE, 3.0)
-		draw_circle(strike.pos, strike.radius, Color(COLOR_HOSTILE, 0.15))
+		var strike_color := COLOR_HOSTILE if strike.hostile else COLOR_AWAKEN
+		draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, strike_color, 3.0)
+		draw_circle(strike.pos, strike.radius, Color(strike_color, 0.15))
 	_draw_auras(player)
 	_draw_boss_telegraph()
 	for enemy in sim.enemies:
@@ -308,7 +375,8 @@ func _draw() -> void:
 		else:
 			draw_circle(effect.pos, effect.radius, Color(effect.color, 0.5 * fade))
 			draw_line(effect.pos + Vector2(0, -500), effect.pos, Color(effect.color, fade), 3.0)
-	draw_circle(player, float(data.player.radius), Color.WHITE if sim.player_flash > 0.0 else COLOR_PLAYER)
+	var player_color := COLOR_AWAKEN if sim.is_awakened(sim.build) else COLOR_PLAYER
+	draw_circle(player, float(data.player.radius), Color.WHITE if sim.player_flash > 0.0 else player_color)
 	draw_set_transform(Vector2.ZERO)
 	_draw_bars(view)
 
@@ -322,17 +390,13 @@ func _draw_arena() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color.WHITE, false, 2.0)
 
 
-func _aura_radius(aura_level: int) -> float:
-	return float(data.weapons.aura.radius) + float(data.weapons.aura.radius_per_level) * (aura_level - 1)
-
-
 func _draw_auras(player: Vector2) -> void:
-	var aura_level: int = sim.build.weapons.aura
-	if aura_level > 0:
-		draw_circle(player, _aura_radius(aura_level), Color(COLOR_PLAYER, 0.08))
+	if int(sim.build.weapons.aura) > 0:
+		var color := COLOR_AWAKEN if sim.main_weapon == "aura" and sim.is_awakened(sim.build) else COLOR_PLAYER
+		draw_circle(player, sim.weapon_stats("aura", sim.build).radius, Color(color, 0.08))
 	for enemy in sim.enemies:
 		if enemy.kind == "ghost" and int(enemy.build.weapons.aura) > 0:
-			draw_circle(enemy.pos, _aura_radius(int(enemy.build.weapons.aura)), Color(COLOR_HOSTILE, 0.12))
+			draw_circle(enemy.pos, sim.weapon_stats("aura", enemy.build).radius * float(data.weapons.aura.hostile_radius_mult), Color(COLOR_HOSTILE, 0.12))
 
 
 func _draw_boss_telegraph() -> void:
@@ -357,7 +421,7 @@ func _draw_enemy(enemy, alpha: float) -> void:
 		"runner":
 			color = COLOR_RUNNER
 		"ghost":
-			color = COLOR_GHOST
+			color = COLOR_AWAKEN if sim.is_awakened(enemy.build) else COLOR_GHOST
 		"boss":
 			color = COLOR_BOSS
 	draw_circle(pos, enemy.radius, Color.WHITE if enemy.flash > 0.0 else color)
