@@ -100,6 +100,9 @@ var pickups_taken := 0
 var awaken_round := 0
 var past_builds: Array = []
 var ghost_queue: Array = []
+var wave_queue: Array = []
+var wave_index := 0
+var waves_spawned := 0
 
 var boss: Enemy = null
 var boss_warned := false
@@ -141,6 +144,8 @@ func _init(balance: Dictionary, run_seed: int, main_id: String) -> void:
 	}
 	build.weapons[main_id] = 1
 	pickup_timer = float(data.items.interval)
+	wave_index = rng.randi_range(0, data.waves.formations.size() - 1)
+	_schedule_waves()
 	timers = {"bolt": 0.0, "aura": 0.0, "lightning": 0.0}
 
 
@@ -323,6 +328,7 @@ func continue_round() -> void:
 	boss_state = "idle"
 	boss_pattern_index = 0
 	_schedule_ghosts()
+	_schedule_waves()
 	_event({"type": "round", "round": round_index})
 
 
@@ -337,6 +343,7 @@ func step(move_dir: Vector2) -> void:
 	_move_player(move_dir)
 	_fire_weapons(player_pos, build, timers, false, 1.0)
 	_spawn_enemies()
+	_spawn_waves()
 	_spawn_ghosts()
 	_spawn_boss()
 	_update_enemies()
@@ -585,6 +592,55 @@ func _add_enemy(kind: String, pos: Vector2) -> void:
 	enemy.xp = int(def.xp)
 	enemy.born = time
 	enemies.append(enemy)
+
+
+func _schedule_waves() -> void:
+	wave_queue = data.waves.times.duplicate()
+
+
+func _spawn_waves() -> void:
+	while not wave_queue.is_empty() and round_time >= float(wave_queue[0]):
+		wave_queue.pop_front()
+		var formations: Array = data.waves.formations
+		var formation: Dictionary = formations[wave_index % formations.size()]
+		wave_index += 1
+		waves_spawned += 1
+		_spawn_formation(formation)
+		_event({"type": "wave", "name": formation.name})
+
+
+func _spawn_formation(formation: Dictionary) -> void:
+	var count := int(round(float(formation.count) * (1.0 + float(data.waves.count_per_round) * (round_index - 1))))
+	var kind: String = formation.kind
+	var distance := float(data.waves.distance)
+	var angle := rng.randf() * TAU
+	match formation.type:
+		"encircle":
+			for i in count:
+				_add_wave_enemy(kind, player_pos + Vector2.from_angle(TAU * i / count) * distance)
+		"rush":
+			_spawn_line(kind, count, angle, distance)
+		"flank":
+			_spawn_line(kind, count / 2, angle, distance)
+			_spawn_line(kind, count - count / 2, angle + PI, distance)
+		"elite":
+			for i in int(formation.elites):
+				_add_wave_enemy(formation.elite_kind, player_pos + Vector2.from_angle(angle + 0.5 * i) * distance)
+			for i in count:
+				_add_wave_enemy(kind, player_pos + Vector2.from_angle(angle + TAU * i / count) * (distance + 60.0))
+
+
+func _spawn_line(kind: String, count: int, angle: float, distance: float) -> void:
+	var center := player_pos + Vector2.from_angle(angle) * distance
+	var side := Vector2.from_angle(angle).orthogonal()
+	var spacing := float(data.waves.line_spacing)
+	for i in count:
+		_add_wave_enemy(kind, center + side * (i - (count - 1) * 0.5) * spacing)
+
+
+func _add_wave_enemy(kind: String, pos: Vector2) -> void:
+	if enemies.size() < int(data.waves.max_enemies):
+		_add_enemy(kind, _clamp_to_arena(pos))
 
 
 ## 오래된 빌드일수록 복제본이 늘어난다. 전원은 군단장 등장 때 한 번 더 출동한다.
@@ -1024,5 +1080,6 @@ func _finish_round() -> void:
 	strikes = []
 	pickups = []
 	ghost_queue = []
+	wave_queue = []
 	round_summary = {"round": round_index, "in_time": in_time, "fight_time": boss_log[-1].fight_time}
 	_event({"type": "round_clear", "round": round_index})

@@ -72,6 +72,15 @@
     "swarmling_chance": 0.35, "runner_chance": 0.15, "runner_chance_per_round": 0.05,
     "hp_per_round": 0.35, "distance": 560, "max_enemies": 110
   },
+  "waves": {
+    "times": [12, 28, 44, 58, 85], "distance": 430, "line_spacing": 34, "max_enemies": 170, "count_per_round": 0.2,
+    "formations": [
+      { "type": "encircle", "name": "포위", "kind": "swarmling", "count": 22 },
+      { "type": "rush", "name": "돌격", "kind": "runner", "count": 14 },
+      { "type": "flank", "name": "협공", "kind": "swarmling", "count": 24 },
+      { "type": "elite", "name": "돌격병", "kind": "swarmling", "count": 12, "elite_kind": "brute", "elites": 2 }
+    ]
+  },
   "ghost": {
     "first_at": 15, "last_at": 62, "radius": 18, "contact": 12, "xp": 12,
     "hp_min": 90, "target_ttk": 5, "hp_per_age": 0.25, "damage_mult": 0.38, "strike_delay": 0.8, "strike_spread": 90,
