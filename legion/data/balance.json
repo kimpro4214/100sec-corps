@@ -1,0 +1,65 @@
+{
+  "tick": 0.05,
+  "rounds": 5,
+  "round_seconds": 100,
+  "boss_at": 70,
+  "round_heal_ratio": 0.6,
+  "arena": { "w": 1500, "h": 1000 },
+  "player": { "hp": 100, "speed": 215, "radius": 14, "pickup_radius": 75, "contact_invuln": 0.4 },
+  "xp": { "base": 6, "per_level": 3 },
+  "start_weapon": "bolt",
+  "max_option_level": 5,
+  "min_cooldown_mult": 0.4,
+  "weapons": {
+    "bolt": {
+      "name": "마력탄", "desc": "가까운 적에게 탄환 발사",
+      "cooldown": 0.8, "damage": 12, "damage_per_level": 4, "count_every_levels": 2,
+      "speed": 430, "hostile_speed": 210, "single_target_weight": 0.5, "hostile_damage_mult": 0.3, "hostile_cooldown_mult": 1.6, "range": 520, "life": 1.6, "radius": 6
+    },
+    "aura": {
+      "name": "가시 오라", "desc": "주변의 적에게 주기적 피해",
+      "cooldown": 0.5, "damage": 5, "damage_per_level": 2.75, "radius": 72, "radius_per_level": 13, "single_target_weight": 1.1, "hostile_damage_mult": 1.0, "hostile_cooldown_mult": 1.0
+    },
+    "lightning": {
+      "name": "낙뢰", "desc": "범위 내 무작위 적을 강타",
+      "cooldown": 2.0, "damage": 26, "damage_per_level": 13, "count_every_levels": 2,
+      "range": 460, "radius": 62, "single_target_weight": 0.55, "hostile_damage_mult": 1.0, "hostile_cooldown_mult": 1.0
+    }
+  },
+  "upgrades": {
+    "might": { "name": "힘", "desc": "모든 피해 +15%", "value": 0.15 },
+    "haste": { "name": "가속", "desc": "재사용 대기시간 -8%", "value": 0.08 },
+    "vitality": { "name": "활력", "desc": "최대 체력 +25, 즉시 회복", "value": 25 }
+  },
+  "enemies": {
+    "grunt": { "name": "병사", "hp": 16, "speed": 80, "radius": 12, "contact": 7, "xp": 1 },
+    "runner": { "name": "추적자", "hp": 8, "speed": 135, "radius": 9, "contact": 5, "xp": 1 }
+  },
+  "spawn": {
+    "base_rate": 1.0, "rate_per_round": 0.45, "ramp_per_second": 0.012, "boss_rate_mult": 0.5,
+    "runner_chance": 0.15, "runner_chance_per_round": 0.05,
+    "hp_per_round": 0.35, "distance": 560, "max_enemies": 110
+  },
+  "ghost": {
+    "first_at": 15, "last_at": 62, "radius": 18, "contact": 12, "xp": 12,
+    "hp_min": 90, "target_ttk": 4, "hp_per_age": 0.25, "damage_mult": 0.3, "strike_delay": 0.8, "strike_spread": 90,
+    "age_per_copy": 2, "copy_hp_mult": 0.4, "copy_damage_mult": 0.5, "boss_wave_hp_mult": 0.5,
+    "behaviors": {
+      "bolt": { "name": "탄막형", "speed": 90, "keep_distance": 300 },
+      "aura": { "name": "돌격형", "speed": 145, "keep_distance": 0 },
+      "lightning": { "name": "포격형", "speed": 75, "keep_distance": 380 }
+    }
+  },
+  "boss": {
+    "name": "군단장", "warning_seconds": 3, "radius": 42, "speed": 72, "contact": 20, "xp": 30,
+    "hp_base": 250, "hp_per_round": 180, "target_ttk": 6,
+    "damage_per_round": 0.15, "enrage_per_second": 0.03,
+    "pattern_interval": 2.6, "bonus_levels": 1,
+    "patterns": [
+      { "type": "charge", "from_round": 1, "windup": 1.0, "speed": 560, "duration": 0.7, "damage": 22 },
+      { "type": "ring", "from_round": 2, "windup": 0.7, "count": 16, "speed": 175, "life": 3.5, "radius": 7, "damage": 9 },
+      { "type": "strikes", "from_round": 3, "windup": 0.2, "count": 5, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16 },
+      { "type": "summon", "from_round": 4, "windup": 0.6, "grunts": 4, "ghost_hp_mult": 0.3 }
+    ]
+  }
+}
