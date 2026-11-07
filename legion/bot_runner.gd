@@ -20,6 +20,7 @@ func _init() -> void:
 	_write_choices(args.out, runs, bots)
 	_write_bosses(args.out, runs, bots, int(data.rounds))
 	_write_damage(args.out, runs, bots)
+	_write_mains(args.out, runs, bots)
 	print("done: %d runs -> %s" % [runs.size(), args.out])
 	quit()
 
@@ -259,6 +260,34 @@ func _write_damage(out: String, runs: Array, bots: Array) -> void:
 		for source in sources:
 			lines.append("%s,%s,%.0f,%.3f" % [bot, source, totals[source], totals[source] / maxf(total, 1.0)])
 	_write(out.path_join("damage.csv"), lines)
+
+
+func _write_mains(out: String, runs: Array, bots: Array) -> void:
+	var lines := ["bot,main,runs,win_rate,awaken_rate,avg_awaken_round,avg_level,avg_pickups"]
+	for bot in bots:
+		for main in MAINS:
+			var total := 0
+			var wins := 0
+			var awakened := 0
+			var awaken_rounds := 0
+			var levels := 0
+			var pickups := 0
+			for run in runs:
+				if run.bot != bot or run.main != main:
+					continue
+				total += 1
+				wins += 1 if run.won else 0
+				levels += run.level
+				pickups += run.pickups
+				if run.awaken_round > 0:
+					awakened += 1
+					awaken_rounds += run.awaken_round
+			if total > 0:
+				lines.append("%s,%s,%d,%.3f,%.3f,%.1f,%.1f,%.1f" % [
+					bot, main, total, float(wins) / total, float(awakened) / total,
+					float(awaken_rounds) / maxi(awakened, 1), float(levels) / total, float(pickups) / total,
+				])
+	_write(out.path_join("mains.csv"), lines)
 
 
 func _write(path: String, lines: Array) -> void:
