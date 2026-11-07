@@ -6,7 +6,7 @@
   "round_heal_ratio": 0.6,
   "arena": { "w": 1500, "h": 1000 },
   "player": { "hp": 100, "speed": 215, "radius": 14, "pickup_radius": 100, "contact_invuln": 0.4 },
-  "xp": { "base": 6, "per_level": 2 },
+  "xp": { "base": 6, "per_level": 3 },
   "awaken_min_round": 2,
   "awaken_scaling_mult": 2.5,
   "max_levels": { "main": 5, "sub": 2, "trait": 3, "upgrade": 5 },
