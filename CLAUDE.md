@@ -16,6 +16,7 @@ Project rules:
 - AI drafts data and implementation. People define the problem and judge whether the game is fun. Bots measure balance only.
 - Record bot results and AI experiment logs in `playtest/`.
 - Split commits into small, fine-grained units of work.
+- Write commit messages as `type: Korean description` with a type such as `feat`, `fix`, `docs`, `test`, or `chore`. Do not use a scope like `feat(legion):`. Name the game in the description when needed.
 - Do not add `Co-Authored-By: Claude` or other AI attribution lines to commit messages.
 
 **Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
