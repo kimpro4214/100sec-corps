@@ -13,6 +13,8 @@ const COLOR_RUNNER := Color("f2a541")
 const COLOR_GEM := Color("7ee081")
 const COLOR_HOSTILE := Color("ff5d8f")
 const COLOR_BOSS := Color("d7263d")
+const COLOR_POTION := Color("ff8fab")
+const COLOR_MAGNET := Color("8ecbff")
 const COLOR_AWAKEN := Color("ffe066")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 
@@ -218,6 +220,8 @@ func _consume_events() -> void:
 				effects.append({"kind": "ring", "pos": event.pos, "radius": event.radius, "time": 0.2, "max": 0.2, "color": COLOR_AWAKEN})
 			"awaken":
 				_show_banner("각성! %s" % event.name)
+			"pickup":
+				_show_banner("%s 획득" % event.name)
 			"lightning":
 				effects.append({"kind": "bolt", "pos": event.pos, "radius": event.radius, "time": 0.25, "max": 0.25, "color": Color.WHITE})
 			"ghost":
@@ -358,6 +362,11 @@ func _draw() -> void:
 	_draw_arena()
 	for gem in sim.gems:
 		draw_circle(gem.pos, 4.0, COLOR_GEM)
+	for item in sim.pickups:
+		var item_color := COLOR_MAGNET if item.kind == "magnet" else COLOR_POTION
+		draw_circle(item.pos, float(data.items.radius), Color(item_color, 0.3))
+		draw_arc(item.pos, float(data.items.radius), 0.0, TAU, 24, item_color, 2.0)
+		draw_string(ThemeDB.fallback_font, item.pos + Vector2(-40, 5), "자석" if item.kind == "magnet" else "포션", HORIZONTAL_ALIGNMENT_CENTER, 80, 13)
 	for strike in sim.strikes:
 		var strike_color := COLOR_HOSTILE if strike.hostile else COLOR_AWAKEN
 		draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, strike_color, 3.0)
