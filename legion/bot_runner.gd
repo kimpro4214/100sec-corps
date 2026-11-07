@@ -2,7 +2,8 @@ extends SceneTree
 ## 사용법: godot --headless --path . --script res://legion/bot_runner.gd -- --runs 300 --seed 1 --out res://playtest/legion
 
 const LegionSim := preload("res://legion/sim/legion_sim.gd")
-const BOTS := ["random", "survivor", "balanced", "focus_bolt", "focus_aura", "focus_lightning"]
+const BOTS := ["random", "survivor", "delay_awaken", "focus_bolt", "focus_aura", "focus_lightning"]
+const MAINS := ["bolt", "aura", "lightning"]
 
 
 func _init() -> void:
@@ -32,7 +33,8 @@ func _parse_args() -> Dictionary:
 
 
 func _play(bot: String, data: Dictionary, run_seed: int) -> Dictionary:
-	var sim = LegionSim.new(data, run_seed)
+	var main: String = bot.trim_prefix("focus_") if bot.begins_with("focus_") else MAINS[run_seed % MAINS.size()]
+	var sim = LegionSim.new(data, run_seed, main)
 	var bot_rng := RandomNumberGenerator.new()
 	bot_rng.seed = run_seed + 100000
 	var wander := Vector2.ZERO
@@ -57,6 +59,7 @@ func _play(bot: String, data: Dictionary, run_seed: int) -> Dictionary:
 		"time": sim.time, "level": sim.level, "kills": sim.kills, "ghost_kills": sim.ghost_kills,
 		"ghost_ttk_total": sim.ghost_ttk_total, "death": "" if sim.state == "won" else sim.last_hit,
 		"picks": sim.picks, "build": sim.build, "boss_log": sim.boss_log, "damage": sim.damage_by_source,
+		"main": main, "awaken_round": sim.awaken_round, "pickups": sim.pickups_taken,
 	}
 
 
@@ -69,16 +72,17 @@ func _pick(bot: String, sim, bot_rng: RandomNumberGenerator) -> int:
 		var option_id: String = sim.pending_choices[i]
 		var option_level: int = sim.option_level(option_id)
 		var score: float = 1.0 + option_level
-		if option_id in sim.WEAPON_IDS:
-			score += 2.0
-			if bot == "balanced":
-				score = 10.0 - option_level
-			elif bot == "focus_" + option_id:
-				score += 20.0
-			elif bot.begins_with("focus_"):
-				score -= 20.0
+		if option_id == sim.main_weapon:
+			score += 20.0
+			# 각성하면 과거의 나도 각성하므로 후반까지 미루는 전략.
+			if bot == "delay_awaken" and sim.is_awakening_option(option_id) and sim.round_index < 4:
+				score = -50.0
+		elif option_id in sim.WEAPON_IDS:
+			score -= 5.0
+		elif sim.data.traits.has(option_id):
+			score += 3.0
 		if option_id == "vitality" and sim.hp < sim.max_hp * 0.5:
-			score += 10.0
+			score += 30.0
 		if score > best_score:
 			best_score = score
 			best = i
@@ -88,9 +92,10 @@ func _pick(bot: String, sim, bot_rng: RandomNumberGenerator) -> int:
 func _survivor_move(bot: String, sim) -> Vector2:
 	var move := Vector2.ZERO
 	var pos: Vector2 = sim.player_pos
-	# 오라 특화 봇은 적에게 가까이 있어야 피해를 주므로 덜 도망친다.
-	var ghost_reach := 150.0 if bot == "focus_aura" else 320.0
-	var minion_reach := 90.0 if bot == "focus_aura" else 170.0
+	# 오라가 메인이면 적에게 가까이 있어야 피해를 주므로 덜 도망친다.
+	var melee: bool = sim.main_weapon == "aura"
+	var ghost_reach := 150.0 if melee else 250.0
+	var minion_reach := 90.0 if melee else 130.0
 	for enemy in sim.enemies:
 		var away: Vector2 = pos - enemy.pos
 		var dist := away.length()
@@ -98,9 +103,11 @@ func _survivor_move(bot: String, sim) -> Vector2:
 		var weight := 1.0
 		if enemy.kind == "ghost":
 			reach = ghost_reach
+			if int(enemy.build.weapons.aura) > 0:
+				reach = maxf(reach, sim.weapon_stats("aura", enemy.build).radius * float(sim.data.weapons.aura.hostile_radius_mult) + 50.0)
 			weight = 3.0
 		elif enemy.kind == "boss":
-			reach = 130.0 if bot == "focus_aura" else 260.0
+			reach = 130.0 if melee else 260.0
 			weight = 4.0
 		if dist < reach and dist > 0.01:
 			move += away / dist * (reach - dist) / reach * weight
@@ -130,14 +137,14 @@ func _survivor_move(bot: String, sim) -> Vector2:
 
 
 func _write_runs(out: String, runs: Array) -> void:
-	var lines := ["bot,seed,won,round,time,level,kills,ghost_kills,avg_ghost_ttk,bosses_killed,bosses_in_time,death,bolt,aura,lightning,might,haste,vitality"]
+	var lines := ["bot,seed,main,awaken_round,pickups,won,round,time,level,kills,ghost_kills,avg_ghost_ttk,bosses_killed,bosses_in_time,death,bolt,aura,lightning,might,haste,vitality"]
 	for run in runs:
 		var build: Dictionary = run.build
 		var in_time := 0
 		for entry in run.boss_log:
 			in_time += 1 if entry.in_time else 0
-		lines.append("%s,%d,%d,%d,%.1f,%d,%d,%d,%.1f,%d,%d,%s,%d,%d,%d,%d,%d,%d" % [
-			run.bot, run.seed, 1 if run.won else 0, run.round, run.time, run.level, run.kills, run.ghost_kills,
+		lines.append("%s,%d,%s,%d,%d,%d,%d,%.1f,%d,%d,%d,%.1f,%d,%d,%s,%d,%d,%d,%d,%d,%d" % [
+			run.bot, run.seed, run.main, run.awaken_round, run.pickups, 1 if run.won else 0, run.round, run.time, run.level, run.kills, run.ghost_kills,
 			run.ghost_ttk_total / maxi(run.ghost_kills, 1), run.boss_log.size(), in_time, run.death,
 			build.weapons.bolt, build.weapons.aura, build.weapons.lightning,
 			build.upgrades.might, build.upgrades.haste, build.upgrades.vitality,
