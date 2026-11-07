@@ -1,0 +1,1501 @@
+bot,seed,won,battle,hp,death,captured
+random,1,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,2,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|mad_prayer|stone_heart
+random,3,0,4,0,독@spider,sticky_film|venom_fang
+random,4,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|venom_fang
+random,5,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|mad_prayer|blood_pact
+random,6,0,6,0,독@collector,rat_swarm|rat_swarm|mad_prayer|blood_pact
+random,7,0,6,0,독@collector,rat_swarm|venom_fang|mad_prayer
+random,8,0,5,0,흡혈 기사@vampire,sticky_film|mad_prayer
+random,9,0,6,0,심연의 수집가@collector,sticky_film|venom_fang|stone_heart
+random,10,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+random,11,0,5,0,골렘@golem,rat_swarm
+random,12,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang
+random,13,0,5,0,흡혈 기사@vampire,sticky_film|rat_swarm|mad_prayer
+random,14,0,5,0,골렘@golem,venom_fang|venom_fang
+random,15,0,5,0,흡혈 기사@vampire,sticky_film|rat_swarm|mad_prayer
+random,16,0,6,0,심연의 수집가@collector,blood_pact
+random,17,0,5,0,골렘@golem,sticky_film|mad_prayer
+random,18,0,5,0,골렘@golem,rat_swarm|sticky_film|mad_prayer
+random,19,0,5,0,골렘@golem,rat_swarm|venom_fang
+random,20,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang|mad_prayer
+random,21,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm
+random,22,0,5,0,흡혈 기사@vampire,rat_swarm
+random,23,0,5,0,독@vampire,sticky_film|rat_swarm|venom_fang
+random,24,0,5,0,골렘@golem,sticky_film|sticky_film|mad_prayer
+random,25,0,5,0,흡혈 기사@vampire,sticky_film
+random,26,0,6,0,독@collector,rat_swarm|venom_fang
+random,27,0,5,0,골렘@golem,sticky_film
+random,28,0,6,0,독@collector,venom_fang|blood_pact
+random,29,0,5,0,골렘@golem,
+random,30,0,6,0,독@collector,venom_fang
+random,31,0,5,0,자해@golem,sticky_film|mad_prayer
+random,32,0,5,0,자해@golem,rat_swarm|mad_prayer
+random,33,0,5,0,흡혈 기사@vampire,
+random,34,0,5,0,골렘@golem,sticky_film|sticky_film|venom_fang|venom_fang
+random,35,0,6,0,독@collector,venom_fang
+random,36,0,5,0,골렘@golem,mad_prayer|mad_prayer
+random,37,0,5,0,흡혈 기사@vampire,sticky_film
+random,38,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|venom_fang|blood_pact
+random,39,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|blood_pact
+random,40,0,6,0,독@collector,sticky_film|venom_fang|blood_pact
+random,41,0,5,0,자해@vampire,sticky_film|mad_prayer
+random,42,0,5,0,골렘@golem,rat_swarm|venom_fang
+random,43,0,5,0,흡혈 기사@vampire,
+random,44,0,5,0,흡혈 기사@vampire,rat_swarm|venom_fang
+random,45,0,5,0,독@vampire,venom_fang
+random,46,0,5,0,골렘@golem,sticky_film|mad_prayer|mad_prayer
+random,47,0,5,0,흡혈 기사@vampire,mad_prayer|mad_prayer
+random,48,0,4,0,광신도@zealot,sticky_film|sticky_film|venom_fang
+random,49,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang|blood_pact
+random,50,0,5,0,흡혈 기사@vampire,mad_prayer
+random,51,0,5,0,흡혈 기사@vampire,sticky_film|rat_swarm|mad_prayer|mad_prayer
+random,52,0,5,0,골렘@golem,venom_fang
+random,53,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|stone_heart
+random,54,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|stone_heart
+random,55,0,5,0,골렘@golem,sticky_film|sticky_film
+random,56,0,5,0,골렘@golem,rat_swarm|mad_prayer
+random,57,0,5,0,골렘@golem,rat_swarm|venom_fang
+random,58,0,5,0,흡혈 기사@vampire,rat_swarm|sticky_film
+random,59,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer
+random,60,0,5,0,골렘@golem,
+random,61,0,5,0,흡혈 기사@vampire,rat_swarm|sticky_film|mad_prayer
+random,62,0,5,0,흡혈 기사@vampire,rat_swarm|sticky_film|mad_prayer
+random,63,0,5,0,골렘@golem,rat_swarm
+random,64,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang|mad_prayer
+random,65,0,5,0,흡혈 기사@vampire,mad_prayer
+random,66,0,5,0,골렘@golem,sticky_film
+random,67,0,6,0,심연의 수집가@collector,venom_fang|blood_pact
+random,68,0,5,0,흡혈 기사@vampire,venom_fang|venom_fang
+random,69,0,5,0,골렘@golem,mad_prayer
+random,70,0,5,0,골렘@golem,sticky_film|rat_swarm|mad_prayer
+random,71,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|blood_pact
+random,72,0,6,0,독@collector,rat_swarm|blood_pact
+random,73,0,5,0,흡혈 기사@vampire,sticky_film|mad_prayer
+random,74,0,4,0,독거미@spider,mad_prayer
+random,75,0,5,0,골렘@golem,mad_prayer|mad_prayer
+random,76,0,5,0,흡혈 기사@vampire,mad_prayer|mad_prayer
+random,77,0,5,0,골렘@golem,sticky_film|venom_fang|venom_fang
+random,78,0,6,0,심연의 수집가@collector,rat_swarm
+random,79,0,5,0,흡혈 기사@vampire,venom_fang
+random,80,0,6,0,심연의 수집가@collector,venom_fang|stone_heart
+random,81,0,5,0,흡혈 기사@vampire,mad_prayer|venom_fang
+random,82,0,6,0,독@collector,sticky_film|mad_prayer|mad_prayer
+random,83,0,6,0,독@collector,venom_fang
+random,84,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|blood_pact
+random,85,0,5,0,독@vampire,sticky_film|sticky_film|mad_prayer|venom_fang
+random,86,0,6,0,심연의 수집가@collector,sticky_film|venom_fang|blood_pact
+random,87,0,5,0,흡혈 기사@vampire,mad_prayer|venom_fang
+random,88,0,5,0,흡혈 기사@vampire,mad_prayer|venom_fang
+random,89,0,5,0,골렘@golem,sticky_film|mad_prayer
+random,90,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer
+random,91,0,4,0,독@spider,sticky_film
+random,92,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,93,0,6,0,독@collector,rat_swarm
+random,94,0,6,0,자해@collector,sticky_film|venom_fang|mad_prayer
+random,95,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|stone_heart
+random,96,0,5,0,골렘@golem,sticky_film|sticky_film|venom_fang|mad_prayer
+random,97,0,5,0,자해@vampire,sticky_film|venom_fang|mad_prayer
+random,98,0,6,0,심연의 수집가@collector,venom_fang
+random,99,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|mad_prayer
+random,100,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+random,101,0,5,0,골렘@golem,sticky_film|sticky_film
+random,102,0,5,0,골렘@golem,sticky_film|venom_fang
+random,103,0,5,0,흡혈 기사@vampire,rat_swarm|rat_swarm
+random,104,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|venom_fang|blood_pact
+random,105,0,5,0,골렘@golem,venom_fang
+random,106,0,6,0,독@collector,rat_swarm|mad_prayer
+random,107,0,5,0,골렘@golem,sticky_film|mad_prayer|mad_prayer
+random,108,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film
+random,109,0,5,0,흡혈 기사@vampire,mad_prayer
+random,110,0,6,0,심연의 수집가@collector,venom_fang|venom_fang
+random,111,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|venom_fang|stone_heart
+random,112,0,6,0,독@collector,rat_swarm|venom_fang
+random,113,0,6,0,독@collector,
+random,114,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|stone_heart
+random,115,0,5,0,흡혈 기사@vampire,sticky_film|mad_prayer
+random,116,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer
+random,117,0,6,0,자해@collector,sticky_film|venom_fang|mad_prayer|stone_heart
+random,118,0,6,0,심연의 수집가@collector,sticky_film
+random,119,0,5,0,독@vampire,sticky_film|venom_fang|venom_fang
+random,120,0,5,0,흡혈 기사@vampire,rat_swarm|mad_prayer
+random,121,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm
+random,122,0,5,0,흡혈 기사@vampire,mad_prayer|mad_prayer
+random,123,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,124,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|stone_heart
+random,125,0,6,0,독@collector,rat_swarm|rat_swarm|venom_fang
+random,126,0,5,0,흡혈 기사@vampire,
+random,127,0,5,0,골렘@golem,rat_swarm|mad_prayer
+random,128,0,5,0,골렘@golem,sticky_film|mad_prayer
+random,129,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|venom_fang
+random,130,0,6,0,독@collector,sticky_film|rat_swarm|venom_fang
+random,131,0,5,0,골렘@golem,mad_prayer|venom_fang
+random,132,0,5,0,골렘@golem,sticky_film|mad_prayer
+random,133,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang
+random,134,0,5,0,골렘@golem,mad_prayer
+random,135,0,5,0,흡혈 기사@vampire,
+random,136,0,4,0,독거미@spider,sticky_film|rat_swarm|mad_prayer
+random,137,0,5,0,흡혈 기사@vampire,mad_prayer
+random,138,0,5,0,골렘@golem,sticky_film|sticky_film|mad_prayer
+random,139,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|blood_pact
+random,140,0,5,0,골렘@golem,mad_prayer
+random,141,0,5,0,골렘@golem,
+random,142,0,5,0,흡혈 기사@vampire,mad_prayer|mad_prayer
+random,143,0,6,0,심연의 수집가@collector,venom_fang
+random,144,0,5,0,골렘@golem,venom_fang|venom_fang
+random,145,0,4,0,독@spider,sticky_film|mad_prayer
+random,146,0,6,0,독@collector,rat_swarm|rat_swarm|venom_fang
+random,147,0,6,0,심연의 수집가@collector,sticky_film|venom_fang|venom_fang|blood_pact
+random,148,0,5,0,흡혈 기사@vampire,venom_fang
+random,149,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,150,0,5,0,골렘@golem,sticky_film|rat_swarm|venom_fang|venom_fang
+random,151,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|stone_heart
+random,152,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|venom_fang|blood_pact
+random,153,0,6,0,심연의 수집가@collector,mad_prayer
+random,154,0,5,0,흡혈 기사@vampire,rat_swarm|rat_swarm|mad_prayer
+random,155,0,6,0,자해@collector,mad_prayer|stone_heart
+random,156,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|mad_prayer
+random,157,0,6,0,심연의 수집가@collector,rat_swarm
+random,158,0,5,0,흡혈 기사@vampire,rat_swarm
+random,159,0,5,0,흡혈 기사@vampire,sticky_film|mad_prayer
+random,160,0,6,0,심연의 수집가@collector,sticky_film
+random,161,0,4,0,광신도@zealot,rat_swarm|sticky_film|mad_prayer
+random,162,0,6,0,독@collector,rat_swarm|rat_swarm|venom_fang
+random,163,0,6,0,심연의 수집가@collector,blood_pact
+random,164,0,5,0,골렘@golem,
+random,165,0,6,0,심연의 수집가@collector,blood_pact
+random,166,0,5,0,흡혈 기사@vampire,
+random,167,0,5,0,흡혈 기사@vampire,sticky_film|mad_prayer|mad_prayer
+random,168,0,6,0,독@collector,rat_swarm|sticky_film|mad_prayer
+random,169,0,6,0,독@collector,sticky_film|sticky_film|venom_fang|venom_fang|blood_pact
+random,170,0,6,0,심연의 수집가@collector,mad_prayer|mad_prayer
+random,171,0,5,0,골렘@golem,sticky_film|rat_swarm|mad_prayer
+random,172,0,5,0,흡혈 기사@vampire,mad_prayer
+random,173,0,5,0,흡혈 기사@vampire,rat_swarm
+random,174,0,5,0,흡혈 기사@vampire,sticky_film|mad_prayer|mad_prayer
+random,175,0,5,0,골렘@golem,sticky_film|rat_swarm|venom_fang
+random,176,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+random,177,0,5,0,흡혈 기사@vampire,mad_prayer
+random,178,0,5,0,흡혈 기사@vampire,mad_prayer
+random,179,0,5,0,자해@vampire,rat_swarm|mad_prayer
+random,180,0,5,0,골렘@golem,venom_fang|mad_prayer
+random,181,0,5,0,골렘@golem,sticky_film|venom_fang
+random,182,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+random,183,0,5,0,골렘@golem,sticky_film|sticky_film
+random,184,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm
+random,185,0,5,0,흡혈 기사@vampire,
+random,186,0,5,0,골렘@golem,rat_swarm|mad_prayer
+random,187,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|venom_fang|blood_pact
+random,188,0,5,0,골렘@golem,rat_swarm|mad_prayer
+random,189,0,5,0,흡혈 기사@vampire,rat_swarm|mad_prayer
+random,190,0,4,0,독@zealot,sticky_film|rat_swarm|venom_fang
+random,191,0,6,0,독@collector,rat_swarm|venom_fang|stone_heart
+random,192,0,5,0,골렘@golem,sticky_film|mad_prayer|mad_prayer
+random,193,0,6,0,독@collector,sticky_film|blood_pact
+random,194,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|stone_heart
+random,195,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+random,196,0,6,0,심연의 수집가@collector,rat_swarm
+random,197,0,5,0,골렘@golem,
+random,198,0,5,0,골렘@golem,sticky_film|mad_prayer
+random,199,0,5,0,골렘@golem,sticky_film|mad_prayer
+random,200,0,5,0,골렘@golem,
+random,201,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+random,202,0,4,0,광신도@zealot,venom_fang
+random,203,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm
+random,204,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|mad_prayer|blood_pact
+random,205,0,6,0,심연의 수집가@collector,venom_fang|blood_pact
+random,206,0,3,0,광신도@zealot,sticky_film
+random,207,0,5,0,골렘@golem,rat_swarm|rat_swarm|mad_prayer|mad_prayer
+random,208,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|stone_heart
+random,209,0,5,0,흡혈 기사@vampire,
+random,210,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|mad_prayer
+random,211,0,6,0,심연의 수집가@collector,sticky_film
+random,212,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|venom_fang|blood_pact
+random,213,0,6,0,심연의 수집가@collector,rat_swarm
+random,214,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|venom_fang|blood_pact
+random,215,0,5,0,골렘@golem,sticky_film|rat_swarm
+random,216,0,6,0,심연의 수집가@collector,rat_swarm
+random,217,0,6,0,심연의 수집가@collector,
+random,218,0,5,0,흡혈 기사@vampire,rat_swarm|venom_fang|mad_prayer
+random,219,0,5,0,골렘@golem,mad_prayer
+random,220,0,5,0,자해@golem,venom_fang|mad_prayer
+random,221,0,6,0,독@collector,sticky_film
+random,222,0,5,0,골렘@golem,sticky_film
+random,223,0,5,0,독@golem,sticky_film|venom_fang|mad_prayer
+random,224,0,5,0,골렘@golem,sticky_film|sticky_film
+random,225,0,5,0,흡혈 기사@vampire,
+random,226,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|stone_heart
+random,227,0,5,0,흡혈 기사@vampire,sticky_film|sticky_film|mad_prayer
+random,228,0,4,0,독@spider,sticky_film|sticky_film
+random,229,0,5,0,골렘@golem,
+random,230,0,4,0,독거미@spider,rat_swarm|rat_swarm
+random,231,0,5,0,골렘@golem,sticky_film
+random,232,0,6,0,심연의 수집가@collector,sticky_film|sticky_film
+random,233,0,5,0,흡혈 기사@vampire,mad_prayer|mad_prayer
+random,234,0,5,0,흡혈 기사@vampire,rat_swarm|rat_swarm|mad_prayer|mad_prayer
+random,235,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,236,0,5,0,골렘@golem,sticky_film|sticky_film
+random,237,0,5,0,골렘@golem,sticky_film|venom_fang|mad_prayer
+random,238,0,5,0,흡혈 기사@vampire,rat_swarm|mad_prayer
+random,239,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|venom_fang
+random,240,0,5,0,흡혈 기사@vampire,mad_prayer|venom_fang
+random,241,0,6,0,심연의 수집가@collector,venom_fang
+random,242,0,5,0,독@golem,venom_fang
+random,243,0,6,0,심연의 수집가@collector,venom_fang|mad_prayer|stone_heart
+random,244,0,5,0,골렘@golem,sticky_film|venom_fang
+random,245,0,5,0,흡혈 기사@vampire,
+random,246,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,247,0,5,0,흡혈 기사@vampire,mad_prayer
+random,248,0,4,0,자해@spider,sticky_film|mad_prayer
+random,249,0,6,0,심연의 수집가@collector,rat_swarm
+random,250,0,5,0,골렘@golem,venom_fang
+random,251,0,5,0,골렘@golem,mad_prayer|mad_prayer
+random,252,0,5,0,골렘@golem,sticky_film|sticky_film|mad_prayer
+random,253,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|mad_prayer|stone_heart
+random,254,0,4,0,독거미@spider,sticky_film
+random,255,0,6,0,심연의 수집가@collector,venom_fang|mad_prayer|blood_pact
+random,256,0,5,0,골렘@golem,rat_swarm|venom_fang
+random,257,0,6,0,심연의 수집가@collector,venom_fang
+random,258,0,5,0,골렘@golem,sticky_film|mad_prayer|mad_prayer
+random,259,0,5,0,골렘@golem,sticky_film|sticky_film
+random,260,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,261,0,5,0,흡혈 기사@vampire,rat_swarm|venom_fang|mad_prayer
+random,262,0,4,0,독거미@spider,
+random,263,0,5,0,흡혈 기사@vampire,sticky_film|sticky_film|mad_prayer|mad_prayer
+random,264,0,5,0,흡혈 기사@vampire,
+random,265,0,6,0,심연의 수집가@collector,sticky_film|venom_fang
+random,266,0,5,0,흡혈 기사@vampire,mad_prayer
+random,267,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|venom_fang|venom_fang
+random,268,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|blood_pact
+random,269,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|venom_fang|venom_fang|stone_heart
+random,270,0,6,0,심연의 수집가@collector,sticky_film|venom_fang
+random,271,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|stone_heart
+random,272,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+random,273,0,5,0,독@vampire,rat_swarm|rat_swarm|venom_fang
+random,274,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,275,0,6,0,심연의 수집가@collector,sticky_film|venom_fang
+random,276,0,6,0,심연의 수집가@collector,
+random,277,0,4,0,광신도@zealot,rat_swarm
+random,278,0,5,0,자해@golem,sticky_film|mad_prayer
+random,279,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer
+random,280,0,6,0,자해@collector,rat_swarm|mad_prayer
+random,281,0,5,0,독@golem,rat_swarm|venom_fang|mad_prayer
+random,282,0,5,0,흡혈 기사@vampire,sticky_film|venom_fang
+random,283,0,6,0,독@collector,rat_swarm|stone_heart
+random,284,0,5,0,골렘@golem,venom_fang|venom_fang
+random,285,0,5,0,독@golem,sticky_film|venom_fang|mad_prayer
+random,286,0,6,0,독@collector,sticky_film|mad_prayer
+random,287,0,6,0,독@collector,rat_swarm|sticky_film
+random,288,0,6,0,심연의 수집가@collector,
+random,289,0,5,0,골렘@golem,rat_swarm|venom_fang
+random,290,0,5,0,흡혈 기사@vampire,mad_prayer
+random,291,0,6,0,자해@collector,rat_swarm|sticky_film|venom_fang|mad_prayer|blood_pact
+random,292,0,6,0,심연의 수집가@collector,rat_swarm
+random,293,0,5,0,흡혈 기사@vampire,
+random,294,0,6,0,심연의 수집가@collector,sticky_film
+random,295,0,6,0,심연의 수집가@collector,venom_fang
+random,296,0,5,0,자해@golem,sticky_film|mad_prayer
+random,297,0,5,0,흡혈 기사@vampire,
+random,298,0,6,0,심연의 수집가@collector,rat_swarm
+random,299,0,5,0,흡혈 기사@vampire,rat_swarm|venom_fang
+random,300,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|mad_prayer|mad_prayer
+planner,1,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,2,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,3,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,4,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,5,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,6,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,7,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,8,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,9,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,10,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,11,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,12,1,6,43,,sticky_film|sticky_film|mad_prayer
+planner,13,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,14,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,15,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,16,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,17,1,6,21,,sticky_film|sticky_film|mad_prayer
+planner,18,1,6,9,,sticky_film|sticky_film|mad_prayer
+planner,19,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,20,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,21,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,22,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,23,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,24,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,25,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,26,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,27,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,28,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,29,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,30,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,31,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,32,1,6,9,,sticky_film|sticky_film|mad_prayer
+planner,33,1,6,27,,sticky_film|sticky_film|mad_prayer
+planner,34,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,35,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,36,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,37,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,38,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,39,1,6,23,,sticky_film|sticky_film|mad_prayer
+planner,40,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,41,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,42,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,43,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,44,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,45,1,6,22,,sticky_film|sticky_film|mad_prayer
+planner,46,1,6,16,,sticky_film|sticky_film|mad_prayer
+planner,47,1,6,9,,sticky_film|sticky_film|mad_prayer
+planner,48,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,49,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,50,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,51,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,52,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,53,1,6,20,,sticky_film|sticky_film|mad_prayer
+planner,54,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,55,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,56,1,6,27,,sticky_film|sticky_film|mad_prayer
+planner,57,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,58,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,59,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,60,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,61,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,62,1,6,20,,sticky_film|sticky_film|mad_prayer
+planner,63,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,64,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,65,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,66,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,67,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,68,1,6,23,,sticky_film|sticky_film|mad_prayer
+planner,69,1,6,29,,sticky_film|sticky_film|mad_prayer
+planner,70,1,6,16,,sticky_film|sticky_film|mad_prayer
+planner,71,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,72,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,73,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,74,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,75,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,76,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,77,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,78,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,79,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,80,1,6,27,,sticky_film|sticky_film|mad_prayer
+planner,81,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,82,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,83,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,84,1,6,23,,sticky_film|sticky_film|mad_prayer
+planner,85,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,86,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,87,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,88,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,89,1,6,21,,sticky_film|sticky_film|mad_prayer
+planner,90,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,91,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,92,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,93,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,94,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,95,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,96,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,97,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,98,1,6,22,,sticky_film|sticky_film|mad_prayer
+planner,99,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,100,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,101,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,102,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,103,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,104,1,6,9,,sticky_film|sticky_film|mad_prayer
+planner,105,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,106,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,107,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,108,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,109,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,110,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,111,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,112,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,113,1,6,23,,sticky_film|sticky_film|mad_prayer
+planner,114,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,115,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,116,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,117,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,118,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,119,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,120,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,121,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,122,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,123,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,124,1,6,31,,sticky_film|sticky_film|mad_prayer
+planner,125,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,126,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,127,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,128,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,129,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,130,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,131,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,132,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,133,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,134,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,135,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,136,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,137,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,138,1,6,32,,sticky_film|sticky_film|mad_prayer
+planner,139,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,140,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,141,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,142,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,143,1,6,20,,sticky_film|sticky_film|mad_prayer
+planner,144,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,145,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,146,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,147,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,148,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,149,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,150,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,151,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,152,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,153,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,154,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,155,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,156,1,6,31,,sticky_film|sticky_film|mad_prayer
+planner,157,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,158,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,159,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,160,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,161,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,162,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,163,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,164,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,165,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,166,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,167,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,168,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,169,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,170,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,171,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,172,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,173,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,174,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,175,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,176,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,177,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,178,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,179,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,180,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,181,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,182,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,183,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,184,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,185,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,186,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,187,1,6,27,,sticky_film|sticky_film|mad_prayer
+planner,188,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,189,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,190,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,191,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,192,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,193,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,194,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,195,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,196,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,197,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,198,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,199,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,200,1,6,21,,sticky_film|sticky_film|mad_prayer
+planner,201,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,202,1,6,21,,sticky_film|sticky_film|mad_prayer
+planner,203,1,6,23,,sticky_film|sticky_film|mad_prayer
+planner,204,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,205,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,206,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,207,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,208,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,209,1,6,16,,sticky_film|sticky_film|mad_prayer
+planner,210,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,211,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,212,1,6,21,,sticky_film|sticky_film|mad_prayer
+planner,213,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,214,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,215,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,216,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,217,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,218,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,219,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,220,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,221,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,222,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,223,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,224,1,6,20,,sticky_film|sticky_film|mad_prayer
+planner,225,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,226,1,6,40,,sticky_film|sticky_film|mad_prayer
+planner,227,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,228,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,229,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,230,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,231,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,232,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,233,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,234,1,6,20,,sticky_film|sticky_film|mad_prayer
+planner,235,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,236,1,6,20,,sticky_film|sticky_film|mad_prayer
+planner,237,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,238,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,239,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,240,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,241,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,242,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,243,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,244,1,6,14,,sticky_film|sticky_film|mad_prayer
+planner,245,1,6,37,,sticky_film|sticky_film|mad_prayer
+planner,246,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,247,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,248,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,249,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,250,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,251,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,252,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,253,1,6,12,,sticky_film|sticky_film|mad_prayer
+planner,254,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,255,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,256,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,257,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,258,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,259,1,6,9,,sticky_film|sticky_film|mad_prayer
+planner,260,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,261,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,262,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,263,1,6,7,,sticky_film|sticky_film|mad_prayer
+planner,264,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,265,1,6,8,,sticky_film|sticky_film|mad_prayer
+planner,266,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,267,1,6,13,,sticky_film|sticky_film|mad_prayer
+planner,268,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,269,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,270,1,6,26,,sticky_film|sticky_film|mad_prayer
+planner,271,1,6,18,,sticky_film|sticky_film|mad_prayer
+planner,272,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,273,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,274,1,6,19,,sticky_film|sticky_film|mad_prayer
+planner,275,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,276,1,6,16,,sticky_film|sticky_film|mad_prayer
+planner,277,1,6,9,,sticky_film|sticky_film|mad_prayer
+planner,278,1,6,5,,sticky_film|sticky_film|mad_prayer
+planner,279,1,6,24,,sticky_film|sticky_film|mad_prayer
+planner,280,1,6,26,,sticky_film|sticky_film|mad_prayer
+planner,281,1,6,28,,sticky_film|sticky_film|mad_prayer
+planner,282,1,6,11,,sticky_film|sticky_film|mad_prayer
+planner,283,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,284,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,285,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,286,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+planner,287,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,288,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,289,1,6,1,,sticky_film|sticky_film|mad_prayer
+planner,290,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer
+planner,291,1,6,6,,sticky_film|sticky_film|mad_prayer
+planner,292,1,6,3,,sticky_film|sticky_film|mad_prayer
+planner,293,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,294,1,6,2,,sticky_film|sticky_film|mad_prayer
+planner,295,1,6,15,,sticky_film|sticky_film|mad_prayer
+planner,296,1,6,23,,sticky_film|sticky_film|mad_prayer
+planner,297,1,6,10,,sticky_film|sticky_film|mad_prayer
+planner,298,1,6,4,,sticky_film|sticky_film|mad_prayer
+planner,299,1,6,17,,sticky_film|sticky_film|mad_prayer
+planner,300,1,6,9,,sticky_film|sticky_film|mad_prayer
+always,1,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,2,1,6,22,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,3,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,4,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,5,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,6,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,7,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,8,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,9,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,10,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,11,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,12,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,13,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,14,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,15,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,16,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,17,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,18,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,19,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,20,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,21,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,22,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,23,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,24,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,25,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,26,1,6,12,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,27,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,28,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,29,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,30,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,31,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,32,1,6,10,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,33,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,34,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,35,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,36,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,37,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,38,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,39,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,40,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,41,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,42,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,43,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,44,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,45,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,46,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,47,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,48,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,49,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,50,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,51,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,52,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,53,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,54,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,55,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,56,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,57,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,58,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,59,1,6,3,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,60,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,61,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,62,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,63,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,64,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,65,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,66,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,67,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,68,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,69,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,70,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,71,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,72,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,73,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,74,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,75,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,76,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,77,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,78,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,79,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,80,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,81,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,82,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,83,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,84,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,85,1,6,14,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,86,1,6,17,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,87,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,88,1,6,3,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,89,1,6,16,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,90,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,91,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,92,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,93,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,94,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,95,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,96,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,97,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,98,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,99,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,100,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,101,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,102,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,103,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,104,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|blood_pact
+always,105,1,6,10,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,106,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,107,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,108,1,6,12,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,109,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,110,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,111,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,112,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,113,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,114,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,115,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,116,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,117,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,118,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,119,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,120,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,121,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,122,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,123,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,124,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,125,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,126,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,127,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,128,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,129,1,6,15,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,130,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,131,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,132,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,133,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,134,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,135,1,6,12,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,136,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,137,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,138,1,6,3,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,139,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,140,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,141,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,142,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,143,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,144,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,145,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,146,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,147,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,148,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,149,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,150,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,151,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,152,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,153,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,154,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,155,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,156,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,157,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,158,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,159,1,6,10,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,160,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,161,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,162,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,163,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,164,1,6,26,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,165,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,166,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,167,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,168,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,169,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,170,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,171,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,172,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,173,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,174,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,175,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,176,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,177,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,178,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,179,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,180,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,181,1,6,12,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,182,1,6,3,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,183,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,184,1,6,12,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,185,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,186,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,187,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,188,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,189,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,190,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,191,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,192,1,6,6,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,193,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,194,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,195,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,196,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,197,1,6,12,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,198,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,199,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,200,1,6,10,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,201,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,202,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,203,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,204,1,6,22,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,205,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,206,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,207,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,208,1,6,14,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,209,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,210,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,211,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,212,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,213,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,214,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,215,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,216,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,217,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,218,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,219,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,220,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,221,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,222,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,223,1,6,11,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,224,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,225,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,226,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,227,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,228,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,229,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,230,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,231,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,232,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,233,1,6,3,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,234,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,235,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,236,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,237,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,238,1,6,17,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,239,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,240,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,241,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,242,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,243,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,244,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,245,1,6,16,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,246,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,247,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,248,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,249,1,6,11,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,250,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,251,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,252,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,253,1,6,6,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,254,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,255,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,256,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,257,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,258,1,6,13,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,259,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,260,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,261,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,262,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,263,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,264,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,265,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,266,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,267,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,268,1,6,8,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,269,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,270,1,6,9,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,271,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,272,1,6,2,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,273,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,274,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,275,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,276,1,6,1,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,277,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,278,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,279,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,280,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,281,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,282,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,283,1,6,3,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,284,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,285,1,6,5,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,286,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,287,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,288,1,6,11,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,289,1,6,7,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,290,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,291,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,292,1,6,13,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,293,1,6,6,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,294,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,295,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,296,1,6,4,,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,297,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,298,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,299,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+always,300,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer|mad_prayer|stone_heart
+never,1,1,6,19,,
+never,2,0,6,0,심연의 수집가@collector,
+never,3,1,6,6,,
+never,4,1,6,7,,
+never,5,0,6,0,심연의 수집가@collector,
+never,6,0,6,0,심연의 수집가@collector,
+never,7,0,6,0,독@collector,
+never,8,0,6,0,심연의 수집가@collector,
+never,9,0,6,0,독@collector,
+never,10,1,6,3,,
+never,11,0,6,0,독@collector,
+never,12,0,6,0,심연의 수집가@collector,
+never,13,0,6,0,심연의 수집가@collector,
+never,14,0,6,0,심연의 수집가@collector,
+never,15,1,6,9,,
+never,16,1,6,7,,
+never,17,0,6,0,심연의 수집가@collector,
+never,18,1,6,3,,
+never,19,0,6,0,심연의 수집가@collector,
+never,20,0,6,0,심연의 수집가@collector,
+never,21,0,6,0,심연의 수집가@collector,
+never,22,0,6,0,심연의 수집가@collector,
+never,23,0,6,0,심연의 수집가@collector,
+never,24,0,6,0,심연의 수집가@collector,
+never,25,0,6,0,심연의 수집가@collector,
+never,26,0,6,0,심연의 수집가@collector,
+never,27,0,6,0,심연의 수집가@collector,
+never,28,0,6,0,심연의 수집가@collector,
+never,29,1,6,3,,
+never,30,1,6,1,,
+never,31,1,6,3,,
+never,32,0,6,0,심연의 수집가@collector,
+never,33,0,6,0,독@collector,
+never,34,0,6,0,심연의 수집가@collector,
+never,35,0,6,0,심연의 수집가@collector,
+never,36,0,6,0,심연의 수집가@collector,
+never,37,0,6,0,심연의 수집가@collector,
+never,38,1,6,3,,
+never,39,0,6,0,심연의 수집가@collector,
+never,40,0,6,0,심연의 수집가@collector,
+never,41,0,6,0,심연의 수집가@collector,
+never,42,0,6,0,독@collector,
+never,43,0,6,0,독@collector,
+never,44,0,6,0,심연의 수집가@collector,
+never,45,0,6,0,심연의 수집가@collector,
+never,46,1,6,5,,
+never,47,0,6,0,심연의 수집가@collector,
+never,48,0,6,0,심연의 수집가@collector,
+never,49,0,6,0,독@collector,
+never,50,0,6,0,심연의 수집가@collector,
+never,51,0,6,0,심연의 수집가@collector,
+never,52,0,6,0,독@collector,
+never,53,0,6,0,심연의 수집가@collector,
+never,54,0,6,0,심연의 수집가@collector,
+never,55,0,6,0,심연의 수집가@collector,
+never,56,0,6,0,독@collector,
+never,57,0,6,0,독@collector,
+never,58,0,6,0,심연의 수집가@collector,
+never,59,0,6,0,독@collector,
+never,60,0,6,0,심연의 수집가@collector,
+never,61,1,6,6,,
+never,62,0,6,0,심연의 수집가@collector,
+never,63,0,6,0,심연의 수집가@collector,
+never,64,0,6,0,심연의 수집가@collector,
+never,65,0,6,0,심연의 수집가@collector,
+never,66,0,6,0,독@collector,
+never,67,0,6,0,심연의 수집가@collector,
+never,68,1,6,2,,
+never,69,0,6,0,독@collector,
+never,70,0,6,0,심연의 수집가@collector,
+never,71,0,6,0,심연의 수집가@collector,
+never,72,0,6,0,심연의 수집가@collector,
+never,73,1,6,19,,
+never,74,1,6,3,,
+never,75,0,6,0,심연의 수집가@collector,
+never,76,0,6,0,심연의 수집가@collector,
+never,77,1,6,8,,
+never,78,0,6,0,심연의 수집가@collector,
+never,79,1,6,2,,
+never,80,0,6,0,심연의 수집가@collector,
+never,81,1,6,3,,
+never,82,0,6,0,심연의 수집가@collector,
+never,83,1,6,15,,
+never,84,1,6,2,,
+never,85,1,6,7,,
+never,86,0,6,0,심연의 수집가@collector,
+never,87,1,6,2,,
+never,88,0,6,0,독@collector,
+never,89,1,6,10,,
+never,90,1,6,4,,
+never,91,1,6,2,,
+never,92,0,6,0,심연의 수집가@collector,
+never,93,0,6,0,심연의 수집가@collector,
+never,94,0,6,0,독@collector,
+never,95,0,6,0,심연의 수집가@collector,
+never,96,0,6,0,심연의 수집가@collector,
+never,97,0,6,0,심연의 수집가@collector,
+never,98,1,6,4,,
+never,99,0,6,0,독@collector,
+never,100,1,6,2,,
+never,101,0,6,0,심연의 수집가@collector,
+never,102,0,6,0,독@collector,
+never,103,0,6,0,독@collector,
+never,104,0,6,0,독@collector,
+never,105,0,6,0,독@collector,
+never,106,0,6,0,심연의 수집가@collector,
+never,107,0,6,0,독@collector,
+never,108,0,6,0,심연의 수집가@collector,
+never,109,1,6,9,,
+never,110,0,6,0,독@collector,
+never,111,0,6,0,심연의 수집가@collector,
+never,112,0,6,0,심연의 수집가@collector,
+never,113,0,6,0,독@collector,
+never,114,0,6,0,심연의 수집가@collector,
+never,115,1,6,1,,
+never,116,0,6,0,심연의 수집가@collector,
+never,117,1,6,2,,
+never,118,1,6,5,,
+never,119,1,6,3,,
+never,120,0,6,0,독@collector,
+never,121,0,6,0,심연의 수집가@collector,
+never,122,0,6,0,심연의 수집가@collector,
+never,123,0,6,0,심연의 수집가@collector,
+never,124,0,6,0,심연의 수집가@collector,
+never,125,0,6,0,심연의 수집가@collector,
+never,126,0,6,0,심연의 수집가@collector,
+never,127,1,6,6,,
+never,128,0,6,0,심연의 수집가@collector,
+never,129,0,6,0,심연의 수집가@collector,
+never,130,1,6,4,,
+never,131,0,6,0,심연의 수집가@collector,
+never,132,0,6,0,심연의 수집가@collector,
+never,133,0,6,0,심연의 수집가@collector,
+never,134,0,6,0,심연의 수집가@collector,
+never,135,0,6,0,심연의 수집가@collector,
+never,136,0,6,0,심연의 수집가@collector,
+never,137,1,6,2,,
+never,138,0,6,0,독@collector,
+never,139,1,6,6,,
+never,140,0,6,0,심연의 수집가@collector,
+never,141,0,6,0,독@collector,
+never,142,1,6,2,,
+never,143,0,6,0,심연의 수집가@collector,
+never,144,1,6,6,,
+never,145,1,6,3,,
+never,146,0,6,0,독@collector,
+never,147,1,6,3,,
+never,148,0,6,0,심연의 수집가@collector,
+never,149,0,6,0,심연의 수집가@collector,
+never,150,0,6,0,심연의 수집가@collector,
+never,151,0,6,0,독@collector,
+never,152,0,6,0,독@collector,
+never,153,0,6,0,심연의 수집가@collector,
+never,154,0,6,0,심연의 수집가@collector,
+never,155,0,6,0,심연의 수집가@collector,
+never,156,0,6,0,심연의 수집가@collector,
+never,157,0,6,0,심연의 수집가@collector,
+never,158,0,6,0,심연의 수집가@collector,
+never,159,0,6,0,심연의 수집가@collector,
+never,160,1,6,2,,
+never,161,1,6,1,,
+never,162,1,6,3,,
+never,163,0,6,0,독@collector,
+never,164,0,6,0,독@collector,
+never,165,0,6,0,심연의 수집가@collector,
+never,166,0,6,0,독@collector,
+never,167,0,6,0,심연의 수집가@collector,
+never,168,1,6,14,,
+never,169,1,6,9,,
+never,170,0,6,0,심연의 수집가@collector,
+never,171,0,6,0,심연의 수집가@collector,
+never,172,0,6,0,심연의 수집가@collector,
+never,173,0,6,0,독@collector,
+never,174,0,6,0,독@collector,
+never,175,0,6,0,독@collector,
+never,176,1,6,3,,
+never,177,1,6,10,,
+never,178,1,6,3,,
+never,179,0,6,0,독@collector,
+never,180,0,6,0,심연의 수집가@collector,
+never,181,0,6,0,심연의 수집가@collector,
+never,182,0,6,0,심연의 수집가@collector,
+never,183,0,6,0,독@collector,
+never,184,0,6,0,심연의 수집가@collector,
+never,185,1,6,4,,
+never,186,0,6,0,심연의 수집가@collector,
+never,187,0,6,0,심연의 수집가@collector,
+never,188,0,6,0,독@collector,
+never,189,0,6,0,독@collector,
+never,190,1,6,9,,
+never,191,1,6,13,,
+never,192,0,6,0,심연의 수집가@collector,
+never,193,0,6,0,심연의 수집가@collector,
+never,194,1,6,4,,
+never,195,0,6,0,심연의 수집가@collector,
+never,196,0,6,0,심연의 수집가@collector,
+never,197,0,6,0,독@collector,
+never,198,1,6,9,,
+never,199,0,6,0,심연의 수집가@collector,
+never,200,1,6,2,,
+never,201,0,6,0,독@collector,
+never,202,0,6,0,심연의 수집가@collector,
+never,203,0,6,0,심연의 수집가@collector,
+never,204,1,6,2,,
+never,205,0,6,0,심연의 수집가@collector,
+never,206,0,6,0,심연의 수집가@collector,
+never,207,0,6,0,심연의 수집가@collector,
+never,208,0,6,0,심연의 수집가@collector,
+never,209,1,6,2,,
+never,210,0,6,0,심연의 수집가@collector,
+never,211,0,6,0,심연의 수집가@collector,
+never,212,0,6,0,심연의 수집가@collector,
+never,213,0,6,0,심연의 수집가@collector,
+never,214,1,6,1,,
+never,215,0,6,0,심연의 수집가@collector,
+never,216,0,6,0,심연의 수집가@collector,
+never,217,0,6,0,심연의 수집가@collector,
+never,218,1,6,2,,
+never,219,0,6,0,심연의 수집가@collector,
+never,220,0,6,0,심연의 수집가@collector,
+never,221,0,6,0,독@collector,
+never,222,1,6,3,,
+never,223,0,6,0,심연의 수집가@collector,
+never,224,0,6,0,심연의 수집가@collector,
+never,225,1,6,3,,
+never,226,0,6,0,심연의 수집가@collector,
+never,227,0,6,0,심연의 수집가@collector,
+never,228,0,6,0,심연의 수집가@collector,
+never,229,0,6,0,심연의 수집가@collector,
+never,230,0,6,0,심연의 수집가@collector,
+never,231,0,6,0,독@collector,
+never,232,0,6,0,심연의 수집가@collector,
+never,233,0,6,0,독@collector,
+never,234,0,6,0,심연의 수집가@collector,
+never,235,0,6,0,독@collector,
+never,236,0,6,0,심연의 수집가@collector,
+never,237,0,6,0,심연의 수집가@collector,
+never,238,0,6,0,독@collector,
+never,239,1,6,2,,
+never,240,1,6,3,,
+never,241,1,6,2,,
+never,242,0,6,0,심연의 수집가@collector,
+never,243,0,6,0,심연의 수집가@collector,
+never,244,0,6,0,심연의 수집가@collector,
+never,245,0,6,0,심연의 수집가@collector,
+never,246,1,6,11,,
+never,247,0,6,0,심연의 수집가@collector,
+never,248,0,6,0,심연의 수집가@collector,
+never,249,1,6,11,,
+never,250,1,6,6,,
+never,251,0,6,0,심연의 수집가@collector,
+never,252,0,6,0,독@collector,
+never,253,0,6,0,독@collector,
+never,254,0,6,0,심연의 수집가@collector,
+never,255,0,6,0,독@collector,
+never,256,0,6,0,심연의 수집가@collector,
+never,257,0,6,0,심연의 수집가@collector,
+never,258,0,6,0,독@collector,
+never,259,0,6,0,독@collector,
+never,260,1,6,3,,
+never,261,0,6,0,심연의 수집가@collector,
+never,262,0,6,0,독@collector,
+never,263,1,6,6,,
+never,264,0,6,0,심연의 수집가@collector,
+never,265,0,6,0,독@collector,
+never,266,0,6,0,심연의 수집가@collector,
+never,267,0,6,0,독@collector,
+never,268,0,6,0,심연의 수집가@collector,
+never,269,0,6,0,독@collector,
+never,270,0,6,0,독@collector,
+never,271,0,6,0,독@collector,
+never,272,0,6,0,독@collector,
+never,273,1,6,15,,
+never,274,0,6,0,독@collector,
+never,275,0,6,0,심연의 수집가@collector,
+never,276,0,6,0,독@collector,
+never,277,0,6,0,심연의 수집가@collector,
+never,278,0,6,0,심연의 수집가@collector,
+never,279,0,6,0,독@collector,
+never,280,1,6,17,,
+never,281,1,6,2,,
+never,282,0,6,0,심연의 수집가@collector,
+never,283,1,6,7,,
+never,284,0,6,0,심연의 수집가@collector,
+never,285,1,6,3,,
+never,286,0,6,0,심연의 수집가@collector,
+never,287,0,6,0,독@collector,
+never,288,0,6,0,심연의 수집가@collector,
+never,289,0,6,0,심연의 수집가@collector,
+never,290,0,6,0,독@collector,
+never,291,0,6,0,심연의 수집가@collector,
+never,292,0,6,0,독@collector,
+never,293,1,6,3,,
+never,294,0,6,0,심연의 수집가@collector,
+never,295,0,6,0,심연의 수집가@collector,
+never,296,0,6,0,심연의 수집가@collector,
+never,297,0,6,0,독@collector,
+never,298,1,6,14,,
+never,299,0,6,0,심연의 수집가@collector,
+never,300,0,6,0,독@collector,
+explore,1,0,6,0,심연의 수집가@collector,rat_swarm
+explore,2,0,6,0,독@collector,venom_fang|venom_fang
+explore,3,1,6,19,,sticky_film|sticky_film|stone_heart
+explore,4,1,6,8,,rat_swarm|sticky_film|venom_fang|blood_pact
+explore,5,1,6,12,,sticky_film|mad_prayer
+explore,6,1,6,28,,rat_swarm|mad_prayer|blood_pact
+explore,7,0,6,0,독@collector,rat_swarm|venom_fang
+explore,8,1,6,1,,sticky_film|stone_heart
+explore,9,0,6,0,독@collector,rat_swarm|stone_heart
+explore,10,0,6,0,독@collector,
+explore,11,1,6,5,,rat_swarm|sticky_film|mad_prayer|mad_prayer
+explore,12,1,6,5,,venom_fang|mad_prayer
+explore,13,0,6,0,독@collector,mad_prayer|mad_prayer|stone_heart
+explore,14,1,6,2,,venom_fang|blood_pact
+explore,15,1,6,31,,sticky_film|blood_pact
+explore,16,1,6,7,,mad_prayer|blood_pact
+explore,17,1,6,21,,sticky_film|mad_prayer|stone_heart
+explore,18,1,6,19,,sticky_film|venom_fang|stone_heart
+explore,19,1,6,22,,sticky_film|sticky_film|mad_prayer|blood_pact
+explore,20,1,6,21,,rat_swarm|sticky_film|mad_prayer|stone_heart
+explore,21,1,6,35,,sticky_film|mad_prayer|blood_pact
+explore,22,1,6,15,,
+explore,23,1,6,5,,venom_fang|blood_pact
+explore,24,1,6,5,,sticky_film|rat_swarm|mad_prayer|stone_heart
+explore,25,1,6,9,,mad_prayer
+explore,26,0,6,0,독@collector,
+explore,27,1,6,4,,sticky_film|stone_heart
+explore,28,0,6,0,심연의 수집가@collector,rat_swarm
+explore,29,1,6,13,,
+explore,30,0,6,0,독@collector,venom_fang|venom_fang
+explore,31,0,6,0,독@collector,venom_fang|mad_prayer
+explore,32,1,6,6,,rat_swarm|mad_prayer
+explore,33,0,6,0,독@collector,mad_prayer
+explore,34,1,6,34,,sticky_film|sticky_film|blood_pact
+explore,35,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|mad_prayer|stone_heart
+explore,36,1,6,12,,mad_prayer|blood_pact
+explore,37,1,6,11,,rat_swarm|venom_fang
+explore,38,0,6,0,독@collector,rat_swarm|mad_prayer
+explore,39,0,6,0,독@collector,rat_swarm|sticky_film
+explore,40,1,6,14,,venom_fang
+explore,41,1,6,38,,rat_swarm|blood_pact
+explore,42,1,6,8,,rat_swarm|venom_fang
+explore,43,1,6,11,,rat_swarm|mad_prayer|venom_fang|blood_pact
+explore,44,1,6,29,,rat_swarm|blood_pact
+explore,45,1,6,3,,rat_swarm|mad_prayer
+explore,46,1,6,5,,sticky_film|venom_fang
+explore,47,0,6,0,독@collector,venom_fang|blood_pact
+explore,48,1,6,18,,sticky_film|venom_fang
+explore,49,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm
+explore,50,0,6,0,독@collector,sticky_film|venom_fang|venom_fang
+explore,51,0,6,0,심연의 수집가@collector,mad_prayer|blood_pact
+explore,52,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|blood_pact
+explore,53,1,6,16,,rat_swarm|sticky_film|mad_prayer
+explore,54,1,6,15,,rat_swarm|rat_swarm|venom_fang
+explore,55,1,6,17,,sticky_film|rat_swarm|venom_fang|blood_pact
+explore,56,1,6,29,,sticky_film|rat_swarm|venom_fang|blood_pact
+explore,57,0,6,0,심연의 수집가@collector,rat_swarm
+explore,58,0,6,0,심연의 수집가@collector,mad_prayer|stone_heart
+explore,59,0,6,0,독@collector,venom_fang
+explore,60,1,6,5,,sticky_film|mad_prayer
+explore,61,0,6,0,독@collector,rat_swarm|sticky_film|venom_fang
+explore,62,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|mad_prayer|mad_prayer|stone_heart
+explore,63,0,6,0,독@collector,rat_swarm|rat_swarm|venom_fang|venom_fang
+explore,64,0,6,0,독@collector,venom_fang|venom_fang
+explore,65,0,6,0,심연의 수집가@collector,
+explore,66,0,6,0,독@collector,
+explore,67,1,6,18,,sticky_film|sticky_film|mad_prayer
+explore,68,1,6,20,,stone_heart
+explore,69,0,6,0,독@collector,sticky_film|rat_swarm
+explore,70,1,6,11,,sticky_film|mad_prayer
+explore,71,1,6,3,,rat_swarm|sticky_film|venom_fang|mad_prayer|stone_heart
+explore,72,1,6,18,,rat_swarm|sticky_film|venom_fang
+explore,73,1,6,5,,rat_swarm|venom_fang|mad_prayer|blood_pact
+explore,74,0,6,0,심연의 수집가@collector,sticky_film|venom_fang|mad_prayer
+explore,75,1,6,3,,rat_swarm|venom_fang|venom_fang|stone_heart
+explore,76,1,6,3,,sticky_film|venom_fang
+explore,77,0,6,0,심연의 수집가@collector,sticky_film|venom_fang|mad_prayer|stone_heart
+explore,78,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|blood_pact
+explore,79,1,6,3,,rat_swarm|venom_fang|stone_heart
+explore,80,1,6,31,,blood_pact
+explore,81,0,6,0,심연의 수집가@collector,mad_prayer|venom_fang
+explore,82,1,6,8,,sticky_film|venom_fang|stone_heart
+explore,83,1,6,12,,rat_swarm|mad_prayer
+explore,84,1,6,27,,sticky_film|stone_heart
+explore,85,0,6,0,심연의 수집가@collector,sticky_film
+explore,86,1,6,14,,sticky_film|sticky_film|mad_prayer|blood_pact
+explore,87,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|mad_prayer|stone_heart
+explore,88,1,6,30,,sticky_film|venom_fang|blood_pact
+explore,89,1,6,4,,sticky_film|mad_prayer
+explore,90,0,6,0,독@collector,sticky_film
+explore,91,0,6,0,심연의 수집가@collector,venom_fang|mad_prayer
+explore,92,1,6,4,,sticky_film|mad_prayer|mad_prayer|stone_heart
+explore,93,1,6,10,,mad_prayer|blood_pact
+explore,94,1,6,19,,sticky_film|mad_prayer
+explore,95,1,6,15,,sticky_film|venom_fang|stone_heart
+explore,96,1,6,17,,sticky_film|venom_fang|blood_pact
+explore,97,0,6,0,독@collector,venom_fang
+explore,98,1,6,55,,blood_pact
+explore,99,1,6,7,,venom_fang
+explore,100,1,6,14,,rat_swarm|venom_fang|blood_pact
+explore,101,1,6,36,,sticky_film|sticky_film|venom_fang|blood_pact
+explore,102,0,6,0,심연의 수집가@collector,mad_prayer|venom_fang
+explore,103,0,6,0,심연의 수집가@collector,venom_fang|mad_prayer
+explore,104,1,6,12,,sticky_film|mad_prayer
+explore,105,0,6,0,독@collector,sticky_film|mad_prayer
+explore,106,1,6,11,,rat_swarm|venom_fang
+explore,107,0,6,0,심연의 수집가@collector,
+explore,108,0,6,0,독@collector,mad_prayer|stone_heart
+explore,109,1,6,12,,rat_swarm|blood_pact
+explore,110,1,6,26,,sticky_film|stone_heart
+explore,111,0,6,0,심연의 수집가@collector,rat_swarm
+explore,112,0,6,0,독@collector,rat_swarm|venom_fang|blood_pact
+explore,113,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang|mad_prayer|stone_heart
+explore,114,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+explore,115,1,6,31,,sticky_film|sticky_film|venom_fang|blood_pact
+explore,116,0,6,0,심연의 수집가@collector,mad_prayer|mad_prayer
+explore,117,1,6,30,,sticky_film|rat_swarm|mad_prayer
+explore,118,1,6,5,,sticky_film
+explore,119,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|venom_fang|stone_heart
+explore,120,0,6,0,독@collector,mad_prayer
+explore,121,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+explore,122,1,6,2,,rat_swarm|sticky_film|venom_fang
+explore,123,0,6,0,심연의 수집가@collector,mad_prayer
+explore,124,1,6,8,,sticky_film|venom_fang|venom_fang
+explore,125,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+explore,126,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang|venom_fang
+explore,127,1,6,10,,rat_swarm|blood_pact
+explore,128,0,6,0,심연의 수집가@collector,
+explore,129,1,6,4,,sticky_film|rat_swarm|venom_fang
+explore,130,0,6,0,심연의 수집가@collector,mad_prayer
+explore,131,0,6,0,심연의 수집가@collector,
+explore,132,0,6,0,독@collector,rat_swarm|venom_fang|mad_prayer|blood_pact
+explore,133,1,6,3,,
+explore,134,1,6,15,,sticky_film|sticky_film|stone_heart
+explore,135,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|stone_heart
+explore,136,0,6,0,심연의 수집가@collector,venom_fang|mad_prayer
+explore,137,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|stone_heart
+explore,138,0,6,0,심연의 수집가@collector,mad_prayer|blood_pact
+explore,139,1,6,36,,sticky_film|stone_heart
+explore,140,0,6,0,독@collector,sticky_film|rat_swarm|venom_fang
+explore,141,0,6,0,독@collector,rat_swarm|venom_fang
+explore,142,1,6,13,,sticky_film|mad_prayer|mad_prayer|blood_pact
+explore,143,0,6,0,독@collector,rat_swarm|venom_fang|venom_fang|stone_heart
+explore,144,0,6,0,독@collector,venom_fang|mad_prayer
+explore,145,0,6,0,독@collector,venom_fang|blood_pact
+explore,146,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+explore,147,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|venom_fang
+explore,148,0,6,0,독@collector,rat_swarm|rat_swarm|venom_fang|venom_fang|blood_pact
+explore,149,0,6,0,독@collector,sticky_film|rat_swarm|venom_fang|mad_prayer
+explore,150,1,6,36,,sticky_film|blood_pact
+explore,151,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+explore,152,1,6,6,,sticky_film|rat_swarm|venom_fang|mad_prayer|stone_heart
+explore,153,1,6,18,,venom_fang|stone_heart
+explore,154,0,6,0,독@collector,rat_swarm|venom_fang|blood_pact
+explore,155,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|mad_prayer|stone_heart
+explore,156,1,6,8,,rat_swarm|mad_prayer|mad_prayer|blood_pact
+explore,157,1,6,10,,sticky_film|sticky_film|venom_fang|stone_heart
+explore,158,0,6,0,독@collector,mad_prayer|stone_heart
+explore,159,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm
+explore,160,0,6,0,독@collector,sticky_film|rat_swarm|venom_fang|mad_prayer|stone_heart
+explore,161,1,6,7,,rat_swarm|mad_prayer
+explore,162,0,6,0,독@collector,venom_fang|venom_fang|blood_pact
+explore,163,0,6,0,심연의 수집가@collector,mad_prayer
+explore,164,1,6,25,,rat_swarm|rat_swarm|blood_pact
+explore,165,1,6,18,,rat_swarm|sticky_film|mad_prayer|blood_pact
+explore,166,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|mad_prayer|venom_fang
+explore,167,1,6,27,,sticky_film|venom_fang
+explore,168,1,6,7,,rat_swarm|mad_prayer
+explore,169,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|stone_heart
+explore,170,0,6,0,독@collector,rat_swarm|mad_prayer
+explore,171,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer
+explore,172,1,6,7,,mad_prayer
+explore,173,1,6,9,,sticky_film|venom_fang
+explore,174,0,6,0,독@collector,venom_fang|mad_prayer|stone_heart
+explore,175,1,6,5,,sticky_film|mad_prayer|stone_heart
+explore,176,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm
+explore,177,1,6,22,,stone_heart
+explore,178,0,6,0,독@collector,rat_swarm|venom_fang|venom_fang|stone_heart
+explore,179,0,6,0,독@collector,
+explore,180,1,6,7,,rat_swarm|sticky_film
+explore,181,1,6,13,,sticky_film|venom_fang
+explore,182,0,6,0,독@collector,
+explore,183,0,6,0,심연의 수집가@collector,sticky_film|sticky_film|mad_prayer|venom_fang|stone_heart
+explore,184,1,6,32,,sticky_film|sticky_film|venom_fang
+explore,185,1,6,5,,mad_prayer
+explore,186,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+explore,187,0,6,0,독@collector,rat_swarm|sticky_film|venom_fang
+explore,188,1,6,27,,rat_swarm|mad_prayer|blood_pact
+explore,189,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|blood_pact
+explore,190,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|venom_fang|mad_prayer
+explore,191,1,6,5,,venom_fang
+explore,192,1,6,15,,rat_swarm|mad_prayer|venom_fang|blood_pact
+explore,193,1,6,19,,sticky_film|rat_swarm|blood_pact
+explore,194,0,6,0,독@collector,sticky_film
+explore,195,0,6,0,독@collector,mad_prayer|venom_fang|blood_pact
+explore,196,1,6,10,,rat_swarm|stone_heart
+explore,197,0,6,0,심연의 수집가@collector,
+explore,198,0,6,0,심연의 수집가@collector,sticky_film
+explore,199,0,6,0,심연의 수집가@collector,mad_prayer
+explore,200,0,6,0,심연의 수집가@collector,sticky_film|venom_fang
+explore,201,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film
+explore,202,1,6,8,,sticky_film|venom_fang|mad_prayer
+explore,203,1,6,5,,sticky_film|venom_fang
+explore,204,0,6,0,독@collector,rat_swarm|sticky_film
+explore,205,1,6,18,,sticky_film|sticky_film|stone_heart
+explore,206,0,6,0,독@collector,venom_fang|blood_pact
+explore,207,1,6,24,,rat_swarm|rat_swarm|blood_pact
+explore,208,1,6,24,,sticky_film|rat_swarm|blood_pact
+explore,209,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|blood_pact
+explore,210,0,6,0,심연의 수집가@collector,rat_swarm
+explore,211,1,6,3,,
+explore,212,0,6,0,심연의 수집가@collector,mad_prayer
+explore,213,0,6,0,독@collector,mad_prayer|mad_prayer
+explore,214,1,6,23,,sticky_film|sticky_film|mad_prayer
+explore,215,0,6,0,독@collector,venom_fang|venom_fang
+explore,216,1,6,8,,rat_swarm|sticky_film|venom_fang|stone_heart
+explore,217,1,6,29,,sticky_film|sticky_film|venom_fang|blood_pact
+explore,218,1,6,10,,rat_swarm|sticky_film|venom_fang
+explore,219,0,6,0,심연의 수집가@collector,sticky_film|sticky_film
+explore,220,0,6,0,독@collector,rat_swarm|sticky_film|stone_heart
+explore,221,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|mad_prayer|venom_fang
+explore,222,1,6,29,,sticky_film|sticky_film|mad_prayer
+explore,223,1,6,7,,rat_swarm|rat_swarm|mad_prayer
+explore,224,0,6,0,독@collector,sticky_film|rat_swarm|venom_fang
+explore,225,1,6,12,,
+explore,226,0,6,0,독@collector,sticky_film|venom_fang|mad_prayer
+explore,227,1,6,13,,sticky_film|rat_swarm|stone_heart
+explore,228,1,6,39,,blood_pact
+explore,229,1,6,5,,sticky_film
+explore,230,1,6,5,,rat_swarm|mad_prayer|stone_heart
+explore,231,1,6,27,,rat_swarm|blood_pact
+explore,232,1,6,4,,sticky_film|stone_heart
+explore,233,1,6,3,,rat_swarm|sticky_film|venom_fang
+explore,234,0,6,0,독@collector,rat_swarm|venom_fang
+explore,235,1,6,1,,rat_swarm|mad_prayer|mad_prayer
+explore,236,0,6,0,심연의 수집가@collector,sticky_film|rat_swarm|venom_fang|mad_prayer|blood_pact
+explore,237,1,6,1,,venom_fang
+explore,238,0,6,0,독@collector,rat_swarm|rat_swarm|venom_fang
+explore,239,1,6,4,,mad_prayer|stone_heart
+explore,240,0,6,0,심연의 수집가@collector,mad_prayer
+explore,241,1,6,9,,rat_swarm|venom_fang
+explore,242,1,6,40,,sticky_film|mad_prayer|blood_pact
+explore,243,1,6,4,,sticky_film|venom_fang
+explore,244,0,6,0,독@collector,sticky_film|mad_prayer|mad_prayer
+explore,245,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang
+explore,246,1,6,5,,mad_prayer|stone_heart
+explore,247,1,6,12,,rat_swarm|sticky_film|venom_fang|stone_heart
+explore,248,0,6,0,독@collector,sticky_film|venom_fang|venom_fang|stone_heart
+explore,249,0,6,0,심연의 수집가@collector,sticky_film|venom_fang|mad_prayer
+explore,250,0,6,0,독@collector,mad_prayer
+explore,251,1,6,41,,sticky_film|blood_pact
+explore,252,0,6,0,심연의 수집가@collector,rat_swarm|stone_heart
+explore,253,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|stone_heart
+explore,254,1,6,10,,sticky_film|mad_prayer|mad_prayer
+explore,255,1,6,1,,sticky_film|venom_fang|venom_fang|stone_heart
+explore,256,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|mad_prayer|stone_heart
+explore,257,1,6,12,,sticky_film|venom_fang
+explore,258,1,6,14,,rat_swarm|venom_fang|blood_pact
+explore,259,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+explore,260,1,6,20,,rat_swarm|mad_prayer|blood_pact
+explore,261,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+explore,262,0,6,0,독@collector,rat_swarm|venom_fang
+explore,263,0,6,0,심연의 수집가@collector,mad_prayer|mad_prayer|stone_heart
+explore,264,1,6,38,,sticky_film|sticky_film|blood_pact
+explore,265,1,6,1,,sticky_film
+explore,266,1,6,10,,rat_swarm|sticky_film|mad_prayer|stone_heart
+explore,267,1,6,10,,sticky_film|venom_fang|blood_pact
+explore,268,1,6,25,,sticky_film|mad_prayer
+explore,269,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang
+explore,270,1,6,4,,rat_swarm|mad_prayer|mad_prayer|blood_pact
+explore,271,1,6,7,,sticky_film|mad_prayer|blood_pact
+explore,272,0,6,0,심연의 수집가@collector,rat_swarm
+explore,273,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+explore,274,1,6,43,,blood_pact
+explore,275,1,6,3,,rat_swarm|venom_fang|venom_fang
+explore,276,1,6,41,,blood_pact
+explore,277,1,6,5,,rat_swarm|mad_prayer
+explore,278,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer
+explore,279,1,6,17,,sticky_film|sticky_film|venom_fang
+explore,280,0,6,0,심연의 수집가@collector,rat_swarm|mad_prayer|mad_prayer|stone_heart
+explore,281,1,6,18,,rat_swarm|blood_pact
+explore,282,1,6,9,,sticky_film|rat_swarm|venom_fang|blood_pact
+explore,283,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang|stone_heart
+explore,284,0,6,0,심연의 수집가@collector,sticky_film|mad_prayer|venom_fang|stone_heart
+explore,285,1,6,17,,sticky_film|venom_fang
+explore,286,0,6,0,독@collector,sticky_film|sticky_film|mad_prayer
+explore,287,0,6,0,심연의 수집가@collector,rat_swarm|rat_swarm|venom_fang
+explore,288,1,6,17,,sticky_film|rat_swarm|mad_prayer|mad_prayer
+explore,289,0,6,0,심연의 수집가@collector,sticky_film
+explore,290,0,6,0,심연의 수집가@collector,rat_swarm|sticky_film|venom_fang|venom_fang|blood_pact
+explore,291,0,6,0,심연의 수집가@collector,rat_swarm|venom_fang
+explore,292,0,6,0,독@collector,sticky_film|venom_fang|stone_heart
+explore,293,1,6,14,,rat_swarm|rat_swarm|blood_pact
+explore,294,1,6,8,,mad_prayer
+explore,295,0,6,0,심연의 수집가@collector,mad_prayer
+explore,296,0,6,0,독@collector,rat_swarm|venom_fang
+explore,297,0,6,0,심연의 수집가@collector,mad_prayer|venom_fang
+explore,298,0,6,0,독@collector,rat_swarm|sticky_film|venom_fang
+explore,299,1,6,9,,rat_swarm|venom_fang
+explore,300,1,6,15,,rat_swarm|sticky_film|stone_heart

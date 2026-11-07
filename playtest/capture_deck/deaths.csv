@@ -1,0 +1,23 @@
+bot,death,count,share
+random,골렘@golem,70,0.233
+random,광신도@zealot,5,0.017
+random,독@collector,26,0.087
+random,독@golem,4,0.013
+random,독@spider,4,0.013
+random,독@vampire,5,0.017
+random,독@zealot,1,0.003
+random,독거미@spider,5,0.017
+random,심연의 수집가@collector,93,0.310
+random,자해@collector,5,0.017
+random,자해@golem,5,0.017
+random,자해@spider,1,0.003
+random,자해@vampire,3,0.010
+random,흡혈 기사@vampire,73,0.243
+planner,독@collector,32,0.107
+planner,심연의 수집가@collector,35,0.117
+always,독@collector,62,0.207
+always,심연의 수집가@collector,147,0.490
+never,독@collector,66,0.220
+never,심연의 수집가@collector,158,0.527
+explore,독@collector,62,0.207
+explore,심연의 수집가@collector,83,0.277
