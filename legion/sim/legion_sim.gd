@@ -19,6 +19,8 @@ class Enemy:
 	var damage_mult := 1.0
 	var keep_distance := 0.0
 	var born := 0.0
+	var slow_time := 0.0
+	var slow_amount := 0.0
 
 
 class Projectile:
@@ -30,6 +32,10 @@ class Projectile:
 	var life := 1.0
 	var hostile := false
 	var source := ""
+	var pierce := 0
+	var hit_list: Array = []
+	var splash_radius := 0.0
+	var splash_mult := 0.0
 
 
 class Strike:
@@ -38,6 +44,7 @@ class Strike:
 	var damage := 0.0
 	var radius := 1.0
 	var source := ""
+	var hostile := true
 
 
 class Gem:
@@ -66,8 +73,11 @@ var hp := 0.0
 var max_hp := 0.0
 var invuln := 0.0
 var player_flash := 0.0
+var main_weapon := ""
 var build := {}
 var timers := {}
+var player_slow_time := 0.0
+var player_slow_amount := 0.0
 var level := 1
 var xp := 0
 var queued_levels := 0
@@ -77,6 +87,7 @@ var enemies: Array[Enemy] = []
 var projectiles: Array[Projectile] = []
 var strikes: Array[Strike] = []
 var gems: Array[Gem] = []
+var awaken_round := 0
 var past_builds: Array = []
 var ghost_queue: Array = []
 
@@ -100,7 +111,7 @@ var boss_log: Array = []
 var damage_by_source := {}
 
 
-func _init(balance: Dictionary, run_seed: int) -> void:
+func _init(balance: Dictionary, run_seed: int, main_id: String) -> void:
 	data = balance
 	rng.seed = run_seed
 	tick = float(data.tick)
@@ -108,8 +119,17 @@ func _init(balance: Dictionary, run_seed: int) -> void:
 	hp = max_hp
 	player_pos = Vector2(float(data.arena.w), float(data.arena.h)) * 0.5
 	player_prev = player_pos
-	build = {"weapons": {"bolt": 0, "aura": 0, "lightning": 0}, "upgrades": {"might": 0, "haste": 0, "vitality": 0}}
-	build.weapons[data.start_weapon] = 1
+	main_weapon = main_id
+	var trait_levels := {}
+	for trait_id in data.traits:
+		trait_levels[trait_id] = 0
+	build = {
+		"main": main_id,
+		"weapons": {"bolt": 0, "aura": 0, "lightning": 0},
+		"traits": trait_levels,
+		"upgrades": {"might": 0, "haste": 0, "vitality": 0},
+	}
+	build.weapons[main_id] = 1
 	timers = {"bolt": 0.0, "aura": 0.0, "lightning": 0.0}
 
 
@@ -122,71 +142,155 @@ func xp_needed() -> int:
 
 
 func option_level(option_id: String) -> int:
+	return _build_level(build, option_id)
+
+
+func _build_level(target_build: Dictionary, option_id: String) -> int:
 	if option_id in WEAPON_IDS:
-		return int(build.weapons[option_id])
-	return int(build.upgrades[option_id])
+		return int(target_build.weapons[option_id])
+	if data.traits.has(option_id):
+		return int(target_build.traits[option_id])
+	return int(target_build.upgrades[option_id])
 
 
 func option_def(option_id: String) -> Dictionary:
 	if option_id in WEAPON_IDS:
 		return data.weapons[option_id]
+	if data.traits.has(option_id):
+		return data.traits[option_id]
 	return data.upgrades[option_id]
 
 
+func option_max(option_id: String) -> int:
+	if option_id == main_weapon:
+		return int(data.max_levels.main)
+	if option_id in WEAPON_IDS:
+		return int(data.max_levels.sub)
+	if data.traits.has(option_id):
+		return int(data.max_levels.trait)
+	return int(data.max_levels.upgrade)
+
+
+func is_awakening_option(option_id: String) -> bool:
+	return option_id == main_weapon and option_level(option_id) + 1 >= int(data.max_levels.main)
+
+
+func is_awakened(target_build: Dictionary) -> bool:
+	return int(target_build.weapons[target_build.main]) >= int(data.max_levels.main)
+
+
 func dominant_weapon(target_build: Dictionary) -> String:
-	var best := "bolt"
-	for weapon_id in WEAPON_IDS:
-		if int(target_build.weapons[weapon_id]) > int(target_build.weapons[best]):
-			best = weapon_id
-	return best
+	return target_build.main
+
+
+## 레벨, 특성, 각성, 공통 강화를 합친 무기의 실제 수치.
+func weapon_stats(weapon_id: String, owner_build: Dictionary) -> Dictionary:
+	var weapon: Dictionary = data.weapons[weapon_id]
+	var weapon_level := int(owner_build.weapons[weapon_id])
+	var stats := {
+		"damage": float(weapon.damage) + float(weapon.damage_per_level) * (weapon_level - 1),
+		"count": 1,
+		"radius": float(weapon.radius) + float(weapon.get("radius_per_level", 0.0)) * (weapon_level - 1),
+		"cooldown": float(weapon.cooldown),
+		"pierce": 0, "leech": 0.0, "slow": 0.0, "knockback": 0.0,
+		"splash_radius": 0.0, "splash_mult": 0.0, "echo_delay": 0.0,
+	}
+	if weapon.has("count_every_levels"):
+		stats.count += int((weapon_level - 1) / float(weapon.count_every_levels))
+	for trait_id in data.traits:
+		var trait_def: Dictionary = data.traits[trait_id]
+		var trait_level := int(owner_build.traits[trait_id])
+		if trait_def.weapon != weapon_id or trait_level <= 0:
+			continue
+		var amount := float(trait_def.value) * trait_level
+		match trait_def.effect:
+			"count":
+				stats.count += int(amount)
+			"pierce":
+				stats.pierce += int(amount)
+			"cooldown":
+				stats.cooldown *= maxf(float(data.min_cooldown_mult), 1.0 - amount)
+			"radius":
+				stats.radius += amount
+			"leech":
+				stats.leech += amount
+			"slow":
+				stats.slow += amount
+			"damage":
+				stats.damage *= 1.0 + amount
+	if weapon_level >= int(data.max_levels.main):
+		var awaken: Dictionary = weapon.awaken
+		stats.damage *= float(awaken.get("damage_mult", 1.0))
+		stats.count = stats.count * int(awaken.get("count_mult", 1)) + int(awaken.get("extra_count", 0))
+		stats.radius *= float(awaken.get("radius_mult", 1.0))
+		stats.knockback = float(awaken.get("knockback", 0.0))
+		stats.splash_radius = float(awaken.get("splash_radius", 0.0))
+		stats.splash_mult = float(awaken.get("splash_mult", 0.0))
+		stats.echo_delay = float(awaken.get("echo_delay", 0.0))
+	stats.damage *= _might_mult(owner_build)
+	stats.cooldown *= _cooldown_mult(owner_build)
+	return stats
 
 
 func build_dps(target_build: Dictionary) -> float:
 	var total := 0.0
-	var cooldown_mult := _cooldown_mult(target_build)
 	for weapon_id in WEAPON_IDS:
-		var weapon_level := int(target_build.weapons[weapon_id])
-		if weapon_level <= 0:
+		if int(target_build.weapons[weapon_id]) <= 0:
 			continue
-		var weapon: Dictionary = data.weapons[weapon_id]
-		var damage := float(weapon.damage) + float(weapon.damage_per_level) * (weapon_level - 1)
-		var count := 1
-		if weapon.has("count_every_levels"):
-			count += int((weapon_level - 1) / float(weapon.count_every_levels))
-		total += damage * count / (float(weapon.cooldown) * cooldown_mult) * float(weapon.single_target_weight)
-	return total * _might_mult(target_build)
+		var stats := weapon_stats(weapon_id, target_build)
+		var hits: float = 2.0 if stats.echo_delay > 0.0 else 1.0
+		total += stats.damage * stats.count * hits / stats.cooldown * float(data.weapons[weapon_id].single_target_weight)
+	return total
+
+
+## 각성은 화력이 크게 뛰므로, 적 체력 계산에서는 각성 직전 화력에 정해진 배수만 곱한다.
+func enemy_scaling_dps(target_build: Dictionary) -> float:
+	if not is_awakened(target_build):
+		return build_dps(target_build)
+	var before: Dictionary = target_build.duplicate(true)
+	before.weapons[target_build.main] -= 1
+	return build_dps(before) * float(data.awaken_scaling_mult)
 
 
 func ghost_hp(target_build: Dictionary, age: int) -> float:
 	var ghost_def: Dictionary = data.ghost
-	var scaled := build_dps(target_build) * float(ghost_def.target_ttk) * (1.0 + float(ghost_def.hp_per_age) * age)
+	var scaled := enemy_scaling_dps(target_build) * float(ghost_def.target_ttk) * (1.0 + float(ghost_def.hp_per_age) * age)
 	return maxf(float(ghost_def.hp_min), scaled)
 
 
 ## 이 선택지를 고르면 다음 라운드의 과거의 나가 어떻게 되는지 알려준다.
 func ghost_preview(option_id: String) -> Dictionary:
 	var preview_build: Dictionary = build.duplicate(true)
-	if option_id in WEAPON_IDS:
-		preview_build.weapons[option_id] += 1
-	elif option_id != "":
-		preview_build.upgrades[option_id] += 1
+	if option_id != "":
+		_apply_option(preview_build, option_id)
 	return {
 		"hp": ghost_hp(preview_build, 0),
 		"behavior": data.ghost.behaviors[dominant_weapon(preview_build)].name,
+		"awakened": is_awakened(preview_build),
 	}
+
+
+func _apply_option(target_build: Dictionary, option_id: String) -> void:
+	if option_id in WEAPON_IDS:
+		target_build.weapons[option_id] += 1
+	elif data.traits.has(option_id):
+		target_build.traits[option_id] += 1
+	else:
+		target_build.upgrades[option_id] += 1
 
 
 func choose(index: int) -> void:
 	var option_id: String = pending_choices[index]
 	picks.append({"offered": pending_choices.duplicate(), "chosen": option_id})
-	if option_id in WEAPON_IDS:
-		build.weapons[option_id] += 1
-	else:
-		build.upgrades[option_id] += 1
-		if option_id == "vitality":
-			var bonus := float(data.upgrades.vitality.value)
-			max_hp += bonus
-			hp = minf(hp + bonus, max_hp)
+	var awakens := is_awakening_option(option_id)
+	_apply_option(build, option_id)
+	if option_id == "vitality":
+		var bonus := float(data.upgrades.vitality.value)
+		max_hp += bonus
+		hp = minf(hp + bonus, max_hp)
+	if awakens:
+		awaken_round = round_index
+		_event({"type": "awaken", "name": data.weapons[main_weapon].awaken.name})
 	pending_choices = []
 	_offer_next_level()
 
@@ -218,6 +322,7 @@ func step(move_dir: Vector2) -> void:
 	round_time += tick
 	invuln = maxf(0.0, invuln - tick)
 	player_flash = maxf(0.0, player_flash - tick)
+	player_slow_time = maxf(0.0, player_slow_time - tick)
 	_move_player(move_dir)
 	_fire_weapons(player_pos, build, timers, false, 1.0)
 	_spawn_enemies()
@@ -246,7 +351,10 @@ func _clamp_to_arena(pos: Vector2) -> Vector2:
 
 func _move_player(move_dir: Vector2) -> void:
 	player_prev = player_pos
-	player_pos = _clamp_to_arena(player_pos + move_dir.limit_length(1.0) * float(data.player.speed) * tick)
+	var speed := float(data.player.speed)
+	if player_slow_time > 0.0:
+		speed *= maxf(0.2, 1.0 - player_slow_amount)
+	player_pos = _clamp_to_arena(player_pos + move_dir.limit_length(1.0) * speed * tick)
 
 
 func _might_mult(owner_build: Dictionary) -> float:
@@ -267,24 +375,25 @@ func _fire_weapons(origin: Vector2, owner_build: Dictionary, owner_timers: Dicti
 		if owner_timers[weapon_id] > 0.0:
 			continue
 		var weapon: Dictionary = data.weapons[weapon_id]
-		var damage := (float(weapon.damage) + float(weapon.damage_per_level) * (weapon_level - 1)) * _might_mult(owner_build) * hostile_mult
+		var stats := weapon_stats(weapon_id, owner_build)
+		var damage: float = stats.damage * hostile_mult
 		if hostile:
 			damage *= float(weapon.hostile_damage_mult)
 		var fired := false
 		match weapon_id:
 			"bolt":
-				fired = _fire_bolt(origin, weapon, weapon_level, damage, hostile)
+				fired = _fire_bolt(origin, weapon, stats, damage, hostile)
 			"aura":
-				fired = _fire_aura(origin, weapon, weapon_level, damage, hostile)
+				fired = _fire_aura(origin, stats, damage, hostile)
 			"lightning":
-				fired = _fire_lightning(origin, weapon, weapon_level, damage, hostile)
-		var cooldown := float(weapon.cooldown) * _cooldown_mult(owner_build)
+				fired = _fire_lightning(origin, weapon, stats, damage, hostile)
+		var cooldown: float = stats.cooldown
 		if hostile:
 			cooldown *= float(weapon.hostile_cooldown_mult)
 		owner_timers[weapon_id] = cooldown if fired else 0.0
 
 
-func _fire_bolt(origin: Vector2, weapon: Dictionary, weapon_level: int, damage: float, hostile: bool) -> bool:
+func _fire_bolt(origin: Vector2, weapon: Dictionary, stats: Dictionary, damage: float, hostile: bool) -> bool:
 	var target := Vector2.ZERO
 	var max_range := float(weapon.range)
 	if hostile:
@@ -302,16 +411,20 @@ func _fire_bolt(origin: Vector2, weapon: Dictionary, weapon_level: int, damage: 
 		if best == null:
 			return false
 		target = best.pos
-	var count := 1 + int((weapon_level - 1) / float(weapon.count_every_levels))
+	var count: int = mini(stats.count, int(weapon.hostile_max_count)) if hostile else stats.count
 	var base_dir := (target - origin).normalized()
 	var speed := float(weapon.hostile_speed) if hostile else float(weapon.speed)
 	for i in count:
-		_add_projectile(origin, base_dir.rotated((i - (count - 1) * 0.5) * 0.18) * speed, damage, float(weapon.radius),
+		var shot := _add_projectile(origin, base_dir.rotated((i - (count - 1) * 0.5) * 0.18) * speed, damage, float(weapon.radius),
 				float(weapon.life) * (float(weapon.speed) / speed if hostile else 1.0), hostile, "ghost_bolt")
+		if not hostile:
+			shot.pierce = stats.pierce
+			shot.splash_radius = stats.splash_radius
+			shot.splash_mult = stats.splash_mult
 	return true
 
 
-func _add_projectile(origin: Vector2, vel: Vector2, damage: float, radius: float, life: float, hostile: bool, source: String) -> void:
+func _add_projectile(origin: Vector2, vel: Vector2, damage: float, radius: float, life: float, hostile: bool, source: String) -> Projectile:
 	var shot := Projectile.new()
 	shot.pos = origin
 	shot.prev = origin
@@ -322,28 +435,45 @@ func _add_projectile(origin: Vector2, vel: Vector2, damage: float, radius: float
 	shot.hostile = hostile
 	shot.source = source
 	projectiles.append(shot)
+	return shot
 
 
-func _fire_aura(origin: Vector2, weapon: Dictionary, weapon_level: int, damage: float, hostile: bool) -> bool:
-	var radius := float(weapon.radius) + float(weapon.radius_per_level) * (weapon_level - 1)
+func _fire_aura(origin: Vector2, stats: Dictionary, damage: float, hostile: bool) -> bool:
+	var radius: float = stats.radius
+	if hostile:
+		radius *= float(data.weapons.aura.hostile_radius_mult)
 	_event({"type": "aura", "pos": origin, "radius": radius, "hostile": hostile})
 	if hostile:
 		if origin.distance_to(player_pos) <= radius + float(data.player.radius):
 			_hurt_player(damage, "ghost_aura")
-	else:
-		for enemy in enemies:
-			if origin.distance_to(enemy.pos) <= radius + enemy.radius:
-				_damage_enemy(enemy, damage)
+			if stats.slow > 0.0:
+				player_slow_time = float(data.ghost.slow_seconds)
+				player_slow_amount = stats.slow
+		return true
+	var hit_any := false
+	for enemy in enemies:
+		if origin.distance_to(enemy.pos) > radius + enemy.radius:
+			continue
+		hit_any = true
+		_damage_enemy(enemy, damage)
+		if stats.slow > 0.0:
+			enemy.slow_time = 1.0
+			enemy.slow_amount = stats.slow
+		if stats.knockback > 0.0 and enemy.kind != "boss":
+			enemy.pos += (enemy.pos - origin).normalized() * stats.knockback
+	if hit_any:
+		hp = minf(max_hp, hp + stats.leech)
 	return true
 
 
-func _add_strike(pos: Vector2, delay: float, damage: float, radius: float, source: String) -> void:
+func _add_strike(pos: Vector2, delay: float, damage: float, radius: float, source: String, hostile := true) -> void:
 	var strike := Strike.new()
 	strike.pos = _clamp_to_arena(pos)
 	strike.delay = delay
 	strike.damage = damage
 	strike.radius = radius
 	strike.source = source
+	strike.hostile = hostile
 	strikes.append(strike)
 
 
@@ -351,15 +481,19 @@ func _random_offset(spread: float) -> Vector2:
 	return Vector2.from_angle(rng.randf() * TAU) * rng.randf() * spread
 
 
-func _fire_lightning(origin: Vector2, weapon: Dictionary, weapon_level: int, damage: float, hostile: bool) -> bool:
-	var radius := float(weapon.radius)
-	var count := 1 + int((weapon_level - 1) / float(weapon.count_every_levels))
+func _fire_lightning(origin: Vector2, weapon: Dictionary, stats: Dictionary, damage: float, hostile: bool) -> bool:
+	var radius: float = stats.radius
+	var count: int = stats.count
+	var echo_delay: float = stats.echo_delay
 	if hostile:
 		if origin.distance_to(player_pos) > float(weapon.range):
 			return false
-		for i in count:
+		var strike_delay := float(data.ghost.strike_delay)
+		for i in mini(count, int(weapon.hostile_max_count)):
 			var offset := Vector2.ZERO if i == 0 else _random_offset(float(data.ghost.strike_spread))
-			_add_strike(player_pos + offset, float(data.ghost.strike_delay), damage, radius, "ghost_lightning")
+			_add_strike(player_pos + offset, strike_delay, damage, radius, "ghost_lightning")
+			if echo_delay > 0.0:
+				_add_strike(player_pos + offset, strike_delay + echo_delay, damage, radius, "ghost_lightning")
 		return true
 	var in_range: Array[Enemy] = []
 	var range_sq := float(weapon.range) * float(weapon.range)
@@ -371,10 +505,16 @@ func _fire_lightning(origin: Vector2, weapon: Dictionary, weapon_level: int, dam
 	for i in count:
 		var center: Enemy = in_range[rng.randi_range(0, in_range.size() - 1)]
 		_event({"type": "lightning", "pos": center.pos, "radius": radius})
-		for enemy in enemies:
-			if center.pos.distance_to(enemy.pos) <= radius + enemy.radius:
-				_damage_enemy(enemy, damage)
+		_damage_area(center.pos, radius, damage)
+		if echo_delay > 0.0:
+			_add_strike(center.pos, echo_delay, damage, radius, "", false)
 	return true
+
+
+func _damage_area(center: Vector2, radius: float, damage: float) -> void:
+	for enemy in enemies:
+		if center.distance_to(enemy.pos) <= radius + enemy.radius:
+			_damage_enemy(enemy, damage)
 
 
 func _damage_enemy(enemy: Enemy, damage: float) -> void:
@@ -518,7 +658,7 @@ func _spawn_boss() -> void:
 	enemy.pos = _spawn_position()
 	enemy.prev = enemy.pos
 	var base_hp := float(cfg.hp_base) + float(cfg.hp_per_round) * (round_index - 1)
-	enemy.max_hp = maxf(base_hp, build_dps(build) * float(cfg.target_ttk))
+	enemy.max_hp = maxf(base_hp, enemy_scaling_dps(build) * float(cfg.target_ttk))
 	enemy.hp = enemy.max_hp
 	enemy.speed = float(cfg.speed)
 	enemy.radius = float(cfg.radius)
@@ -546,7 +686,7 @@ func _update_boss(enemy: Enemy) -> void:
 	boss_timer -= tick
 	match boss_state:
 		"idle":
-			enemy.pos += (player_pos - enemy.pos).normalized() * enemy.speed * tick
+			enemy.pos += (player_pos - enemy.pos).normalized() * _enemy_speed(enemy) * tick
 			if boss_timer <= 0.0:
 				_start_boss_pattern(enemy)
 		"windup":
@@ -609,6 +749,7 @@ func _update_enemies() -> void:
 		var enemy: Enemy = enemies[i]
 		enemy.prev = enemy.pos
 		enemy.flash = maxf(0.0, enemy.flash - tick)
+		enemy.slow_time = maxf(0.0, enemy.slow_time - tick)
 		match enemy.kind:
 			"boss":
 				_update_boss(enemy)
@@ -616,7 +757,7 @@ func _update_enemies() -> void:
 				_move_ghost(enemy)
 				_fire_weapons(enemy.pos, enemy.build, enemy.timers, true, enemy.damage_mult)
 			_:
-				enemy.pos += (player_pos - enemy.pos).normalized() * enemy.speed * tick
+				enemy.pos += (player_pos - enemy.pos).normalized() * _enemy_speed(enemy) * tick
 		# 이웃 한 쌍만 밀어내 O(n)으로 겹침을 줄인다.
 		var other: Enemy = enemies[(i + 1) % count]
 		var gap := enemy.pos - other.pos
@@ -627,6 +768,12 @@ func _update_enemies() -> void:
 			other.pos -= push
 		if invuln <= 0.0 and enemy.pos.distance_to(player_pos) <= enemy.radius + player_radius:
 			_touch_player(enemy)
+
+
+func _enemy_speed(enemy: Enemy) -> float:
+	if enemy.slow_time > 0.0:
+		return enemy.speed * maxf(0.2, 1.0 - enemy.slow_amount)
+	return enemy.speed
 
 
 func _touch_player(enemy: Enemy) -> void:
@@ -652,7 +799,7 @@ func _move_ghost(ghost: Enemy) -> void:
 			move = -dir
 		elif dist <= ghost.keep_distance + 25.0:
 			move = dir.orthogonal() * 0.6
-	ghost.pos = _clamp_to_arena(ghost.pos + move * ghost.speed * tick)
+	ghost.pos = _clamp_to_arena(ghost.pos + move * _enemy_speed(ghost) * tick)
 
 
 func _update_projectiles() -> void:
@@ -669,10 +816,18 @@ func _update_projectiles() -> void:
 				hit = true
 		else:
 			for enemy in enemies:
-				if enemy.hp > 0.0 and shot.pos.distance_to(enemy.pos) <= shot.radius + enemy.radius:
-					_damage_enemy(enemy, shot.damage)
+				if enemy.hp <= 0.0 or enemy in shot.hit_list or shot.pos.distance_to(enemy.pos) > shot.radius + enemy.radius:
+					continue
+				_damage_enemy(enemy, shot.damage)
+				if shot.splash_radius > 0.0:
+					_event({"type": "burst", "pos": shot.pos, "radius": shot.splash_radius})
+					_damage_area(shot.pos, shot.splash_radius, shot.damage * shot.splash_mult)
+				if shot.pierce > 0:
+					shot.pierce -= 1
+					shot.hit_list.append(enemy)
+				else:
 					hit = true
-					break
+				break
 		if not hit and shot.life > 0.0:
 			alive.append(shot)
 	projectiles = alive
@@ -686,7 +841,9 @@ func _update_strikes() -> void:
 			alive.append(strike)
 			continue
 		_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius})
-		if strike.pos.distance_to(player_pos) <= strike.radius + float(data.player.radius):
+		if not strike.hostile:
+			_damage_area(strike.pos, strike.radius, strike.damage)
+		elif strike.pos.distance_to(player_pos) <= strike.radius + float(data.player.radius):
 			_hurt_player(strike.damage, strike.source)
 	strikes = alive
 
@@ -735,19 +892,54 @@ func _offer_next_level() -> void:
 	if queued_levels <= 0 or not pending_choices.is_empty():
 		return
 	var available: Array = []
-	for option_id in WEAPON_IDS + UPGRADE_IDS:
-		if option_level(option_id) < int(data.max_option_level):
+	var weights: Array = []
+	for option_id in _option_pool():
+		if is_awakening_option(option_id) and round_index < int(data.awaken_min_round):
+			continue
+		if option_level(option_id) < option_max(option_id):
 			available.append(option_id)
+			weights.append(_option_weight(option_id))
 	queued_levels -= 1
 	if available.is_empty():
 		queued_levels = 0
 		return
-	for i in range(available.size() - 1, 0, -1):
-		var j := rng.randi_range(0, i)
-		var swap = available[i]
-		available[i] = available[j]
-		available[j] = swap
-	pending_choices = available.slice(0, 3)
+	pending_choices = []
+	while pending_choices.size() < 3 and not available.is_empty():
+		var index := _weighted_index(weights)
+		pending_choices.append(available.pop_at(index))
+		weights.remove_at(index)
+
+
+## 메인 무기, 메인 무기의 특성, 공통 강화, 보조 무기만 선택지로 나온다.
+func _option_pool() -> Array:
+	var pool: Array = WEAPON_IDS + UPGRADE_IDS
+	for trait_id in data.traits:
+		if data.traits[trait_id].weapon == main_weapon:
+			pool.append(trait_id)
+	return pool
+
+
+func _option_weight(option_id: String) -> float:
+	var offer: Dictionary = data.offer_weights
+	if option_id == main_weapon:
+		return float(offer.main)
+	if option_id in WEAPON_IDS:
+		return float(offer.sub)
+	if data.traits.has(option_id):
+		return float(offer.trait)
+	return float(offer.upgrade)
+
+
+func _weighted_index(weights: Array) -> int:
+	var total := 0.0
+	for weight in weights:
+		total += float(weight)
+	var roll := rng.randf() * total
+	for i in weights.size():
+		roll -= float(weights[i])
+		if roll <= 0.0:
+			return i
+	return weights.size() - 1
 
 
 func _finish_round() -> void:

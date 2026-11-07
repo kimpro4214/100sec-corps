@@ -7,24 +7,49 @@
   "arena": { "w": 1500, "h": 1000 },
   "player": { "hp": 100, "speed": 215, "radius": 14, "pickup_radius": 75, "contact_invuln": 0.4 },
   "xp": { "base": 6, "per_level": 3 },
-  "start_weapon": "bolt",
-  "max_option_level": 5,
+  "awaken_min_round": 2,
+  "awaken_scaling_mult": 2.5,
+  "max_levels": { "main": 5, "sub": 2, "trait": 3, "upgrade": 5 },
+  "offer_weights": { "main": 3.0, "trait": 2.0, "upgrade": 1.0, "sub": 0.5 },
   "min_cooldown_mult": 0.4,
   "weapons": {
     "bolt": {
       "name": "마력탄", "desc": "가까운 적에게 탄환 발사",
       "cooldown": 0.8, "damage": 12, "damage_per_level": 4, "count_every_levels": 2,
-      "speed": 430, "hostile_speed": 210, "single_target_weight": 0.5, "hostile_damage_mult": 0.3, "hostile_cooldown_mult": 1.6, "range": 520, "life": 1.6, "radius": 6
+      "speed": 430, "hostile_speed": 210, "hostile_max_count": 4, "single_target_weight": 0.5, "hostile_damage_mult": 0.3, "hostile_cooldown_mult": 1.6, "range": 520, "life": 1.6, "radius": 6,
+      "awaken": {
+        "name": "폭풍탄", "desc": "탄환 2배, 명중 시 주변 폭발",
+        "damage_mult": 1.2, "count_mult": 2, "splash_radius": 60, "splash_mult": 0.5
+      }
     },
     "aura": {
       "name": "가시 오라", "desc": "주변의 적에게 주기적 피해",
-      "cooldown": 0.5, "damage": 5, "damage_per_level": 2.75, "radius": 72, "radius_per_level": 13, "single_target_weight": 1.1, "hostile_damage_mult": 1.0, "hostile_cooldown_mult": 1.0
+      "cooldown": 0.5, "damage": 5, "damage_per_level": 2.75, "radius": 72, "radius_per_level": 13, "single_target_weight": 1.1, "hostile_damage_mult": 0.55, "hostile_cooldown_mult": 1.5, "hostile_radius_mult": 0.85,
+      "awaken": {
+        "name": "가시 폭풍", "desc": "범위 +40%, 피해 +50%, 적을 밀어냄",
+        "damage_mult": 1.5, "radius_mult": 1.4, "knockback": 22
+      }
     },
     "lightning": {
       "name": "낙뢰", "desc": "범위 내 무작위 적을 강타",
       "cooldown": 2.0, "damage": 26, "damage_per_level": 13, "count_every_levels": 2,
-      "range": 460, "radius": 62, "single_target_weight": 0.55, "hostile_damage_mult": 1.0, "hostile_cooldown_mult": 1.0
+      "range": 460, "radius": 62, "hostile_max_count": 3, "single_target_weight": 0.55, "hostile_damage_mult": 1.0, "hostile_cooldown_mult": 1.0,
+      "awaken": {
+        "name": "천벌", "desc": "타격 +2, 피해 +30%, 같은 자리에 2차 낙뢰",
+        "damage_mult": 1.3, "extra_count": 2, "echo_delay": 0.45
+      }
     }
+  },
+  "traits": {
+    "multishot": { "weapon": "bolt", "name": "다중 사격", "desc": "탄환 +1", "effect": "count", "value": 1 },
+    "pierce": { "weapon": "bolt", "name": "관통", "desc": "탄환이 적 1명 더 관통", "effect": "pierce", "value": 1 },
+    "rapid": { "weapon": "bolt", "name": "속사", "desc": "발사 간격 -12%", "effect": "cooldown", "value": 0.12 },
+    "expand": { "weapon": "aura", "name": "확장", "desc": "오라 범위 +18", "effect": "radius", "value": 18 },
+    "leech": { "weapon": "aura", "name": "흡혈", "desc": "적을 맞힌 오라 1회마다 체력 +0.25", "effect": "leech", "value": 0.25 },
+    "frost": { "weapon": "aura", "name": "빙결", "desc": "오라에 닿으면 이동 속도 -15%", "effect": "slow", "value": 0.15 },
+    "chain": { "weapon": "lightning", "name": "연쇄", "desc": "낙뢰 +1", "effect": "count", "value": 1 },
+    "wide": { "weapon": "lightning", "name": "광역", "desc": "낙뢰 범위 +16", "effect": "radius", "value": 16 },
+    "overcharge": { "weapon": "lightning", "name": "과전류", "desc": "낙뢰 피해 +20%", "effect": "damage", "value": 0.2 }
   },
   "upgrades": {
     "might": { "name": "힘", "desc": "모든 피해 +15%", "value": 0.15 },
@@ -42,17 +67,18 @@
   },
   "ghost": {
     "first_at": 15, "last_at": 62, "radius": 18, "contact": 12, "xp": 12,
-    "hp_min": 90, "target_ttk": 4, "hp_per_age": 0.25, "damage_mult": 0.3, "strike_delay": 0.8, "strike_spread": 90,
+    "hp_min": 90, "target_ttk": 5, "hp_per_age": 0.25, "damage_mult": 0.38, "strike_delay": 0.8, "strike_spread": 90,
+    "slow_seconds": 0.8,
     "age_per_copy": 2, "copy_hp_mult": 0.4, "copy_damage_mult": 0.5, "boss_wave_hp_mult": 0.5,
     "behaviors": {
       "bolt": { "name": "탄막형", "speed": 90, "keep_distance": 300 },
-      "aura": { "name": "돌격형", "speed": 145, "keep_distance": 0 },
+      "aura": { "name": "돌격형", "speed": 125, "keep_distance": 0 },
       "lightning": { "name": "포격형", "speed": 75, "keep_distance": 380 }
     }
   },
   "boss": {
     "name": "군단장", "warning_seconds": 3, "radius": 42, "speed": 72, "contact": 20, "xp": 30,
-    "hp_base": 250, "hp_per_round": 180, "target_ttk": 6,
+    "hp_base": 250, "hp_per_round": 180, "target_ttk": 8,
     "damage_per_round": 0.15, "enrage_per_second": 0.03,
     "pattern_interval": 2.6, "bonus_levels": 1,
     "patterns": [
