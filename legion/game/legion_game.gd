@@ -13,6 +13,8 @@ const COLOR_RUNNER := Color("f2a541")
 const COLOR_GEM := Color("7ee081")
 const COLOR_HOSTILE := Color("ff5d8f")
 const COLOR_BOSS := Color("d7263d")
+const COLOR_SWARMLING := Color("ffb3a7")
+const COLOR_BRUTE := Color("a4243b")
 const COLOR_POTION := Color("ff8fab")
 const COLOR_MAGNET := Color("8ecbff")
 const COLOR_AWAKEN := Color("ffe066")
@@ -226,6 +228,8 @@ func _consume_events() -> void:
 				effects.append({"kind": "bolt", "pos": event.pos, "radius": event.radius, "time": 0.25, "max": 0.25, "color": Color.WHITE})
 			"ghost":
 				_show_banner("%s 등장!" % event.label)
+			"wave":
+				_show_banner("웨이브: %s!" % event.name)
 			"boss_warning":
 				_show_banner("경고: 군단장이 접근합니다")
 			"boss":
@@ -429,6 +433,10 @@ func _draw_enemy(enemy, alpha: float) -> void:
 	match enemy.kind:
 		"runner":
 			color = COLOR_RUNNER
+		"swarmling":
+			color = COLOR_SWARMLING
+		"brute":
+			color = COLOR_BRUTE
 		"ghost":
 			color = COLOR_AWAKEN if sim.is_awakened(enemy.build) else COLOR_GHOST
 		"boss":
