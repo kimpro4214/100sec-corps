@@ -13,10 +13,18 @@ static func collect_gems(sim) -> void:
 		if gem.attracted:
 			gem.pos = gem.pos.move_toward(sim.player_pos, magnet_step)
 		if gem.pos.distance_squared_to(sim.player_pos) <= radius_sq:
-			Progression.gain_xp(sim, gem.value)
+			take_gem(sim, gem)
 		else:
 			remaining.append(gem)
 	sim.gems = remaining
+
+
+## 보석은 경험치, 금화는 금화로 받는다.
+static func take_gem(sim, gem: Entities.Gem) -> void:
+	if gem.gold:
+		sim.gold += gem.value
+	else:
+		Progression.gain_xp(sim, gem.value)
 
 
 static func update_pickups(sim) -> void:

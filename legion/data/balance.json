@@ -4,7 +4,8 @@
   "round_seconds": 100,
   "boss_at": 70,
   "round_heal_ratio": 0.6,
-  "arena": { "w": 1500, "h": 1000 },
+  "arena": { "w": 3000, "h": 2000 },
+  "boss_room": { "w": 1500, "h": 1000, "gap": 800, "portal_radius": 40, "portal_distance": 300 },
   "player": { "hp": 100, "speed": 215, "radius": 14, "pickup_radius": 100, "contact_invuln": 0.4 },
   "xp": { "base": 6, "per_level": 3 },
   "awaken_min_round": 2,
@@ -15,8 +16,8 @@
   "weapons": {
     "bolt": {
       "name": "마력탄", "desc": "가까운 적에게 탄환 발사",
-      "cooldown": 0.8, "damage": 12, "damage_per_level": 4, "count_every_levels": 2,
-      "speed": 430, "hostile_speed": 210, "hostile_max_count": 4, "single_target_weight": 0.5, "hostile_damage_mult": 0.3, "hostile_cooldown_mult": 1.6, "range": 520, "life": 1.6, "radius": 6,
+      "cooldown": 0.8, "damage": 12, "damage_per_level": 3.0, "count_every_levels": 2,
+      "speed": 430, "hostile_speed": 210, "hostile_max_count": 4, "single_target_weight": 0.5, "hostile_damage_mult": 0.4, "hostile_cooldown_mult": 1.6, "range": 520, "life": 1.6, "radius": 6,
       "awaken": {
         "name": "폭풍탄", "desc": "탄환 2배, 명중 시 주변 폭발",
         "damage_mult": 1.2, "count_mult": 2, "splash_radius": 60, "splash_mult": 0.5
@@ -24,7 +25,7 @@
     },
     "aura": {
       "name": "가시 오라", "desc": "주변의 적에게 주기적 피해",
-      "cooldown": 0.5, "damage": 5, "damage_per_level": 2.75, "radius": 72, "radius_per_level": 13, "single_target_weight": 1.1, "hostile_damage_mult": 0.55, "hostile_cooldown_mult": 1.5, "hostile_radius_mult": 0.85,
+      "cooldown": 0.5, "damage": 5, "damage_per_level": 2.75, "radius": 72, "radius_per_level": 13, "single_target_weight": 1.1, "hostile_damage_mult": 0.55, "hostile_cooldown_mult": 1.5, "hostile_radius_mult": 0.75,
       "awaken": {
         "name": "가시 폭풍", "desc": "범위 +40%, 피해 +50%, 적을 밀어냄",
         "damage_mult": 1.5, "radius_mult": 1.4, "knockback": 22
@@ -33,7 +34,7 @@
     "lightning": {
       "name": "낙뢰", "desc": "범위 내 무작위 적을 강타",
       "cooldown": 2.0, "damage": 26, "damage_per_level": 13, "count_every_levels": 2,
-      "range": 460, "radius": 62, "hostile_max_count": 3, "single_target_weight": 0.55, "hostile_damage_mult": 1.0, "hostile_cooldown_mult": 1.0,
+      "range": 460, "radius": 62, "hostile_max_count": 3, "single_target_weight": 0.55, "hostile_damage_mult": 0.8, "hostile_cooldown_mult": 1.0,
       "awaken": {
         "name": "천벌", "desc": "타격 +2, 피해 +30%, 같은 자리에 2차 낙뢰",
         "damage_mult": 1.3, "extra_count": 2, "echo_delay": 0.45
@@ -67,6 +68,39 @@
     "magnet": { "name": "자석", "weight": 1.0, "speed": 900 },
     "potion": { "name": "포션", "weight": 1.0, "heal_ratio": 0.25 }
   },
+  "gold": {
+    "chance": { "grunt": 0.15, "runner": 0.15, "swarmling": 0.06, "brute": 1.0, "ghost": 1.0 },
+    "amount": { "grunt": 1, "runner": 1, "swarmling": 1, "brute": 3, "ghost": 6 }
+  },
+  "interactables": {
+    "activate_seconds": 1.0, "radius": 34, "min_distance": 260, "edge_margin": 150,
+    "kinds": {
+      "chest": {
+        "name": "보물상자", "count": 6, "cost": 5, "cost_per_round": 3, "repeat": false,
+        "rewards": [
+          { "type": "level", "weight": 3 },
+          { "type": "heal", "weight": 2, "value": 0.35 },
+          { "type": "shield", "weight": 2, "seconds": 5 },
+          { "type": "frenzy", "weight": 2, "seconds": 10, "value": 0.4 },
+          { "type": "bomb", "weight": 1, "radius": 420, "damage": 200 }
+        ]
+      },
+      "casino": {
+        "name": "미믹 룰렛", "count": 2, "cost": 8, "cost_per_round": 4, "repeat": true,
+        "rewards": [
+          { "type": "jackpot", "weight": 1, "levels": 2 },
+          { "type": "level", "weight": 3 },
+          { "type": "refund", "weight": 3, "mult": 2 },
+          { "type": "nothing", "weight": 4 },
+          { "type": "ambush", "weight": 2, "count": 14 }
+        ]
+      },
+      "shrine": {
+        "name": "피의 제단", "count": 2, "cost_hp": 0.25, "repeat": false,
+        "rewards": [ { "type": "level", "weight": 1 } ]
+      }
+    }
+  },
   "enemies": {
     "grunt": { "name": "병사", "hp": 16, "speed": 80, "radius": 12, "contact": 7, "xp": 1 },
     "runner": { "name": "추적자", "hp": 8, "speed": 135, "radius": 9, "contact": 5, "xp": 1 },
@@ -74,7 +108,7 @@
     "brute": { "name": "돌격병", "hp": 110, "speed": 62, "radius": 22, "contact": 14, "xp": 6 }
   },
   "spawn": {
-    "base_rate": 1.0, "rate_per_round": 0.45, "ramp_per_second": 0.012, "boss_rate_mult": 0.5,
+    "base_rate": 1.0, "rate_per_round": 0.45, "ramp_per_second": 0.012, "boss_rate_mult": 0.9,
     "swarmling_chance": 0.35, "runner_chance": 0.15, "runner_chance_per_round": 0.05,
     "hp_per_round": 0.35, "distance": 560, "max_enemies": 110
   },
@@ -91,7 +125,7 @@
     "first_at": 15, "last_at": 62, "radius": 18, "contact": 12, "xp": 12,
     "hp_min": 90, "target_ttk": 5, "hp_per_age": 0.25, "damage_mult": 0.38, "strike_delay": 0.8, "strike_spread": 90,
     "slow_seconds": 0.8,
-    "age_per_copy": 2, "copy_hp_mult": 0.4, "copy_damage_mult": 0.5, "boss_wave_hp_mult": 0.5,
+    "age_per_copy": 2, "copy_hp_mult": 0.4, "copy_damage_mult": 0.5, "boss_wave_hp_mult": 0.65,
     "behaviors": {
       "bolt": { "name": "탄막형", "speed": 90, "keep_distance": 300 },
       "aura": { "name": "돌격형", "speed": 125, "keep_distance": 0 },
@@ -99,15 +133,52 @@
     }
   },
   "boss": {
-    "name": "군단장", "warning_seconds": 3, "radius": 42, "speed": 72, "contact": 20, "xp": 30,
+    "warning_seconds": 3, "contact": 20, "xp": 30,
     "hp_base": 250, "hp_per_round": 180, "target_ttk": 8,
     "damage_per_round": 0.15, "enrage_per_second": 0.03,
-    "pattern_interval": 2.6, "bonus_levels": 1,
-    "patterns": [
-      { "type": "charge", "from_round": 1, "windup": 1.0, "speed": 560, "duration": 0.7, "damage": 22 },
-      { "type": "ring", "from_round": 2, "windup": 0.7, "count": 16, "speed": 175, "life": 3.5, "radius": 7, "damage": 9 },
-      { "type": "strikes", "from_round": 3, "windup": 0.2, "count": 5, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16 },
-      { "type": "summon", "from_round": 4, "windup": 0.6, "grunts": 4, "ghost_hp_mult": 0.3 }
-    ]
-  }
+    "pattern_interval": 2.6, "bonus_levels": 1
+  },
+  "bosses": [
+    {
+      "id": "spider", "name": "거미 여왕", "title": "둥지의 주인", "sprite": "boss_spider", "radius": 38, "speed": 88,
+      "patterns": [
+        { "type": "charge", "windup": 0.9, "speed": 600, "duration": 0.6, "damage": 18 },
+        { "type": "spray", "windup": 0.6, "count": 7, "spread": 0.9, "speed": 230, "life": 3.0, "radius": 7, "damage": 8 }
+      ]
+    },
+    {
+      "id": "wraith", "name": "망령", "title": "잊힌 나의 그림자", "sprite": "boss_wraith", "radius": 36, "speed": 60,
+      "patterns": [
+        { "type": "blink", "windup": 0.8, "distance": 200, "count": 12, "speed": 170, "life": 3.5, "radius": 7, "damage": 9 },
+        { "type": "ring", "windup": 0.7, "count": 14, "speed": 175, "life": 3.5, "radius": 7, "damage": 9 },
+        { "type": "summon", "windup": 0.6, "grunts": 2, "ghost_hp_mult": 0.3 }
+      ]
+    },
+    {
+      "id": "giant", "name": "외눈 거인", "title": "땅을 울리는 자", "sprite": "brute", "radius": 48, "speed": 55,
+      "patterns": [
+        { "type": "quake", "windup": 1.1, "radius": 170, "damage": 24 },
+        { "type": "charge", "windup": 1.0, "speed": 520, "duration": 0.7, "damage": 24 },
+        { "type": "strikes", "windup": 0.2, "count": 4, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16 }
+      ]
+    },
+    {
+      "id": "knight", "name": "타락한 기사", "title": "군단의 선봉", "sprite": "boss_knight", "radius": 40, "speed": 80,
+      "patterns": [
+        { "type": "charge", "windup": 0.7, "speed": 720, "duration": 0.5, "damage": 22 },
+        { "type": "spray", "windup": 0.6, "count": 9, "spread": 1.2, "speed": 250, "life": 3.0, "radius": 7, "damage": 9 },
+        { "type": "ring", "windup": 0.7, "count": 18, "speed": 185, "life": 3.5, "radius": 7, "damage": 9 }
+      ]
+    },
+    {
+      "id": "legion", "name": "군단장", "title": "100초의 끝", "sprite": "boss", "radius": 42, "speed": 72,
+      "patterns": [
+        { "type": "charge", "windup": 1.0, "speed": 560, "duration": 0.7, "damage": 22 },
+        { "type": "ring", "windup": 0.7, "count": 16, "speed": 175, "life": 3.5, "radius": 7, "damage": 9 },
+        { "type": "strikes", "windup": 0.2, "count": 5, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16 },
+        { "type": "spray", "windup": 0.6, "count": 9, "spread": 1.0, "speed": 240, "life": 3.0, "radius": 7, "damage": 9 },
+        { "type": "summon", "windup": 0.6, "grunts": 4, "ghost_hp_mult": 0.3 }
+      ]
+    }
+  ]
 }

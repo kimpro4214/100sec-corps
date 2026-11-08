@@ -30,6 +30,9 @@ static func fire_weapons(sim, origin: Vector2, owner_build: Dictionary, owner_ti
 		var cooldown: float = stats.cooldown
 		if hostile:
 			cooldown *= float(weapon.hostile_cooldown_mult)
+		elif sim.frenzy_time > 0.0:
+			# 보물상자의 광폭 효과. 빌드에 남지 않아 과거의 나에게는 없다.
+			cooldown *= 1.0 - sim.frenzy_amount
 		owner_timers[weapon_id] = cooldown if fired else 0.0
 
 
@@ -240,4 +243,17 @@ static func resolve_deaths(sim) -> void:
 		gem.pos = enemy.pos
 		gem.value = enemy.xp
 		sim.gems.append(gem)
+		_drop_gold(sim, enemy)
 	sim.enemies = alive
+
+
+## 종류별 확률로 금화를 떨어뜨린다. 금화는 필드의 보물상자와 룰렛에 쓴다.
+static func _drop_gold(sim, enemy: Entities.Enemy) -> void:
+	var gold: Dictionary = sim.data.gold
+	if not gold.chance.has(enemy.kind) or sim.rng.randf() >= float(gold.chance[enemy.kind]):
+		return
+	var coin := Entities.Gem.new()
+	coin.pos = enemy.pos + Vector2(8, 0)
+	coin.value = int(gold.amount[enemy.kind])
+	coin.gold = true
+	sim.gems.append(coin)

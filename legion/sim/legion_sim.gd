@@ -7,6 +7,8 @@ extends RefCounted
 ##   spawner: 잡몹, 웨이브, 과거의 나 생성
 ##   loot / progression: 보석, 아이템, 경험치, 레벨 업
 ##   ultimate: 궁극기
+##   boss_room: 필드에서 보스 방으로 넘어가는 포탈
+##   interactables: 필드의 보물상자, 룰렛, 제단
 
 const Entities := preload("res://legion/sim/entities.gd")
 const BuildRules := preload("res://legion/sim/build_rules.gd")
@@ -17,6 +19,8 @@ const Spawner := preload("res://legion/sim/spawner.gd")
 const Loot := preload("res://legion/sim/loot.gd")
 const Progression := preload("res://legion/sim/progression.gd")
 const Ultimate := preload("res://legion/sim/ultimate.gd")
+const BossRoom := preload("res://legion/sim/boss_room.gd")
+const Interactables := preload("res://legion/sim/interactables.gd")
 
 const WEAPON_IDS := BuildRules.WEAPON_IDS
 const UPGRADE_IDS := BuildRules.UPGRADE_IDS
@@ -64,6 +68,7 @@ var wave_index := 0
 var waves_spawned := 0
 
 var boss: Entities.Enemy = null
+var boss_def := {}
 var boss_warned := false
 var boss_spawned := false
 var boss_dead := false
@@ -72,6 +77,16 @@ var boss_timer := 0.0
 var boss_pattern := {}
 var boss_pattern_index := 0
 var charge_dir := Vector2.RIGHT
+
+var area := Rect2() # 지금 서 있는 공간. 필드나 보스 방
+var in_boss_room := false
+var portal_open := false
+var portal_pos := Vector2.ZERO
+var interactables: Array[Entities.Interactable] = []
+var gold := 0
+var interactions := 0
+var frenzy_time := 0.0
+var frenzy_amount := 0.0
 
 var spawn_acc := 0.0
 var last_hit := ""
@@ -92,13 +107,15 @@ func _init(balance: Dictionary, run_seed: int, main_id: String) -> void:
 	tick = float(data.tick)
 	max_hp = float(data.player.hp)
 	hp = max_hp
-	player_pos = Vector2(float(data.arena.w), float(data.arena.h)) * 0.5
+	area = BossRoom.field_rect(data)
+	player_pos = area.get_center()
 	player_prev = player_pos
 	main_weapon = main_id
 	build = BuildRules.new_build(data, main_id)
 	pickup_timer = float(data.items.interval)
 	wave_index = rng.randi_range(0, data.waves.formations.size() - 1)
 	Spawner.schedule_waves(self)
+	Interactables.place(self)
 	timers = {"bolt": 0.0, "aura": 0.0, "lightning": 0.0}
 
 
@@ -178,8 +195,14 @@ func continue_round() -> void:
 	boss_dead = false
 	boss_state = "idle"
 	boss_pattern_index = 0
+	in_boss_room = false
+	portal_open = false
+	area = BossRoom.field_rect(data)
+	player_pos = area.get_center()
+	player_prev = player_pos
 	Spawner.schedule_ghosts(self)
 	Spawner.schedule_waves(self)
+	Interactables.place(self)
 	emit_event({"type": "round", "round": round_index})
 
 
@@ -193,11 +216,13 @@ func step(move_dir: Vector2) -> void:
 	ult_guard = maxf(0.0, ult_guard - tick)
 	player_flash = maxf(0.0, player_flash - tick)
 	player_slow_time = maxf(0.0, player_slow_time - tick)
+	frenzy_time = maxf(0.0, frenzy_time - tick)
 	_move_player(move_dir)
 	Combat.fire_weapons(self, player_pos, build, timers, false, 1.0)
 	Spawner.spawn_enemies(self)
 	Spawner.spawn_waves(self)
 	Spawner.spawn_ghosts(self)
+	BossRoom.update(self)
 	Boss.spawn(self)
 	EnemyAI.update(self)
 	Combat.update_projectiles(self)
@@ -205,6 +230,7 @@ func step(move_dir: Vector2) -> void:
 	Combat.resolve_deaths(self)
 	Loot.update_pickups(self)
 	Loot.collect_gems(self)
+	Interactables.update(self)
 	if hp <= 0.0:
 		state = "lost"
 		emit_event({"type": "lost"})
@@ -219,8 +245,9 @@ func emit_event(event: Dictionary) -> void:
 		events.append(event)
 
 
+## 지금 서 있는 공간(필드나 보스 방) 안으로 위치를 제한한다.
 func clamp_to_arena(pos: Vector2) -> Vector2:
-	return Vector2(clampf(pos.x, 0.0, float(data.arena.w)), clampf(pos.y, 0.0, float(data.arena.h)))
+	return pos.clamp(area.position, area.end)
 
 
 func random_offset(spread: float) -> Vector2:
@@ -244,7 +271,7 @@ func _finish_round() -> void:
 	if in_time:
 		queued_levels += int(data.boss.bonus_levels)
 	for gem in gems:
-		Progression.gain_xp(self, gem.value)
+		Loot.take_gem(self, gem)
 	gems = []
 	Progression.offer_next_level(self)
 	enemies = []

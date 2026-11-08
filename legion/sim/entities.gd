@@ -56,6 +56,16 @@ class Gem:
 	var pos := Vector2.ZERO
 	var value := 1
 	var attracted := false
+	var gold := false # true면 경험치 대신 금화
+
+
+## 필드에 놓인 상호작용 오브젝트(보물상자, 룰렛, 제단). 위에 서 있으면 progress가 차고, 다 차면 작동한다.
+class Interactable:
+	var kind := ""
+	var pos := Vector2.ZERO
+	var used := false
+	var progress := 0.0
+	var last_reward := ""
 
 
 class Pickup:

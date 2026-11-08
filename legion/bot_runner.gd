@@ -2,6 +2,7 @@ extends SceneTree
 ## 사용법: godot --headless --path . --script res://legion/bot_runner.gd -- --runs 300 --seed 1 --out res://playtest/legion
 
 const LegionSim := preload("res://legion/sim/legion_sim.gd")
+const Interactables := preload("res://legion/sim/interactables.gd")
 const BOTS := ["random", "survivor", "delay_awaken", "focus_bolt", "focus_aura", "focus_lightning"]
 const MAINS := ["bolt", "aura", "lightning"]
 
@@ -63,6 +64,7 @@ func _play(bot: String, data: Dictionary, run_seed: int) -> Dictionary:
 		"ghost_ttk_total": sim.ghost_ttk_total, "death": "" if sim.state == "won" else sim.last_hit,
 		"picks": sim.picks, "build": sim.build, "boss_log": sim.boss_log, "damage": sim.damage_by_source,
 		"main": main, "awaken_round": sim.awaken_round, "pickups": sim.pickups_taken, "ultimates": sim.ultimates_used,
+		"interactions": sim.interactions,
 	}
 
 
@@ -153,9 +155,37 @@ func _survivor_move(bot: String, sim) -> Vector2:
 		var want := 1.5 if item.kind == "magnet" else (4.0 if sim.hp < sim.max_hp * 0.6 else 0.5)
 		if pos.distance_to(item.pos) < 500.0:
 			move += (item.pos - pos).normalized() * want
-	var center := Vector2(float(sim.data.arena.w), float(sim.data.arena.h)) * 0.5
-	move += (center - pos) / center.length() * 1.2
+	if sim.portal_open and not sim.in_boss_room:
+		move += (sim.portal_pos - pos).normalized() * 3.0
+	else:
+		var target = _wanted_interactable(sim)
+		if target != null:
+			var to_target: Vector2 = target.pos - pos
+			# 위에 올라서면 피하는 힘을 줄이고 작동할 때까지 버틴다.
+			if to_target.length() < float(sim.data.interactables.radius) * 0.7:
+				return move * 0.25 if move.length() > 2.0 else Vector2.ZERO
+			move += to_target.normalized() * 2.5
+	var center: Vector2 = sim.area.get_center()
+	move += (center - pos) / (sim.area.size.length() * 0.5) * 1.2
 	return move.normalized() if move != Vector2.ZERO else Vector2.ZERO
+
+
+## 가까운 상호작용 중 쓸 만한 것: 상자는 살 수 있으면, 룰렛은 금화가 두 판 이상 있을 때, 제단은 체력이 70% 넘을 때.
+func _wanted_interactable(sim):
+	var best = null
+	var best_dist := 900.0
+	for item in sim.interactables:
+		if item.used or not Interactables.can_afford(sim, item.kind):
+			continue
+		if item.kind == "casino" and sim.gold < Interactables.gold_cost(sim, "casino") * 2:
+			continue
+		if item.kind == "shrine" and sim.hp < sim.max_hp * 0.7:
+			continue
+		var dist: float = sim.player_pos.distance_to(item.pos)
+		if dist < best_dist:
+			best_dist = dist
+			best = item
+	return best
 
 
 func _write_runs(out: String, runs: Array) -> void:
@@ -175,7 +205,7 @@ func _write_runs(out: String, runs: Array) -> void:
 
 
 func _write_summary(out: String, runs: Array, bots: Array, rounds: int) -> void:
-	var header := "bot,runs,win_rate,avg_level,avg_ghost_kills,avg_ghost_ttk,avg_ultimates"
+	var header := "bot,runs,win_rate,avg_level,avg_ghost_kills,avg_ghost_ttk,avg_ultimates,avg_interactions"
 	for r in range(2, rounds + 1):
 		header += ",reach_round_%d" % r
 	var lines := [header]
@@ -187,6 +217,7 @@ func _write_summary(out: String, runs: Array, bots: Array, rounds: int) -> void:
 		var ghost_kills := 0.0
 		var ghost_ttk := 0.0
 		var ultimates := 0.0
+		var interactions := 0.0
 		var reached := {}
 		var deaths := {}
 		for run in runs:
@@ -198,11 +229,12 @@ func _write_summary(out: String, runs: Array, bots: Array, rounds: int) -> void:
 			ghost_kills += run.ghost_kills
 			ghost_ttk += run.ghost_ttk_total
 			ultimates += run.ultimates
+			interactions += run.interactions
 			for r in range(2, int(run.round) + 1):
 				reached[r] = reached.get(r, 0) + 1
 			if not run.won:
 				deaths[run.death] = deaths.get(run.death, 0) + 1
-		var line := "%s,%d,%.3f,%.1f,%.2f,%.1f,%.1f" % [bot, total, float(wins) / total, levels / total, ghost_kills / total, ghost_ttk / maxf(ghost_kills, 1.0), ultimates / total]
+		var line := "%s,%d,%.3f,%.1f,%.2f,%.1f,%.1f,%.1f" % [bot, total, float(wins) / total, levels / total, ghost_kills / total, ghost_ttk / maxf(ghost_kills, 1.0), ultimates / total, interactions / total]
 		for r in range(2, rounds + 1):
 			line += ",%.3f" % (float(reached.get(r, 0)) / total)
 		lines.append(line)

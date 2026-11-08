@@ -1,5 +1,6 @@
 extends RefCounted
-## 군단장의 등장, 광폭화, 패턴 상태 머신(idle → windup → 패턴 실행).
+## 라운드별 보스의 등장, 광폭화, 패턴 상태 머신(idle → windup → 패턴 실행).
+## 보스마다 이름, 크기, 패턴 목록은 data.bosses에 있고, 공통 수치는 data.boss에 있다.
 
 const Entities := preload("res://legion/sim/entities.gd")
 const BuildRules := preload("res://legion/sim/build_rules.gd")
@@ -7,33 +8,38 @@ const Combat := preload("res://legion/sim/combat.gd")
 const Spawner := preload("res://legion/sim/spawner.gd")
 
 
+## 이번 라운드의 보스 정의. 라운드 수가 목록보다 많으면 마지막 보스가 나온다.
+static func definition(sim) -> Dictionary:
+	var bosses: Array = sim.data.bosses
+	return bosses[mini(sim.round_index - 1, bosses.size() - 1)]
+
+
+## 보스 방에 들어온 순간 방 위쪽에 나타난다.
 static func spawn(sim) -> void:
-	var boss_at := float(sim.data.boss_at)
 	var cfg: Dictionary = sim.data.boss
-	if not sim.boss_warned and sim.round_time >= boss_at - float(cfg.warning_seconds):
-		sim.boss_warned = true
-		sim.emit_event({"type": "boss_warning"})
-	if sim.boss_spawned or sim.round_time < boss_at:
+	if sim.boss_spawned or not sim.in_boss_room:
 		return
 	sim.boss_spawned = true
+	var def := definition(sim)
 	var enemy := Entities.Enemy.new()
 	enemy.kind = "boss"
-	enemy.label = cfg.name
-	enemy.pos = Spawner.spawn_position(sim)
+	enemy.label = def.name
+	enemy.pos = sim.area.position + Vector2(sim.area.size.x * 0.5, sim.area.size.y * 0.25)
 	enemy.prev = enemy.pos
 	var base_hp: float = float(cfg.hp_base) + float(cfg.hp_per_round) * (sim.round_index - 1)
 	enemy.max_hp = maxf(base_hp, BuildRules.enemy_scaling_dps(sim.data, sim.build) * float(cfg.target_ttk))
 	enemy.hp = enemy.max_hp
-	enemy.speed = float(cfg.speed)
-	enemy.radius = float(cfg.radius)
+	enemy.speed = float(def.speed)
+	enemy.radius = float(def.radius)
 	enemy.contact = float(cfg.contact)
 	enemy.xp = int(cfg.xp)
 	enemy.born = sim.time
 	sim.boss = enemy
+	sim.boss_def = def
 	sim.boss_state = "idle"
 	sim.boss_timer = float(cfg.pattern_interval)
 	sim.enemies.append(enemy)
-	sim.emit_event({"type": "boss", "label": enemy.label})
+	sim.emit_event({"type": "boss", "label": enemy.label, "title": def.title, "id": def.id, "pos": enemy.pos})
 
 
 static func damage_mult(sim) -> float:
@@ -62,12 +68,10 @@ static func update(sim, enemy: Entities.Enemy) -> void:
 				_to_idle(sim)
 
 
+## 패턴은 보스 정의의 순서대로 돌아가며 쓴다. 준비 시작 순간의 플레이어 방향을 조준에 쓴다.
 static func _start_pattern(sim, enemy: Entities.Enemy) -> void:
-	var available: Array = []
-	for pattern in sim.data.boss.patterns:
-		if int(pattern.from_round) <= sim.round_index:
-			available.append(pattern)
-	sim.boss_pattern = available[sim.boss_pattern_index % available.size()]
+	var patterns: Array = sim.boss_def.patterns
+	sim.boss_pattern = patterns[sim.boss_pattern_index % patterns.size()]
 	sim.boss_pattern_index += 1
 	sim.boss_state = "windup"
 	sim.boss_timer = float(sim.boss_pattern.windup)
@@ -84,10 +88,26 @@ static func _run_pattern(sim, enemy: Entities.Enemy) -> void:
 			sim.boss_timer = float(pattern.duration)
 			return
 		"ring":
+			_fire_ring(sim, enemy.pos, pattern, damage, "boss_ring")
+		"spray":
+			# 준비 때 정한 방향으로 부채꼴 탄막.
 			var count := int(pattern.count)
+			var spread := float(pattern.spread)
 			for i in count:
-				Combat.add_projectile(sim, enemy.pos, Vector2.from_angle(TAU * i / count) * float(pattern.speed), damage,
-						float(pattern.radius), float(pattern.life), true, "boss_ring")
+				var offset := 0.0 if count == 1 else (i / float(count - 1) - 0.5) * spread
+				Combat.add_projectile(sim, enemy.pos, sim.charge_dir.rotated(offset) * float(pattern.speed), damage,
+						float(pattern.radius), float(pattern.life), true, "boss_spray")
+		"blink":
+			# 플레이어 근처로 순간이동한 뒤 원형탄.
+			var angle: float = sim.rng.randf() * TAU
+			enemy.pos = sim.clamp_to_arena(sim.player_pos + Vector2.from_angle(angle) * float(pattern.distance))
+			enemy.prev = enemy.pos
+			sim.emit_event({"type": "boss_blink", "pos": enemy.pos})
+			_fire_ring(sim, enemy.pos, pattern, damage, "boss_blink")
+		"quake":
+			# 자기 주변을 내리찍는 광역 공격. 준비 동안 범위가 예고된다.
+			Combat.add_strike(sim, enemy.pos, 0.05, damage, float(pattern.radius), "boss_quake")
+			sim.emit_event({"type": "boss_quake", "pos": enemy.pos, "radius": float(pattern.radius)})
 		"strikes":
 			for i in int(pattern.count):
 				var offset: Vector2 = Vector2.ZERO if i == 0 else sim.random_offset(float(pattern.spread))
@@ -100,6 +120,13 @@ static func _run_pattern(sim, enemy: Entities.Enemy) -> void:
 				var index: int = sim.rng.randi_range(0, sim.past_builds.size() - 1)
 				Spawner.add_ghost(sim, index, float(pattern.ghost_hp_mult), 1.0, true, sim.clamp_to_arena(enemy.pos + sim.random_offset(120.0)))
 	_to_idle(sim)
+
+
+static func _fire_ring(sim, origin: Vector2, pattern: Dictionary, damage: float, source: String) -> void:
+	var count := int(pattern.count)
+	for i in count:
+		Combat.add_projectile(sim, origin, Vector2.from_angle(TAU * i / count) * float(pattern.speed), damage,
+				float(pattern.radius), float(pattern.life), true, source)
 
 
 static func _to_idle(sim) -> void:

@@ -55,7 +55,10 @@ static func schedule_waves(sim) -> void:
 	sim.wave_queue = sim.data.waves.times.duplicate()
 
 
+## 웨이브는 필드에서만 온다.
 static func spawn_waves(sim) -> void:
+	if sim.in_boss_room:
+		return
 	while not sim.wave_queue.is_empty() and sim.round_time >= float(sim.wave_queue[0]):
 		sim.wave_queue.pop_front()
 		var formations: Array = sim.data.waves.formations
@@ -64,6 +67,12 @@ static func spawn_waves(sim) -> void:
 		sim.waves_spawned += 1
 		_spawn_formation(sim, formation)
 		sim.emit_event({"type": "wave", "name": formation.name})
+
+
+## 룰렛 꽝: 플레이어를 둘러싸는 잔챙이 무리.
+static func ambush(sim, count: int) -> void:
+	_spawn_formation(sim, {"type": "encircle", "kind": "swarmling", "count": count})
+	sim.emit_event({"type": "wave", "name": "매복"})
 
 
 static func _spawn_formation(sim, formation: Dictionary) -> void:
@@ -119,13 +128,13 @@ static func schedule_ghosts(sim) -> void:
 				"time": at, "index": i,
 				"hp_mult": float(ghost_def.copy_hp_mult) if is_copy else 1.0,
 				"damage_mult": float(ghost_def.copy_damage_mult) if is_copy else 1.0,
-				"copy": is_copy,
+				"copy": is_copy, "boss_wave": false,
 			})
 			slot += 1
 	for i in sim.past_builds.size():
 		sim.ghost_queue.append({
 			"time": float(sim.data.boss_at), "index": i,
-			"hp_mult": float(ghost_def.boss_wave_hp_mult), "damage_mult": 1.0, "copy": true,
+			"hp_mult": float(ghost_def.boss_wave_hp_mult), "damage_mult": 1.0, "copy": true, "boss_wave": true,
 		})
 
 
@@ -139,6 +148,9 @@ static func _build_age(sim, index: int) -> int:
 
 static func spawn_ghosts(sim) -> void:
 	while not sim.ghost_queue.is_empty() and sim.round_time >= float(sim.ghost_queue[0].time):
+		# 보스와 함께 나오는 과거의 나는 보스 방에 들어갈 때까지 기다린다.
+		if sim.ghost_queue[0].boss_wave and not sim.in_boss_room:
+			break
 		var entry: Dictionary = sim.ghost_queue.pop_front()
 		add_ghost(sim, entry.index, entry.hp_mult, entry.damage_mult, entry.copy, spawn_position(sim))
 
