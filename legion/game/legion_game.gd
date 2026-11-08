@@ -30,6 +30,8 @@ var sfx: Sfx
 var world_offset := Vector2.ZERO
 var world_scale := Vector2.ONE
 var paused := false
+# 레벨 업 선택 중에 보스가 나오면 컷신이 선택 창 뒤에서 끝나 버리므로, 선택이 끝날 때까지 미뤄 둔다.
+var pending_boss_intro := {}
 
 
 func _ready() -> void:
@@ -64,6 +66,7 @@ func _ready() -> void:
 func _start_run() -> void:
 	sim = null
 	paused = false
+	pending_boss_intro = {}
 	fx.reset()
 	director.reset()
 	ui.reset()
@@ -131,6 +134,10 @@ func _set_paused(on: bool) -> void:
 func _process(delta: float) -> void:
 	if sim == null or paused:
 		return
+	# 미뤄 둔 보스 컷신은 레벨 업 선택이 끝난 뒤, 게임이 다시 흐르기 전에 튼다.
+	if not pending_boss_intro.is_empty() and sim.pending_choices.is_empty() and director.cinema == "":
+		_start_boss_intro(pending_boss_intro)
+		pending_boss_intro = {}
 	_update_cinema(delta)
 	var world_delta := director.world_delta(delta)
 	if not director.blocks_sim():
@@ -242,10 +249,19 @@ func _consume_events() -> void:
 		ui.handle_event(event)
 		sfx.handle(event)
 		if event.type == "boss" and not sim.is_over():
-			director.start_boss_intro(event.pos)
-			ui.show_cinema_text(event.label, event.title, true)
-			ui.set_cinema_style(0.0, 1.0)
+			if sim.pending_choices.is_empty():
+				_start_boss_intro(event)
+			else:
+				pending_boss_intro = event
 	sim.events.clear()
+
+
+func _start_boss_intro(event: Dictionary) -> void:
+	# 선택하는 동안 보스가 움직이지 않으므로, 이벤트 때 위치 대신 지금 위치를 비춘다.
+	var target: Vector2 = sim.boss.pos if sim.boss != null else event.pos
+	director.start_boss_intro(target)
+	ui.show_cinema_text(event.label, event.title, true)
+	ui.set_cinema_style(0.0, 1.0)
 
 
 func _choose(index: int) -> void:
