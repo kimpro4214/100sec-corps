@@ -11,6 +11,23 @@ const Palette := preload("res://legion/game/palette.gd")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 const BANNER_SECONDS := 2.5
 
+# Kenney UI Pack - Pixel Adventure(CC0) 큰 타일 시트를 2배로 키운 것. 한 칸 64px, 가로 13칸.
+const UI_SHEET := preload("res://legion/art/ui/ui_large_2x.png")
+const FONT := preload("res://legion/art/font/Galmuri11.ttf")
+const UI_TILE := 64
+const UI_COLUMNS := 13
+const TILE_PARCHMENT := 0
+const TILE_WOOD := 1
+const TILE_WOOD_FANCY := 4
+const RIBBON_ROW := 4
+const RIBBON_COLUMN := 4
+const TEXT_LIGHT := Color("fff3dc")
+const TEXT_DARK := Color("3d2a1e")
+# 갈무리11은 12px 격자 폰트라 12의 배수에서만 선명하다.
+const FONT_SMALL := 12
+const FONT_NORMAL := 24
+const FONT_TITLE := 72
+
 var data: Dictionary
 var banner_time := 0.0
 
@@ -33,25 +50,28 @@ func setup(balance: Dictionary) -> void:
 	var root := Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	root.theme = _build_theme()
 	add_child(root)
 
 	hud = Label.new()
-	hud.position = Vector2(16, 34)
+	hud.position = Vector2(16, 32)
 	root.add_child(hud)
 
 	build_label = Label.new()
-	build_label.position = Vector2(16, 90)
+	build_label.position = Vector2(16, 92)
+	build_label.add_theme_font_size_override("font_size", FONT_SMALL)
 	root.add_child(build_label)
 
 	banner = Label.new()
+	banner.theme_type_variation = "Banner"
 	banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	banner.position.y = 124
-	banner.add_theme_font_size_override("font_size", 26)
+	banner.position.y = 112
 	root.add_child(banner)
 
-	cinema_title = _cinema_label(root, 64, -40.0)
-	cinema_sub = _cinema_label(root, 24, 30.0)
+	cinema_title = _cinema_label(root, FONT_TITLE, -48.0)
+	cinema_sub = _cinema_label(root, FONT_NORMAL, 36.0)
 
 	_build_start_panel(root)
 
@@ -65,6 +85,7 @@ func setup(balance: Dictionary) -> void:
 	summary_box.add_theme_constant_override("separation", 12)
 	summary_panel.add_child(summary_box)
 	summary_label = Label.new()
+	summary_label.theme_type_variation = "PanelLabel"
 	summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	summary_box.add_child(summary_label)
 	var next_round := Button.new()
@@ -77,6 +98,7 @@ func setup(balance: Dictionary) -> void:
 	end_box.add_theme_constant_override("separation", 10)
 	end_panel.add_child(end_box)
 	end_label = Label.new()
+	end_label.theme_type_variation = "PanelLabel"
 	end_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	end_box.add_child(end_label)
 	var again := Button.new()
@@ -189,6 +211,7 @@ func show_choices(sim) -> void:
 		choice_box.remove_child(child)
 		child.queue_free()
 	var title := Label.new()
+	title.theme_type_variation = "PanelLabel"
 	title.text = "레벨 업! 하나를 고르세요 (1, 2, 3)\n이 선택은 다음 라운드의 과거의 나에게도 복사됩니다"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	choice_box.add_child(title)
@@ -205,7 +228,7 @@ func show_choices(sim) -> void:
 		button.text = "%d. %s  Lv%d → %d\n%s\n과거의 나: %s" % [
 			i + 1, label, sim.option_level(option_id), sim.option_level(option_id) + 1, desc, _preview_text(preview),
 		]
-		button.custom_minimum_size = Vector2(440, 78)
+		button.custom_minimum_size = Vector2(620, 0)
 		if sim.is_awakening_option(option_id):
 			button.add_theme_color_override("font_color", Palette.AWAKEN)
 		button.pressed.connect(option_chosen.emit.bind(i))
@@ -238,6 +261,7 @@ func _build_start_panel(root: Control) -> void:
 	box.add_theme_constant_override("separation", 10)
 	start_panel.add_child(box)
 	var title := Label.new()
+	title.theme_type_variation = "PanelLabel"
 	title.text = "메인 무기를 고르세요 (1, 2, 3)\n레벨 업 선택지가 이 무기 위주로 나옵니다"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
@@ -247,7 +271,7 @@ func _build_start_panel(root: Control) -> void:
 		button.text = "%d. %s (%s)\n%s\n5레벨 각성: %s - %s" % [
 			i + 1, weapon.name, data.ghost.behaviors[MAIN_WEAPONS[i]].name, weapon.desc, weapon.awaken.name, weapon.awaken.desc,
 		]
-		button.custom_minimum_size = Vector2(460, 84)
+		button.custom_minimum_size = Vector2(620, 0)
 		button.pressed.connect(main_chosen.emit.bind(MAIN_WEAPONS[i]))
 		box.add_child(button)
 
@@ -270,11 +294,65 @@ func _cinema_label(root: Control, font_size: int, offset_y: float) -> Label:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.position.y += offset_y
 	label.add_theme_font_size_override("font_size", font_size)
-	label.add_theme_constant_override("outline_size", 8)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 12)
 	label.hide()
 	root.add_child(label)
 	return label
+
+
+## 나무 버튼, 양피지 패널, 리본 배너, 갈무리 폰트를 묶은 테마.
+func _build_theme() -> Theme:
+	var theme := Theme.new()
+	theme.default_font = FONT
+	theme.default_font_size = FONT_NORMAL
+
+	theme.set_color("font_color", "Label", TEXT_LIGHT)
+	theme.set_color("font_outline_color", "Label", Color.BLACK)
+	theme.set_constant("outline_size", "Label", 6)
+
+	theme.set_type_variation("PanelLabel", "Label")
+	theme.set_color("font_color", "PanelLabel", TEXT_DARK)
+	theme.set_constant("outline_size", "PanelLabel", 0)
+
+	theme.set_type_variation("Banner", "Label")
+	var ribbon := _ui_style(Rect2(RIBBON_COLUMN * UI_TILE, RIBBON_ROW * UI_TILE, UI_TILE * 3, UI_TILE), 0.0, 0.0)
+	ribbon.texture_margin_left = 48
+	ribbon.texture_margin_right = 48
+	ribbon.texture_margin_top = 16
+	ribbon.texture_margin_bottom = 24
+	ribbon.content_margin_left = 64
+	ribbon.content_margin_right = 64
+	ribbon.content_margin_top = 12
+	ribbon.content_margin_bottom = 24
+	theme.set_stylebox("normal", "Banner", ribbon)
+
+	theme.set_stylebox("panel", "PanelContainer", _ui_style(_tile_rect(TILE_PARCHMENT), 20.0, 28.0))
+
+	theme.set_stylebox("normal", "Button", _ui_style(_tile_rect(TILE_WOOD), 16.0, 18.0))
+	theme.set_stylebox("hover", "Button", _ui_style(_tile_rect(TILE_WOOD_FANCY), 20.0, 18.0))
+	theme.set_stylebox("pressed", "Button", _ui_style(_tile_rect(TILE_WOOD), 16.0, 18.0, Color(0.75, 0.75, 0.75)))
+	theme.set_stylebox("focus", "Button", StyleBoxEmpty.new())
+	theme.set_color("font_color", "Button", TEXT_LIGHT)
+	theme.set_color("font_hover_color", "Button", Color.WHITE)
+	theme.set_color("font_pressed_color", "Button", TEXT_LIGHT)
+	theme.set_color("font_focus_color", "Button", TEXT_LIGHT)
+	theme.set_color("font_outline_color", "Button", TEXT_DARK)
+	theme.set_constant("outline_size", "Button", 6)
+	return theme
+
+
+func _tile_rect(index: int) -> Rect2:
+	return Rect2((index % UI_COLUMNS) * UI_TILE, (index / UI_COLUMNS) * UI_TILE, UI_TILE, UI_TILE)
+
+
+func _ui_style(region: Rect2, margin: float, content: float, tint := Color.WHITE) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = UI_SHEET
+	style.region_rect = region
+	style.set_texture_margin_all(margin)
+	style.set_content_margin_all(content)
+	style.modulate_color = tint
+	return style
 
 
 func _time_text(sim) -> String:

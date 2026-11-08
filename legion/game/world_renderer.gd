@@ -4,6 +4,7 @@ extends RefCounted
 const Palette := preload("res://legion/game/palette.gd")
 
 const TILE := 16
+const FONT := preload("res://legion/art/font/Galmuri11.ttf")
 const FLOOR_SCALE := 3
 const SPRITES := {
 	"player": preload("res://legion/art/player.png"),
@@ -36,7 +37,7 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 		canvas.draw_circle(item.pos, float(data.items.radius), Color(item_color, 0.2))
 		canvas.draw_arc(item.pos, float(data.items.radius), 0.0, TAU, 24, item_color, 2.0)
 		_draw_sprite(canvas, SPRITES[item.kind], item.pos, 2, Color.WHITE)
-		canvas.draw_string(ThemeDB.fallback_font, item.pos + Vector2(-40, 34), "자석" if item.kind == "magnet" else "포션", HORIZONTAL_ALIGNMENT_CENTER, 80, 13)
+		canvas.draw_string(FONT, item.pos + Vector2(-40, 34), "자석" if item.kind == "magnet" else "포션", HORIZONTAL_ALIGNMENT_CENTER, 80, 12)
 	for strike in sim.strikes:
 		var strike_color := Palette.HOSTILE if strike.hostile else Palette.AWAKEN
 		canvas.draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, strike_color, 3.0)
@@ -57,7 +58,6 @@ static func draw_player(canvas: CanvasItem, sim, data: Dictionary, player: Vecto
 
 ## 화면 좌표로 그리는 체력, 경험치, 궁극기, 군단장 체력 막대.
 static func draw_bars(canvas: CanvasItem, sim, data: Dictionary, view: Vector2) -> void:
-	var font := ThemeDB.fallback_font
 	var hp_bar := Rect2(16, 10, minf(320.0, view.x - 32.0), 16)
 	canvas.draw_rect(hp_bar, Color.BLACK)
 	canvas.draw_rect(Rect2(hp_bar.position, Vector2(hp_bar.size.x * maxf(sim.hp, 0.0) / sim.max_hp, hp_bar.size.y)), Palette.GRUNT)
@@ -73,12 +73,12 @@ static func draw_bars(canvas: CanvasItem, sim, data: Dictionary, view: Vector2) 
 		ult_text = "궁극기 준비! [Space] %s" % data.ultimate[sim.main_weapon].name
 	canvas.draw_rect(ult_bar, Color.BLACK)
 	canvas.draw_rect(Rect2(ult_bar.position, Vector2(ult_bar.size.x * ult_ratio, ult_bar.size.y)), ult_color)
-	canvas.draw_string(font, ult_bar.position + Vector2(0, -6), ult_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
+	canvas.draw_string(FONT, ult_bar.position + Vector2(0, -8), ult_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 24)
 	if sim.boss != null and sim.boss.hp > 0.0:
-		var width := minf(520.0, view.x - 40.0)
-		var boss_bar := Rect2((view.x - width) * 0.5, 44, width, 18)
+		var width := minf(440.0, view.x - 40.0)
+		var boss_bar := Rect2((view.x - width) * 0.5, 40, width, 18)
 		var title: String = sim.boss.label + (" (광폭화)" if sim.is_enraged() else "")
-		canvas.draw_string(font, Vector2(boss_bar.position.x, 38), title, HORIZONTAL_ALIGNMENT_CENTER, width, 18)
+		canvas.draw_string(FONT, Vector2(boss_bar.position.x, 32), title, HORIZONTAL_ALIGNMENT_CENTER, width, 24)
 		canvas.draw_rect(boss_bar, Color.BLACK)
 		canvas.draw_rect(Rect2(boss_bar.position, Vector2(width * sim.boss.hp / sim.boss.max_hp, 18)), Palette.BOSS)
 
@@ -145,8 +145,7 @@ static func _draw_enemy(canvas: CanvasItem, sim, enemy, alpha: float, player: Ve
 	var facing := 1.0 if player.x >= pos.x else -1.0
 	_draw_character(canvas, tex, pos, enemy.radius, FLASH_TINT if enemy.flash > 0.0 else tint, facing)
 	if enemy.kind == "ghost":
-		var font := ThemeDB.fallback_font
-		canvas.draw_string(font, pos + Vector2(-80, -enemy.radius - 18), enemy.label, HORIZONTAL_ALIGNMENT_CENTER, 160, 14)
+		canvas.draw_string(FONT, pos + Vector2(-80, -enemy.radius - 18), enemy.label, HORIZONTAL_ALIGNMENT_CENTER, 160, 12)
 		var bar := Rect2(pos + Vector2(-30, -enemy.radius - 12), Vector2(60, 5))
 		canvas.draw_rect(bar, Color.BLACK)
 		canvas.draw_rect(Rect2(bar.position, Vector2(60.0 * maxf(enemy.hp, 0.0) / enemy.max_hp, 5)), Palette.GHOST)
