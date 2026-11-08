@@ -51,6 +51,9 @@ static func _touch_player(sim, enemy: Entities.Enemy) -> void:
 static func _move_ghost(sim, ghost: Entities.Enemy) -> void:
 	var to_player: Vector2 = sim.player_pos - ghost.pos
 	var dist := to_player.length()
+	ghost.on_path = false
+	if dist <= float(sim.data.ghost.path_leash) and _follow_path(sim, ghost):
+		return
 	if dist < 0.01:
 		return
 	var dir := to_player / dist
@@ -61,3 +64,30 @@ static func _move_ghost(sim, ghost: Entities.Enemy) -> void:
 		elif dist <= ghost.keep_distance + 25.0:
 			move = dir.orthogonal() * 0.6
 	ghost.pos = sim.clamp_to_arena(ghost.pos + move * ghost.current_speed() * sim.tick)
+
+
+## 지난 라운드의 같은 시각에 내가 있던 자리로 걸어간다. 그 자리가 지금 공간 밖이면 따라가지 않는다.
+static func _follow_path(sim, ghost: Entities.Enemy) -> bool:
+	if not has_path_point(sim, ghost.path, sim.round_time):
+		return false
+	var target := path_point(sim, ghost.path, sim.round_time)
+	if not sim.area.has_point(target):
+		return false
+	var slow := ghost.current_speed() / ghost.speed
+	var step: float = float(sim.data.player.speed) * float(sim.data.ghost.path_speed_mult) * slow * sim.tick
+	ghost.pos = sim.clamp_to_arena(ghost.pos.move_toward(target, step))
+	ghost.on_path = true
+	return true
+
+
+static func has_path_point(sim, path: PackedVector2Array, at: float) -> bool:
+	return int(at / float(sim.data.ghost.path_sample)) < path.size()
+
+
+## 샘플 사이는 직선으로 잇는다.
+static func path_point(sim, path: PackedVector2Array, at: float) -> Vector2:
+	var f := at / float(sim.data.ghost.path_sample)
+	var i := int(f)
+	if i + 1 >= path.size():
+		return path[path.size() - 1]
+	return path[i].lerp(path[i + 1], f - i)

@@ -21,6 +21,8 @@ class Enemy:
 	var born := 0.0
 	var slow_time := 0.0
 	var slow_amount := 0.0
+	var path := PackedVector2Array() # 과거의 나가 따라 걷는 그 라운드의 내 경로
+	var on_path := false
 
 	func current_speed() -> float:
 		if slow_time > 0.0:

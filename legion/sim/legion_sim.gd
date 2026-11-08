@@ -63,6 +63,8 @@ var pickup_timer := 0.0
 var pickups_taken := 0
 var awaken_round := 0
 var past_builds: Array = []
+var past_paths: Array = [] # 라운드별 플레이어 이동 경로. past_builds와 같은 순서
+var round_path := PackedVector2Array()
 var ghost_queue: Array = []
 var wave_queue: Array = []
 var wave_index := 0
@@ -186,6 +188,8 @@ func continue_round() -> void:
 		return
 	round_summary = {}
 	past_builds.append(build.duplicate(true))
+	past_paths.append(round_path)
+	round_path = PackedVector2Array()
 	round_index += 1
 	round_time = 0.0
 	spawn_acc = 0.0
@@ -219,6 +223,7 @@ func step(move_dir: Vector2) -> void:
 	player_slow_time = maxf(0.0, player_slow_time - tick)
 	frenzy_time = maxf(0.0, frenzy_time - tick)
 	_move_player(move_dir)
+	_record_path()
 	Combat.fire_weapons(self, player_pos, build, timers, false, 1.0)
 	Spawner.spawn_enemies(self)
 	Spawner.spawn_waves(self)
@@ -262,6 +267,12 @@ func _move_player(move_dir: Vector2) -> void:
 	if player_slow_time > 0.0:
 		speed *= maxf(0.2, 1.0 - player_slow_amount)
 	player_pos = clamp_to_arena(player_pos + move_dir.limit_length(1.0) * speed * tick)
+
+
+## 다음 라운드의 과거의 나가 따라 걷도록 path_sample초마다 위치를 남긴다.
+func _record_path() -> void:
+	if round_path.size() * float(data.ghost.path_sample) <= round_time:
+		round_path.append(player_pos)
 
 
 func _finish_round() -> void:
