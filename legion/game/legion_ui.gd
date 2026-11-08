@@ -8,25 +8,24 @@ signal restart_pressed
 signal menu_pressed
 
 const Palette := preload("res://legion/game/palette.gd")
+const UiTheme := preload("res://legion/game/ui_theme.gd")
+const MenuPanels := preload("res://legion/game/menu_panels.gd")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 const BANNER_SECONDS := 2.5
 
-# Kenney UI Pack - Pixel Adventure(CC0) 큰 타일 시트를 2배로 키운 것. 한 칸 64px, 가로 13칸.
-const UI_SHEET := preload("res://legion/art/ui/ui_large_2x.png")
-const FONT := preload("res://legion/art/font/Galmuri11.ttf")
-const UI_TILE := 64
-const UI_COLUMNS := 13
-const TILE_PARCHMENT := 0
-const TILE_WOOD := 1
-const TILE_WOOD_FANCY := 4
-const RIBBON_ROW := 4
-const RIBBON_COLUMN := 4
-const TEXT_LIGHT := Color("fff3dc")
-const TEXT_DARK := Color("3d2a1e")
-# 갈무리11은 12px 격자 폰트라 12의 배수에서만 선명하다.
-const FONT_SMALL := 12
-const FONT_NORMAL := 24
-const FONT_TITLE := 72
+const CAUSE_TEXT := {
+	"ghost_aura": "과거의 나의 가시 오라",
+	"ghost_bolt": "과거의 나의 마력탄",
+	"ghost_lightning": "과거의 나의 낙뢰",
+	"ghost": "과거의 나와 부딪힘",
+	"boss_contact": "보스와 부딪힘",
+	"boss_charge": "보스의 돌진",
+	"boss_ring": "보스의 원형탄",
+	"boss_spray": "보스의 부채꼴 탄",
+	"boss_blink": "보스의 순간이동 탄막",
+	"boss_quake": "보스의 내리찍기",
+	"boss_strike": "보스의 낙뢰",
+}
 const REWARD_TEXT := {
 	"level": "레벨 업! (과거의 나에게도 복사됩니다)",
 	"jackpot": "잭팟! 레벨 업 2회",
@@ -56,6 +55,10 @@ var summary_panel: PanelContainer
 var summary_label: Label
 var end_panel: PanelContainer
 var end_label: Label
+var end_title: Label
+var end_again: Button
+var end_credits: Button
+var root_control: Control
 
 
 func setup(balance: Dictionary) -> void:
@@ -64,7 +67,8 @@ func setup(balance: Dictionary) -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	root.theme = _build_theme()
+	root.theme = UiTheme.build()
+	root_control = root
 	add_child(root)
 
 	hud = Label.new()
@@ -73,7 +77,7 @@ func setup(balance: Dictionary) -> void:
 
 	build_label = Label.new()
 	build_label.position = Vector2(16, 92)
-	build_label.add_theme_font_size_override("font_size", FONT_SMALL)
+	build_label.add_theme_font_size_override("font_size", UiTheme.FONT_SMALL)
 	root.add_child(build_label)
 
 	banner = Label.new()
@@ -83,8 +87,8 @@ func setup(balance: Dictionary) -> void:
 	banner.position.y = 112
 	root.add_child(banner)
 
-	cinema_title = _cinema_label(root, FONT_TITLE, -48.0)
-	cinema_sub = _cinema_label(root, FONT_NORMAL, 36.0)
+	cinema_title = _cinema_label(root, UiTheme.FONT_TITLE, -48.0)
+	cinema_sub = _cinema_label(root, UiTheme.FONT_NORMAL, 36.0)
 	cinema_title_y = cinema_title.position.y
 	cinema_sub_y = cinema_sub.position.y
 
@@ -112,18 +116,37 @@ func setup(balance: Dictionary) -> void:
 	var end_box := VBoxContainer.new()
 	end_box.add_theme_constant_override("separation", 10)
 	end_panel.add_child(end_box)
+	end_title = Label.new()
+	end_title.theme_type_variation = "PanelLabel"
+	end_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	end_title.add_theme_font_size_override("font_size", UiTheme.FONT_LARGE)
+	end_box.add_child(end_title)
 	end_label = Label.new()
 	end_label.theme_type_variation = "PanelLabel"
 	end_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	end_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	end_label.custom_minimum_size = Vector2(680, 0)
 	end_box.add_child(end_label)
-	var again := Button.new()
-	again.text = "다시 하기"
-	again.pressed.connect(restart_pressed.emit)
-	end_box.add_child(again)
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 12)
+	end_box.add_child(buttons)
+	end_again = Button.new()
+	end_again.text = "다시 하기"
+	end_again.pressed.connect(restart_pressed.emit)
+	buttons.add_child(end_again)
+	end_credits = Button.new()
+	end_credits.text = "크레딧"
+	end_credits.pressed.connect(func() -> void:
+		end_panel.hide()
+		root_control.add_child(MenuPanels.build_credits(func() -> void:
+			end_panel.show()
+			end_again.grab_focus())))
+	buttons.add_child(end_credits)
 	var menu := Button.new()
-	menu.text = "메뉴로"
+	menu.text = "타이틀로"
 	menu.pressed.connect(menu_pressed.emit)
-	end_box.add_child(menu)
+	buttons.add_child(menu)
 
 
 ## 무기 선택 화면으로 돌아간다.
@@ -275,11 +298,35 @@ func show_summary(sim) -> void:
 	summary_panel.show()
 
 
+## 결과 화면: 이긴 판이면 크레딧으로 이어지고, 진 판이면 무엇에 쓰러졌는지 알려 준다.
 func show_end(sim) -> void:
-	var title: String = "승리! 군단을 넘어섰습니다" if sim.state == "won" else "패배: 라운드 %d" % sim.round_index
-	end_label.text = "%s\n레벨 %d   처치 %d   과거의 나 처치 %d   군단장 처치 %d" % [title, sim.level, sim.kills, sim.ghost_kills, sim.boss_log.size()]
+	var won: bool = sim.state == "won"
+	end_title.text = "승리! 군단을 넘어섰습니다" if won else "패배: 라운드 %d" % sim.round_index
+	var bosses: Array = []
+	for i in sim.boss_log.size():
+		bosses.append(data.bosses[mini(i, data.bosses.size() - 1)].name)
+	var lines: Array = [
+		"메인 무기 %s   레벨 %d   플레이 시간 %d분 %02d초" % [data.weapons[sim.main_weapon].name, sim.level, int(sim.time) / 60, int(sim.time) % 60],
+		"처치 %d   과거의 나 처치 %d   궁극기 %d회   상호작용 %d회" % [sim.kills, sim.ghost_kills, sim.ultimates_used, sim.interactions],
+		"쓰러뜨린 보스: %s" % (", ".join(bosses) if not bosses.is_empty() else "없음"),
+	]
+	if not won:
+		lines.append("쓰러진 원인: %s" % _cause_text(sim.last_hit))
+	lines.append("")
+	lines.append("최종 빌드\n" + _build_text(sim, sim.build))
+	end_label.text = "\n".join(lines)
+	end_credits.visible = won
 	hide_round_panels()
 	end_panel.show()
+	end_again.grab_focus()
+
+
+func _cause_text(source: String) -> String:
+	if CAUSE_TEXT.has(source):
+		return CAUSE_TEXT[source]
+	if data.enemies.has(source):
+		return data.enemies[source].name
+	return source
 
 
 # --- 내부 ---
@@ -327,61 +374,6 @@ func _cinema_label(root: Control, font_size: int, offset_y: float) -> Label:
 	label.hide()
 	root.add_child(label)
 	return label
-
-
-## 나무 버튼, 양피지 패널, 리본 배너, 갈무리 폰트를 묶은 테마.
-func _build_theme() -> Theme:
-	var theme := Theme.new()
-	theme.default_font = FONT
-	theme.default_font_size = FONT_NORMAL
-
-	theme.set_color("font_color", "Label", TEXT_LIGHT)
-	theme.set_color("font_outline_color", "Label", Color.BLACK)
-	theme.set_constant("outline_size", "Label", 6)
-
-	theme.set_type_variation("PanelLabel", "Label")
-	theme.set_color("font_color", "PanelLabel", TEXT_DARK)
-	theme.set_constant("outline_size", "PanelLabel", 0)
-
-	theme.set_type_variation("Banner", "Label")
-	var ribbon := _ui_style(Rect2(RIBBON_COLUMN * UI_TILE, RIBBON_ROW * UI_TILE, UI_TILE * 3, UI_TILE), 0.0, 0.0)
-	ribbon.texture_margin_left = 48
-	ribbon.texture_margin_right = 48
-	ribbon.texture_margin_top = 16
-	ribbon.texture_margin_bottom = 24
-	ribbon.content_margin_left = 64
-	ribbon.content_margin_right = 64
-	ribbon.content_margin_top = 12
-	ribbon.content_margin_bottom = 24
-	theme.set_stylebox("normal", "Banner", ribbon)
-
-	theme.set_stylebox("panel", "PanelContainer", _ui_style(_tile_rect(TILE_PARCHMENT), 20.0, 28.0))
-
-	theme.set_stylebox("normal", "Button", _ui_style(_tile_rect(TILE_WOOD), 16.0, 18.0))
-	theme.set_stylebox("hover", "Button", _ui_style(_tile_rect(TILE_WOOD_FANCY), 20.0, 18.0))
-	theme.set_stylebox("pressed", "Button", _ui_style(_tile_rect(TILE_WOOD), 16.0, 18.0, Color(0.75, 0.75, 0.75)))
-	theme.set_stylebox("focus", "Button", StyleBoxEmpty.new())
-	theme.set_color("font_color", "Button", TEXT_LIGHT)
-	theme.set_color("font_hover_color", "Button", Color.WHITE)
-	theme.set_color("font_pressed_color", "Button", TEXT_LIGHT)
-	theme.set_color("font_focus_color", "Button", TEXT_LIGHT)
-	theme.set_color("font_outline_color", "Button", TEXT_DARK)
-	theme.set_constant("outline_size", "Button", 6)
-	return theme
-
-
-func _tile_rect(index: int) -> Rect2:
-	return Rect2((index % UI_COLUMNS) * UI_TILE, (index / UI_COLUMNS) * UI_TILE, UI_TILE, UI_TILE)
-
-
-func _ui_style(region: Rect2, margin: float, content: float, tint := Color.WHITE) -> StyleBoxTexture:
-	var style := StyleBoxTexture.new()
-	style.texture = UI_SHEET
-	style.region_rect = region
-	style.set_texture_margin_all(margin)
-	style.set_content_margin_all(content)
-	style.modulate_color = tint
-	return style
 
 
 func _time_text(sim) -> String:

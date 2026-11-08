@@ -34,6 +34,9 @@ var world_scale := Vector2.ONE
 func _ready() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string(DATA_PATH))
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var settings := get_node_or_null("/root/Settings")
+	if settings != null:
+		director.motion = settings.screen_shake
 	glow = DrawLayer.new()
 	glow.additive = true
 	glow.draw_fn = _draw_glow
@@ -79,7 +82,7 @@ func _begin_run(main_id: String) -> void:
 
 
 func _to_menu() -> void:
-	get_tree().change_scene_to_file("res://main_menu.tscn")
+	get_tree().change_scene_to_file("res://legion/game/title.tscn")
 
 
 func _unhandled_input(event: InputEvent) -> void:
