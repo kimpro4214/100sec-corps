@@ -4,6 +4,7 @@ extends Node2D
 ##   CinemaDirector: 카메라, 시간 연출, 시네마틱
 ##   Fx: 이벤트 이펙트와 파편
 ##   WorldRenderer: 월드와 막대 그리기
+##   Sfx: 효과음과 음악 신호
 ## 그리는 순서: 이 노드(월드) → glow(더하기 혼합 빛) → overlay(화면 효과와 막대) → UI
 
 const LegionSim := preload("res://legion/sim/legion_sim.gd")
@@ -12,6 +13,7 @@ const CinemaDirector := preload("res://legion/game/cinema_director.gd")
 const Fx := preload("res://legion/game/fx.gd")
 const WorldRenderer := preload("res://legion/game/world_renderer.gd")
 const DrawLayer := preload("res://legion/game/draw_layer.gd")
+const Sfx := preload("res://legion/game/sfx.gd")
 const Palette := preload("res://legion/game/palette.gd")
 const DATA_PATH := "res://legion/data/balance.json"
 
@@ -24,6 +26,7 @@ var director := CinemaDirector.new()
 var fx := Fx.new()
 var glow: DrawLayer
 var overlay: DrawLayer
+var sfx: Sfx
 var world_offset := Vector2.ZERO
 var world_scale := Vector2.ONE
 
@@ -38,13 +41,15 @@ func _ready() -> void:
 	overlay = DrawLayer.new()
 	overlay.draw_fn = _draw_overlay
 	add_child(overlay)
+	sfx = Sfx.new()
+	add_child(sfx)
 	ui = LegionUI.new()
 	add_child(ui)
 	ui.setup(data)
 	ui.main_chosen.connect(_begin_run)
 	ui.option_chosen.connect(_choose)
 	ui.continue_pressed.connect(_continue_round)
-	ui.restart_pressed.connect(_start_run)
+	ui.restart_pressed.connect(_restart)
 	ui.menu_pressed.connect(_to_menu)
 	_start_run()
 
@@ -57,7 +62,13 @@ func _start_run() -> void:
 	_redraw_all()
 
 
+func _restart() -> void:
+	sfx.play("click")
+	_start_run()
+
+
 func _begin_run(main_id: String) -> void:
+	sfx.play("click")
 	sim = LegionSim.new(data, randi(), main_id)
 	sim.record_events = true
 	acc = 0.0
@@ -92,6 +103,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif ui.is_summary_visible() and event.physical_keycode == KEY_SPACE:
 		_continue_round()
 	elif event.physical_keycode == KEY_SPACE and sim.ultimate_ready() and not sim.is_over():
+		sfx.play("ult_charge")
 		director.start("ult")
 		var ult: Dictionary = data.ultimate[sim.main_weapon]
 		ui.show_cinema_text(ult.name, ult.desc)
@@ -117,6 +129,9 @@ func _process(delta: float) -> void:
 		acc = 0.0
 		if not ui.is_choice_visible():
 			ui.show_choices(sim)
+			# 라운드 종료 직후에는 라운드 돌파 신호가 이미 울리고 있으니 겹치지 않게 한다.
+			if sim.round_summary.is_empty():
+				sfx.play_jingle("level_up")
 	elif not sim.round_summary.is_empty():
 		acc = 0.0
 		if not ui.is_summary_visible():
@@ -200,10 +215,12 @@ func _consume_events() -> void:
 	for event in sim.events:
 		fx.handle(event, director)
 		ui.handle_event(event)
+		sfx.handle(event)
 	sim.events.clear()
 
 
 func _choose(index: int) -> void:
+	sfx.play("select")
 	sim.choose(index)
 	ui.hide_round_panels()
 	if not sim.pending_choices.is_empty():
@@ -211,6 +228,7 @@ func _choose(index: int) -> void:
 
 
 func _continue_round() -> void:
+	sfx.play("click")
 	sim.continue_round()
 	ui.hide_round_panels()
 
