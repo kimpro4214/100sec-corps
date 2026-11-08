@@ -20,12 +20,48 @@ const COLOR_MAGNET := Color("8ecbff")
 const COLOR_AWAKEN := Color("ffe066")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 
+# 연출 수치. 게임 규칙에는 영향을 주지 않는다.
+const INTRO_SECONDS := 3.4
+const ULT_CAST_SECONDS := 0.5
+const ULT_SECONDS := 1.1
+const ENDING_PANEL_AT := 2.8
+const ULT_ZOOM := 1.7
+const ENDING_ZOOM := 1.8
+const MAX_SHAKE := 24.0
+const MAX_PARTICLES := 700
+const KILL_JUICE := {
+	"swarmling": {"particles": 4, "shake": 0.0, "hitstop": 0.0},
+	"runner": {"particles": 4, "shake": 0.0, "hitstop": 0.0},
+	"grunt": {"particles": 6, "shake": 0.0, "hitstop": 0.0},
+	"brute": {"particles": 12, "shake": 4.0, "hitstop": 0.03},
+	"ghost": {"particles": 22, "shake": 8.0, "hitstop": 0.08},
+	"boss": {"particles": 48, "shake": 22.0, "hitstop": 0.35},
+}
+
 var data: Dictionary
 var sim
 var acc := 0.0
-var camera := Vector2.ZERO
 var effects: Array = []
+var particles: Array = []
 var banner_time := 0.0
+
+var zoom := 1.0
+var focus := Vector2.ZERO
+var shake := 0.0
+var hitstop := 0.0
+var slowmo := 0.0
+var flash := 0.0
+var flash_color := Color.WHITE
+var hurt_tint := 0.0
+var letterbox := 0.0
+var cinema := "" # intro, ult, ending
+var cinema_time := 0.0
+var ult_fired := false
+var ending_won := false
+var ending_focus := Vector2.ZERO
+
+var cinema_title: Label
+var cinema_sub: Label
 
 var start_panel: PanelContainer
 var hud: Label
@@ -48,6 +84,16 @@ func _ready() -> void:
 func _start_run() -> void:
 	sim = null
 	effects = []
+	particles = []
+	cinema = ""
+	shake = 0.0
+	hitstop = 0.0
+	slowmo = 0.0
+	flash = 0.0
+	hurt_tint = 0.0
+	letterbox = 0.0
+	cinema_title.hide()
+	cinema_sub.hide()
 	hud.text = ""
 	build_label.text = ""
 	end_panel.hide()
@@ -63,7 +109,8 @@ func _begin_run(main_id: String) -> void:
 	sim.record_events = true
 	acc = 0.0
 	start_panel.hide()
-	_show_banner("이동: WASD / 방향키   70초에 군단장이 등장합니다")
+	_start_cinema("intro")
+	_show_cinema_text("100초 군단", "100초마다, 지난 내가 돌아온다")
 
 
 func _build_start_panel(root: Control) -> void:
@@ -109,6 +156,9 @@ func _build_ui() -> void:
 	banner.position.y = 124
 	banner.add_theme_font_size_override("font_size", 26)
 	root.add_child(banner)
+
+	cinema_title = _cinema_label(root, 64, -40.0)
+	cinema_sub = _cinema_label(root, 24, 30.0)
 
 	_build_start_panel(root)
 
@@ -156,6 +206,21 @@ func _centered_panel(root: Control) -> PanelContainer:
 	return panel
 
 
+func _cinema_label(root: Control, font_size: int, offset_y: float) -> Label:
+	var label := Label.new()
+	label.set_anchors_preset(Control.PRESET_CENTER)
+	label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position.y += offset_y
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_constant_override("outline_size", 8)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.hide()
+	root.add_child(label)
+	return label
+
+
 func _to_menu() -> void:
 	get_tree().change_scene_to_file("res://main_menu.tscn")
 
@@ -169,23 +234,37 @@ func _unhandled_input(event: InputEvent) -> void:
 		var main_index: int = event.physical_keycode - KEY_1
 		if main_index >= 0 and main_index < MAIN_WEAPONS.size():
 			_begin_run(MAIN_WEAPONS[main_index])
+	elif cinema == "intro":
+		if event.physical_keycode == KEY_SPACE:
+			_end_intro()
+	elif cinema != "":
+		return
 	elif not sim.pending_choices.is_empty():
 		var index: int = event.physical_keycode - KEY_1
 		if index >= 0 and index < sim.pending_choices.size():
 			_choose(index)
 	elif summary_panel.visible and event.physical_keycode == KEY_SPACE:
 		_continue_round()
+	elif event.physical_keycode == KEY_SPACE and sim.ultimate_ready() and not sim.is_over():
+		_start_cinema("ult")
+		var ult: Dictionary = data.ultimate[sim.main_weapon]
+		_show_cinema_text(ult.name, ult.desc)
 
 
 func _process(delta: float) -> void:
 	if sim == null:
 		return
-	acc += delta
+	_update_cinema(delta)
+	var world_delta := _world_delta(delta)
+	if cinema == "" or (cinema == "ult" and ult_fired):
+		acc += world_delta
 	while acc >= sim.tick:
 		acc -= sim.tick
 		sim.step(_read_input())
 		_consume_events()
-	if not sim.pending_choices.is_empty():
+	if sim.is_over():
+		pass
+	elif not sim.pending_choices.is_empty():
 		acc = 0.0
 		if not choice_panel.visible:
 			_show_choices()
@@ -193,11 +272,167 @@ func _process(delta: float) -> void:
 		acc = 0.0
 		if not summary_panel.visible:
 			_show_summary()
-	if sim.is_over() and not end_panel.visible:
-		_show_end()
-	_update_timers(delta)
+	if sim.is_over() and cinema != "ending" and not end_panel.visible:
+		_start_ending()
+	_update_timers(delta, world_delta)
 	_update_hud()
 	queue_redraw()
+
+
+func _world_delta(delta: float) -> float:
+	if hitstop > 0.0:
+		hitstop -= delta
+		return 0.0
+	if slowmo > 0.0:
+		slowmo -= delta
+		return delta * 0.35
+	return delta
+
+
+func _start_cinema(kind: String) -> void:
+	cinema = kind
+	cinema_time = 0.0
+	ult_fired = false
+
+
+func _show_cinema_text(title: String, sub: String) -> void:
+	cinema_title.text = title
+	cinema_sub.text = sub
+	cinema_title.show()
+	cinema_sub.show()
+	cinema_title.modulate.a = 1.0
+	cinema_sub.modulate.a = 1.0
+
+
+func _hide_cinema_text() -> void:
+	cinema_title.hide()
+	cinema_sub.hide()
+
+
+func _end_intro() -> void:
+	cinema = ""
+	_hide_cinema_text()
+	_show_banner("이동: WASD / 방향키   궁극기: Space   70초에 군단장이 등장합니다")
+
+
+func _start_ending() -> void:
+	ending_won = sim.state == "won"
+	ending_focus = sim.boss.pos if ending_won and sim.boss != null else sim.player_pos
+	_start_cinema("ending")
+	choice_panel.hide()
+	summary_panel.hide()
+	if ending_won:
+		_add_flash(Color.WHITE, 0.9)
+		_show_cinema_text("승리", "군단을 넘어섰습니다")
+	else:
+		_add_flash(Color(COLOR_GRUNT), 0.6)
+		_show_cinema_text("패배", "라운드 %d에서 쓰러졌습니다" % sim.round_index)
+	cinema_title.modulate.a = 0.0
+	cinema_sub.modulate.a = 0.0
+
+
+## 시네마틱 타임라인. 카메라 줌, 레터박스, 문구를 시간에 따라 바꾼다.
+func _update_cinema(delta: float) -> void:
+	var player: Vector2 = sim.player_pos
+	if cinema == "":
+		zoom = lerpf(zoom, 1.0, 1.0 - exp(-8.0 * delta))
+		focus = player
+		letterbox = move_toward(letterbox, 0.0, delta * 3.0)
+		return
+	cinema_time += delta
+	match cinema:
+		"intro":
+			var t := clampf(cinema_time / INTRO_SECONDS, 0.0, 1.0)
+			var arena := Vector2(float(data.arena.w), float(data.arena.h))
+			var view := get_viewport_rect().size
+			var overview := minf(view.x / arena.x, view.y / arena.y) * 0.95
+			var move := _ease_in_out(clampf((t - 0.35) / 0.65, 0.0, 1.0))
+			zoom = lerpf(overview, 1.0, move)
+			focus = (arena * 0.5).lerp(player, move)
+			letterbox = 1.0
+			var fade := 1.0 - clampf((t - 0.6) / 0.3, 0.0, 1.0)
+			cinema_title.modulate.a = fade
+			cinema_sub.modulate.a = fade
+			if cinema_time >= INTRO_SECONDS:
+				_end_intro()
+		"ult":
+			focus = player
+			if not ult_fired:
+				var t := _ease_out(clampf(cinema_time / ULT_CAST_SECONDS, 0.0, 1.0))
+				zoom = lerpf(1.0, ULT_ZOOM, t)
+				letterbox = t
+				cinema_title.scale = Vector2.ONE * lerpf(1.6, 1.0, t)
+				if cinema_time >= ULT_CAST_SECONDS:
+					ult_fired = true
+					sim.use_ultimate()
+					zoom = 0.85
+					shake = MAX_SHAKE
+					slowmo = 0.3
+					_add_flash(Color(COLOR_AWAKEN), 0.35)
+			else:
+				zoom = lerpf(zoom, 1.0, 1.0 - exp(-6.0 * delta))
+				letterbox = move_toward(letterbox, 0.0, delta * 3.0)
+				var fade := 1.0 - clampf((cinema_time - ULT_CAST_SECONDS) / 0.3, 0.0, 1.0)
+				cinema_title.modulate.a = fade
+				cinema_sub.modulate.a = fade
+				if cinema_time >= ULT_SECONDS:
+					cinema = ""
+					cinema_title.scale = Vector2.ONE
+					_hide_cinema_text()
+		"ending":
+			var t := _ease_out(clampf(cinema_time / 1.4, 0.0, 1.0))
+			zoom = lerpf(1.0, ENDING_ZOOM, t)
+			focus = player.lerp(ending_focus, t)
+			letterbox = t
+			var text_alpha := clampf((cinema_time - 0.6) / 0.5, 0.0, 1.0)
+			cinema_title.modulate.a = text_alpha
+			cinema_sub.modulate.a = text_alpha
+			if cinema_time >= ENDING_PANEL_AT and not end_panel.visible:
+				_hide_cinema_text()
+				_show_end()
+
+
+func _ease_out(t: float) -> float:
+	return 1.0 - pow(1.0 - t, 3.0)
+
+
+func _ease_in_out(t: float) -> float:
+	return t * t * (3.0 - 2.0 * t)
+
+
+func _add_flash(color: Color, amount: float) -> void:
+	flash_color = color
+	flash = maxf(flash, amount)
+
+
+func _add_shake(amount: float) -> void:
+	shake = minf(MAX_SHAKE, maxf(shake, amount))
+
+
+func _spawn_particles(pos: Vector2, count: int, color: Color, speed: float, size: float) -> void:
+	for i in count:
+		if particles.size() >= MAX_PARTICLES:
+			return
+		var life := randf_range(0.25, 0.55)
+		particles.append({
+			"pos": pos, "vel": Vector2.from_angle(randf() * TAU) * randf_range(0.3, 1.0) * speed,
+			"time": life, "max": life, "color": color, "size": size * randf_range(0.6, 1.2),
+		})
+
+
+func _enemy_color(kind: String) -> Color:
+	match kind:
+		"runner":
+			return COLOR_RUNNER
+		"swarmling":
+			return COLOR_SWARMLING
+		"brute":
+			return COLOR_BRUTE
+		"ghost":
+			return COLOR_GHOST
+		"boss":
+			return COLOR_BOSS
+	return COLOR_GRUNT
 
 
 func _read_input() -> Vector2:
@@ -236,18 +471,45 @@ func _consume_events() -> void:
 				_show_banner("%s 등장! 과거의 나 총출동" % event.label)
 			"round":
 				_show_banner("라운드 %d: 지난 빌드가 돌아옵니다" % event.round)
+			"kill":
+				var juice: Dictionary = KILL_JUICE.get(event.kind, KILL_JUICE.grunt)
+				_spawn_particles(event.pos, juice.particles, _enemy_color(event.kind), 160.0 + event.radius * 6.0, 3.0 + event.radius * 0.15)
+				if juice.shake > 0.0:
+					_add_shake(juice.shake)
+				hitstop = maxf(hitstop, juice.hitstop)
+				if event.kind == "boss":
+					_add_flash(Color.WHITE, 0.6)
+					effects.append({"kind": "shock", "pos": event.pos, "radius": 260.0, "time": 0.6, "max": 0.6, "color": COLOR_BOSS})
+			"hurt":
+				_add_shake(minf(3.0 + event.damage * 0.5, 12.0))
+				hurt_tint = minf(0.45, hurt_tint + 0.15 + event.damage * 0.01)
+			"ult_blast":
+				effects.append({"kind": "shock", "pos": event.pos, "radius": event.radius, "time": 0.5, "max": 0.5, "color": COLOR_AWAKEN})
+			"ultimate":
+				effects.append({"kind": "shock", "pos": event.pos, "radius": 140.0, "time": 0.35, "max": 0.35, "color": Color.WHITE})
 	sim.events.clear()
 
 
-func _update_timers(delta: float) -> void:
+func _update_timers(delta: float, world_delta: float) -> void:
 	var alive: Array = []
 	for effect in effects:
-		effect.time -= delta
+		effect.time -= world_delta
 		if effect.time > 0.0:
 			alive.append(effect)
 	effects = alive
+	var alive_particles: Array = []
+	for particle in particles:
+		particle.time -= world_delta
+		particle.pos += particle.vel * world_delta
+		particle.vel *= 1.0 - minf(1.0, 4.0 * world_delta)
+		if particle.time > 0.0:
+			alive_particles.append(particle)
+	particles = alive_particles
+	shake = lerpf(shake, 0.0, 1.0 - exp(-9.0 * delta))
+	flash = maxf(0.0, flash - delta * 2.2)
+	hurt_tint = maxf(0.0, hurt_tint - delta * 1.5)
 	banner_time = maxf(0.0, banner_time - delta)
-	banner.visible = banner_time > 0.0
+	banner.visible = banner_time > 0.0 and cinema == ""
 
 
 func _show_banner(text: String) -> void:
@@ -269,6 +531,8 @@ func _update_hud() -> void:
 		sim.round_index, int(data.rounds), _time_text(), sim.level, sim.kills, sim.ghost_kills,
 	]
 	build_label.text = "빌드: " + _build_text(sim.build)
+	hud.visible = cinema == "" or cinema == "ult"
+	build_label.visible = hud.visible
 
 
 func _build_text(target_build: Dictionary) -> String:
@@ -360,9 +624,11 @@ func _draw() -> void:
 		return
 	var alpha: float = clampf(acc / sim.tick, 0.0, 1.0)
 	var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
-	camera = player - view * 0.5
+	var center: Vector2 = player if cinema == "" else focus
+	var shake_offset := Vector2(randf_range(-shake, shake), randf_range(-shake, shake))
+	var world_offset := view * 0.5 - center * zoom + shake_offset
 	draw_rect(Rect2(Vector2.ZERO, view), COLOR_BG)
-	draw_set_transform(-camera)
+	draw_set_transform(world_offset, 0.0, Vector2(zoom, zoom))
 	_draw_arena()
 	for gem in sim.gems:
 		draw_circle(gem.pos, 4.0, COLOR_GEM)
@@ -383,15 +649,44 @@ func _draw() -> void:
 		draw_circle(shot.prev.lerp(shot.pos, alpha), shot.radius, COLOR_HOSTILE if shot.hostile else Color.WHITE)
 	for effect in effects:
 		var fade: float = effect.time / effect.max
-		if effect.kind == "ring":
-			draw_arc(effect.pos, effect.radius, 0.0, TAU, 48, Color(effect.color, 0.5 * fade), 2.0)
-		else:
-			draw_circle(effect.pos, effect.radius, Color(effect.color, 0.5 * fade))
-			draw_line(effect.pos + Vector2(0, -500), effect.pos, Color(effect.color, fade), 3.0)
+		match effect.kind:
+			"ring":
+				draw_arc(effect.pos, effect.radius, 0.0, TAU, 48, Color(effect.color, 0.5 * fade), 2.0)
+			"shock":
+				var grow := _ease_out(1.0 - fade)
+				draw_circle(effect.pos, effect.radius * grow, Color(effect.color, 0.18 * fade))
+				draw_arc(effect.pos, effect.radius * grow, 0.0, TAU, 64, Color(effect.color, fade), 6.0 * fade + 1.0)
+			_:
+				draw_circle(effect.pos, effect.radius, Color(effect.color, 0.5 * fade))
+				draw_line(effect.pos + Vector2(0, -500), effect.pos, Color(effect.color, fade), 3.0)
+	for particle in particles:
+		draw_circle(particle.pos, particle.size * particle.time / particle.max, particle.color)
+	if cinema == "ult" and not ult_fired:
+		draw_set_transform(Vector2.ZERO)
+		draw_rect(Rect2(Vector2.ZERO, view), Color(0, 0, 0, 0.55 * letterbox))
+		draw_set_transform(world_offset, 0.0, Vector2(zoom, zoom))
+		draw_circle(player, float(data.player.radius) * (2.0 + cinema_time * 4.0), Color(COLOR_AWAKEN, 0.25))
 	var player_color := COLOR_AWAKEN if sim.is_awakened(sim.build) else COLOR_PLAYER
 	draw_circle(player, float(data.player.radius), Color.WHITE if sim.player_flash > 0.0 else player_color)
 	draw_set_transform(Vector2.ZERO)
-	_draw_bars(view)
+	_draw_screen_fx(view)
+	if cinema == "" or cinema == "ult":
+		_draw_bars(view)
+
+
+func _draw_screen_fx(view: Vector2) -> void:
+	if hurt_tint > 0.0:
+		var edge := Color(COLOR_GRUNT, hurt_tint)
+		var clear := Color(COLOR_GRUNT, 0.0)
+		var w := view.x * 0.12
+		draw_polygon([Vector2.ZERO, Vector2(w, 0), Vector2(w, view.y), Vector2(0, view.y)], [edge, clear, clear, edge])
+		draw_polygon([Vector2(view.x - w, 0), Vector2(view.x, 0), Vector2(view.x, view.y), Vector2(view.x - w, view.y)], [clear, edge, edge, clear])
+	if flash > 0.0:
+		draw_rect(Rect2(Vector2.ZERO, view), Color(flash_color, minf(flash, 0.8)))
+	if letterbox > 0.0:
+		var bar := view.y * 0.11 * letterbox
+		draw_rect(Rect2(0, 0, view.x, bar), Color.BLACK)
+		draw_rect(Rect2(0, view.y - bar, view.x, bar), Color.BLACK)
 
 
 func _draw_arena() -> void:
@@ -457,6 +752,16 @@ func _draw_bars(view: Vector2) -> void:
 	var xp_bar := Rect2(0, view.y - 8, view.x, 8)
 	draw_rect(xp_bar, Color.BLACK)
 	draw_rect(Rect2(xp_bar.position, Vector2(view.x * float(sim.xp) / sim.xp_needed(), 8)), COLOR_GEM)
+	var ult_bar := Rect2(16, view.y - 40, minf(320.0, view.x - 32.0), 14)
+	var ult_ratio := float(sim.ult_charge) / float(data.ultimate.charge_kills)
+	var ult_color := COLOR_AWAKEN
+	var ult_text := "궁극기 %d%%" % int(ult_ratio * 100.0)
+	if sim.ultimate_ready():
+		ult_color = COLOR_AWAKEN.lerp(Color.WHITE, 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.012))
+		ult_text = "궁극기 준비! [Space] %s" % data.ultimate[sim.main_weapon].name
+	draw_rect(ult_bar, Color.BLACK)
+	draw_rect(Rect2(ult_bar.position, Vector2(ult_bar.size.x * ult_ratio, ult_bar.size.y)), ult_color)
+	draw_string(ThemeDB.fallback_font, ult_bar.position + Vector2(0, -6), ult_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
 	if sim.boss != null and sim.boss.hp > 0.0:
 		var width := minf(520.0, view.x - 40.0)
 		var boss_bar := Rect2((view.x - width) * 0.5, 44, width, 18)
