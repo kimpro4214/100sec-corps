@@ -40,6 +40,12 @@
       }
     }
   },
+  "ultimate": {
+    "charge_kills": 80, "elite_damage_mult": 0.25, "damage_per_round": 0.35, "invuln": 1.0,
+    "bolt": { "name": "마력 해일", "desc": "사방으로 관통 탄환 발사", "count": 48, "damage": 40, "speed": 520, "life": 1.6, "radius": 9 },
+    "aura": { "name": "가시 해방", "desc": "주변을 터뜨리고 밀어냄", "radius": 360, "damage": 60, "knockback": 140 },
+    "lightning": { "name": "뇌우", "desc": "주변 적들에게 연속 낙뢰", "count": 30, "range": 650, "radius": 70, "damage": 55, "duration": 0.9 }
+  },
   "traits": {
     "multishot": { "weapon": "bolt", "name": "다중 사격", "desc": "탄환 +1", "effect": "count", "value": 1 },
     "pierce": { "weapon": "bolt", "name": "관통", "desc": "탄환이 적 1명 더 관통", "effect": "pierce", "value": 1 },

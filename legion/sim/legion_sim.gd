@@ -122,6 +122,9 @@ var ghost_ttk_total := 0.0
 var picks: Array = []
 var boss_log: Array = []
 var damage_by_source := {}
+var ult_charge := 0
+var ultimates_used := 0
+var ult_guard := 0.0
 
 
 func _init(balance: Dictionary, run_seed: int, main_id: String) -> void:
@@ -338,6 +341,7 @@ func step(move_dir: Vector2) -> void:
 	time += tick
 	round_time += tick
 	invuln = maxf(0.0, invuln - tick)
+	ult_guard = maxf(0.0, ult_guard - tick)
 	player_flash = maxf(0.0, player_flash - tick)
 	player_slow_time = maxf(0.0, player_slow_time - tick)
 	_move_player(move_dir)
@@ -530,19 +534,65 @@ func _fire_lightning(origin: Vector2, weapon: Dictionary, stats: Dictionary, dam
 	return true
 
 
-func _damage_area(center: Vector2, radius: float, damage: float) -> void:
+func _damage_area(center: Vector2, radius: float, damage: float, source := "") -> void:
 	for enemy in enemies:
 		if center.distance_to(enemy.pos) <= radius + enemy.radius:
-			_damage_enemy(enemy, damage)
+			_damage_enemy(enemy, damage, source)
 
 
-func _damage_enemy(enemy: Enemy, damage: float) -> void:
+func _damage_enemy(enemy: Enemy, damage: float, source := "") -> void:
+	if source == "ultimate" and (enemy.kind == "ghost" or enemy.kind == "boss"):
+		damage *= float(data.ultimate.elite_damage_mult)
 	enemy.hp -= damage
 	enemy.flash = 0.1
 
 
+func ultimate_ready() -> bool:
+	return ult_charge >= int(data.ultimate.charge_kills)
+
+
+func use_ultimate() -> bool:
+	if is_over() or not ultimate_ready() or not pending_choices.is_empty() or not round_summary.is_empty():
+		return false
+	ult_charge = 0
+	ultimates_used += 1
+	ult_guard = float(data.ultimate.invuln)
+	var ult: Dictionary = data.ultimate[main_weapon]
+	var damage: float = float(ult.damage) * (1.0 + float(data.ultimate.damage_per_round) * (round_index - 1))
+	_event({"type": "ultimate", "weapon": main_weapon, "name": ult.name, "pos": player_pos})
+	match main_weapon:
+		"bolt":
+			var count := int(ult.count)
+			for i in count:
+				var shot := _add_projectile(player_pos, Vector2.from_angle(TAU * i / count) * float(ult.speed), damage, float(ult.radius), float(ult.life), false, "ultimate")
+				shot.pierce = 999
+		"aura":
+			var radius := float(ult.radius)
+			_event({"type": "ult_blast", "pos": player_pos, "radius": radius})
+			for enemy in enemies:
+				if player_pos.distance_to(enemy.pos) > radius + enemy.radius:
+					continue
+				_damage_enemy(enemy, damage, "ultimate")
+				if enemy.kind != "boss":
+					enemy.pos = _clamp_to_arena(enemy.pos + (enemy.pos - player_pos).normalized() * float(ult.knockback))
+		"lightning":
+			var range_sq := float(ult.range) * float(ult.range)
+			var targets: Array[Enemy] = []
+			for enemy in enemies:
+				if player_pos.distance_squared_to(enemy.pos) <= range_sq:
+					targets.append(enemy)
+			var count := int(ult.count)
+			for i in count:
+				var pos: Vector2 = targets[i % targets.size()].pos if not targets.is_empty() else player_pos + _random_offset(float(ult.range))
+				_add_strike(pos, float(ult.duration) * (i + 1) / count, damage, float(ult.radius), "ultimate", false)
+	return true
+
+
 func _hurt_player(damage: float, source: String) -> void:
+	if ult_guard > 0.0:
+		return
 	hp -= damage
+	_event({"type": "hurt", "damage": damage})
 	last_hit = source
 	player_flash = 0.15
 	damage_by_source[source] = damage_by_source.get(source, 0.0) + damage
@@ -895,7 +945,7 @@ func _update_projectiles() -> void:
 			for enemy in enemies:
 				if enemy.hp <= 0.0 or enemy in shot.hit_list or shot.pos.distance_to(enemy.pos) > shot.radius + enemy.radius:
 					continue
-				_damage_enemy(enemy, shot.damage)
+				_damage_enemy(enemy, shot.damage, shot.source)
 				if shot.splash_radius > 0.0:
 					_event({"type": "burst", "pos": shot.pos, "radius": shot.splash_radius})
 					_damage_area(shot.pos, shot.splash_radius, shot.damage * shot.splash_mult)
@@ -919,7 +969,7 @@ func _update_strikes() -> void:
 			continue
 		_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius})
 		if not strike.hostile:
-			_damage_area(strike.pos, strike.radius, strike.damage)
+			_damage_area(strike.pos, strike.radius, strike.damage, strike.source)
 		elif strike.pos.distance_to(player_pos) <= strike.radius + float(data.player.radius):
 			_hurt_player(strike.damage, strike.source)
 	strikes = alive
@@ -932,6 +982,8 @@ func _remove_dead() -> void:
 			alive.append(enemy)
 			continue
 		kills += 1
+		ult_charge = mini(ult_charge + 1, int(data.ultimate.charge_kills))
+		_event({"type": "kill", "pos": enemy.pos, "kind": enemy.kind, "radius": enemy.radius})
 		if enemy.kind == "ghost":
 			ghost_kills += 1
 			ghost_ttk_total += time - enemy.born
