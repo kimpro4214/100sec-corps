@@ -4,12 +4,14 @@ extends Node2D
 ##   CinemaDirector: 카메라, 시간 연출, 시네마틱
 ##   Fx: 이벤트 이펙트와 파편
 ##   WorldRenderer: 월드와 막대 그리기
+## 그리는 순서: 이 노드(월드) → glow(더하기 혼합 빛) → overlay(화면 효과와 막대) → UI
 
 const LegionSim := preload("res://legion/sim/legion_sim.gd")
 const LegionUI := preload("res://legion/game/legion_ui.gd")
 const CinemaDirector := preload("res://legion/game/cinema_director.gd")
 const Fx := preload("res://legion/game/fx.gd")
 const WorldRenderer := preload("res://legion/game/world_renderer.gd")
+const DrawLayer := preload("res://legion/game/draw_layer.gd")
 const Palette := preload("res://legion/game/palette.gd")
 const DATA_PATH := "res://legion/data/balance.json"
 
@@ -20,11 +22,22 @@ var player_facing := 1.0
 var ui: LegionUI
 var director := CinemaDirector.new()
 var fx := Fx.new()
+var glow: DrawLayer
+var overlay: DrawLayer
+var world_offset := Vector2.ZERO
+var world_scale := Vector2.ONE
 
 
 func _ready() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string(DATA_PATH))
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	glow = DrawLayer.new()
+	glow.additive = true
+	glow.draw_fn = _draw_glow
+	add_child(glow)
+	overlay = DrawLayer.new()
+	overlay.draw_fn = _draw_overlay
+	add_child(overlay)
 	ui = LegionUI.new()
 	add_child(ui)
 	ui.setup(data)
@@ -41,7 +54,7 @@ func _start_run() -> void:
 	fx.reset()
 	director.reset()
 	ui.reset()
-	queue_redraw()
+	_redraw_all()
 
 
 func _begin_run(main_id: String) -> void:
@@ -110,11 +123,29 @@ func _process(delta: float) -> void:
 			ui.show_summary(sim)
 	if sim.is_over() and director.cinema != "ending" and not ui.is_end_visible():
 		_start_ending()
-	fx.update(world_delta)
+	fx.update(world_delta, sim, director.is_casting())
 	director.decay(delta)
 	ui.tick_banner(delta, director.cinema == "")
 	ui.update_hud(sim, director.cinema == "" or director.cinema == "ult")
+	_update_camera()
+	_redraw_all()
+
+
+## 이번 프레임의 카메라 변환. 흔들림이 섞여 있어 프레임마다 한 번만 계산해 모든 층이 같이 쓴다.
+func _update_camera() -> void:
+	var view := get_viewport_rect().size
+	var alpha: float = clampf(acc / sim.tick, 0.0, 1.0)
+	var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
+	var center: Vector2 = player if director.cinema == "" else director.focus
+	world_offset = director.world_offset(view, center)
+	world_scale = Vector2(director.zoom, director.zoom)
+	glow.transform = Transform2D(0.0, world_scale, 0.0, world_offset)
+
+
+func _redraw_all() -> void:
 	queue_redraw()
+	glow.queue_redraw()
+	overlay.queue_redraw()
 
 
 func _update_cinema(delta: float) -> void:
@@ -191,19 +222,31 @@ func _draw() -> void:
 		return
 	var alpha: float = clampf(acc / sim.tick, 0.0, 1.0)
 	var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
-	var center: Vector2 = player if director.cinema == "" else director.focus
-	var world_offset := director.world_offset(view, center)
-	var world_scale := Vector2(director.zoom, director.zoom)
 	draw_set_transform(world_offset, 0.0, world_scale)
+	WorldRenderer.draw_floor(self, data)
+	fx.draw_under(self)
 	WorldRenderer.draw_world(self, sim, data, alpha, player)
-	fx.draw(self)
+	fx.draw_debris(self)
 	if director.is_casting():
 		draw_set_transform(Vector2.ZERO)
 		draw_rect(Rect2(Vector2.ZERO, view), Color(0, 0, 0, 0.55 * director.letterbox))
 		draw_set_transform(world_offset, 0.0, world_scale)
-		draw_circle(player, float(data.player.radius) * (2.0 + director.cinema_time * 4.0), Color(Palette.AWAKEN, 0.25))
-	WorldRenderer.draw_player(self, sim, data, player, player_facing)
+	var moving: bool = sim.player_pos.distance_squared_to(sim.player_prev) > 0.01
+	WorldRenderer.draw_player(self, sim, data, player, player_facing, moving, sim.time + alpha * sim.tick)
 	draw_set_transform(Vector2.ZERO)
-	director.draw_screen(self, view)
+
+
+func _draw_glow(canvas: CanvasItem) -> void:
+	if sim == null:
+		return
+	fx.draw_glow(canvas, sim, clampf(acc / sim.tick, 0.0, 1.0), director)
+
+
+## 화면 좌표: 피격 테두리, 플래시, 레터박스, 막대. 빛 레이어보다 위에 그린다.
+func _draw_overlay(canvas: CanvasItem) -> void:
+	if sim == null:
+		return
+	var view := get_viewport_rect().size
+	director.draw_screen(canvas, view)
 	if director.cinema == "" or director.cinema == "ult":
-		WorldRenderer.draw_bars(self, sim, data, view)
+		WorldRenderer.draw_bars(canvas, sim, data, view)
