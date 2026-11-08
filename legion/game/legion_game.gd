@@ -16,6 +16,7 @@ const DATA_PATH := "res://legion/data/balance.json"
 var data: Dictionary
 var sim
 var acc := 0.0
+var player_facing := 1.0
 var ui: LegionUI
 var director := CinemaDirector.new()
 var fx := Fx.new()
@@ -47,6 +48,7 @@ func _begin_run(main_id: String) -> void:
 	sim = LegionSim.new(data, randi(), main_id)
 	sim.record_events = true
 	acc = 0.0
+	player_facing = 1.0
 	ui.hide_start()
 	director.start("intro")
 	ui.show_cinema_text("100초 군단", "100초마다, 지난 내가 돌아온다")
@@ -93,6 +95,9 @@ func _process(delta: float) -> void:
 		acc -= sim.tick
 		sim.step(_read_input())
 		_consume_events()
+		var moved_x: float = sim.player_pos.x - sim.player_prev.x
+		if absf(moved_x) > 0.01:
+			player_facing = signf(moved_x)
 	if sim.is_over():
 		pass
 	elif not sim.pending_choices.is_empty():
@@ -197,7 +202,7 @@ func _draw() -> void:
 		draw_rect(Rect2(Vector2.ZERO, view), Color(0, 0, 0, 0.55 * director.letterbox))
 		draw_set_transform(world_offset, 0.0, world_scale)
 		draw_circle(player, float(data.player.radius) * (2.0 + director.cinema_time * 4.0), Color(Palette.AWAKEN, 0.25))
-	WorldRenderer.draw_player(self, sim, data, player)
+	WorldRenderer.draw_player(self, sim, data, player, player_facing)
 	draw_set_transform(Vector2.ZERO)
 	director.draw_screen(self, view)
 	if director.cinema == "" or director.cinema == "ult":

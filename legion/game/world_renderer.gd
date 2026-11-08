@@ -44,14 +44,15 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 	_draw_auras(canvas, sim, data, player)
 	_draw_boss_telegraph(canvas, sim)
 	for enemy in sim.enemies:
-		_draw_enemy(canvas, sim, enemy, alpha)
+		_draw_enemy(canvas, sim, enemy, alpha, player)
 	for shot in sim.projectiles:
 		canvas.draw_circle(shot.prev.lerp(shot.pos, alpha), shot.radius, Palette.HOSTILE if shot.hostile else Color.WHITE)
 
 
-static func draw_player(canvas: CanvasItem, sim, data: Dictionary, player: Vector2) -> void:
+## facing: 1이면 오른쪽, -1이면 왼쪽을 바라본다. 스프라이트 원본은 오른쪽을 본다.
+static func draw_player(canvas: CanvasItem, sim, data: Dictionary, player: Vector2, facing: float) -> void:
 	var tint := AWAKEN_TINT if sim.is_awakened(sim.build) else Color.WHITE
-	_draw_character(canvas, SPRITES.player, player, float(data.player.radius), FLASH_TINT if sim.player_flash > 0.0 else tint)
+	_draw_character(canvas, SPRITES.player, player, float(data.player.radius), FLASH_TINT if sim.player_flash > 0.0 else tint, facing)
 
 
 ## 화면 좌표로 그리는 체력, 경험치, 궁극기, 군단장 체력 막대.
@@ -95,16 +96,19 @@ static func _draw_arena(canvas: CanvasItem, data: Dictionary) -> void:
 
 
 ## 반지름에 맞춰 정수 배율로 키운 캐릭터와 발밑 그림자.
-static func _draw_character(canvas: CanvasItem, tex: Texture2D, pos: Vector2, radius: float, tint: Color) -> void:
+static func _draw_character(canvas: CanvasItem, tex: Texture2D, pos: Vector2, radius: float, tint: Color, facing: float) -> void:
 	var scale := maxi(2, roundi(radius * 3.0 / TILE))
 	var size := float(TILE * scale)
 	canvas.draw_circle(pos + Vector2(0, size * 0.36), size * 0.26, Color(0, 0, 0, 0.35))
-	_draw_sprite(canvas, tex, pos, scale, tint)
+	_draw_sprite(canvas, tex, pos, scale, tint, facing)
 
 
-static func _draw_sprite(canvas: CanvasItem, tex: Texture2D, pos: Vector2, scale: int, tint: Color) -> void:
+## 너비를 음수로 주면 좌우가 뒤집힌다. 위치는 그대로 왼쪽 위 모서리로 쓰인다.
+static func _draw_sprite(canvas: CanvasItem, tex: Texture2D, pos: Vector2, scale: int, tint: Color, facing := 1.0) -> void:
 	var size := Vector2.ONE * TILE * scale
-	canvas.draw_texture_rect(tex, Rect2(pos - size * 0.5, size), false, tint)
+	if facing < 0.0:
+		size.x = -size.x
+	canvas.draw_texture_rect(tex, Rect2(pos - size.abs() * 0.5, size), false, tint)
 
 
 static func _draw_auras(canvas: CanvasItem, sim, data: Dictionary, player: Vector2) -> void:
@@ -131,13 +135,15 @@ static func _draw_boss_telegraph(canvas: CanvasItem, sim) -> void:
 			canvas.draw_arc(sim.boss.pos, 120.0, 0.0, TAU, 48, Palette.GHOST, 3.0)
 
 
-static func _draw_enemy(canvas: CanvasItem, sim, enemy, alpha: float) -> void:
+## 적은 항상 플레이어를 바라본다. 쫓거나 노리는 대상이 플레이어이기 때문이다.
+static func _draw_enemy(canvas: CanvasItem, sim, enemy, alpha: float, player: Vector2) -> void:
 	var pos: Vector2 = enemy.prev.lerp(enemy.pos, alpha)
 	var tex: Texture2D = SPRITES.player if enemy.kind == "ghost" else SPRITES[enemy.kind]
 	var tint := Color.WHITE
 	if enemy.kind == "ghost":
 		tint = AWAKEN_TINT * GHOST_TINT if sim.is_awakened(enemy.build) else GHOST_TINT
-	_draw_character(canvas, tex, pos, enemy.radius, FLASH_TINT if enemy.flash > 0.0 else tint)
+	var facing := 1.0 if player.x >= pos.x else -1.0
+	_draw_character(canvas, tex, pos, enemy.radius, FLASH_TINT if enemy.flash > 0.0 else tint, facing)
 	if enemy.kind == "ghost":
 		var font := ThemeDB.fallback_font
 		canvas.draw_string(font, pos + Vector2(-80, -enemy.radius - 18), enemy.label, HORIZONTAL_ALIGNMENT_CENTER, 160, 14)
