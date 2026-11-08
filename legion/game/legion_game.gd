@@ -72,6 +72,7 @@ func _restart() -> void:
 
 func _begin_run(main_id: String) -> void:
 	sfx.play("click")
+	sfx.play_music("field")
 	sim = LegionSim.new(data, randi(), main_id)
 	sim.record_events = true
 	acc = 0.0
@@ -257,7 +258,7 @@ func _draw() -> void:
 	WorldRenderer.draw_floor(self, sim, Rect2(-world_offset / world_scale, view / world_scale))
 	fx.draw_under(self)
 	WorldRenderer.draw_world(self, sim, data, alpha, player)
-	fx.draw_debris(self)
+	fx.draw_debris(self, sim)
 	if director.is_casting():
 		draw_set_transform(Vector2.ZERO)
 		draw_rect(Rect2(Vector2.ZERO, view), Color(0, 0, 0, 0.55 * director.letterbox))

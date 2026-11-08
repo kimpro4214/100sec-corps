@@ -24,6 +24,13 @@ const CAUSE_TEXT := {
 	"boss_blink": "보스의 순간이동 탄막",
 	"boss_quake": "보스의 내리찍기",
 	"boss_strike": "보스의 낙뢰",
+	"boss_slash": "타락한 기사의 칼",
+	"boss_sword_wave": "타락한 기사의 검기",
+	"boss_venom": "거미 여왕의 독침",
+	"boss_soul": "망령의 영혼탄",
+	"boss_boulder": "외눈 거인의 바위",
+	"boss_fire": "군단장의 불꽃",
+	"boss_meteor": "군단장의 운석",
 }
 const REWARD_TEXT := {
 	"level": "레벨 업! (과거의 나에게도 복사됩니다)",

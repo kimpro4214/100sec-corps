@@ -22,6 +22,9 @@ const SOUNDS := {
 	"boss_windup": {"files": ["forceField_002"], "db": -10.0, "pitch": 0.1, "gap": 0.5},
 	"ult_charge": {"files": ["forceField_001"], "db": -6.0, "pitch": 0.0, "gap": 0.5},
 	"ult_fire": {"files": ["lowFrequency_explosion_001"], "db": -3.0, "pitch": 0.0, "gap": 0.5},
+	"slash": {"files": ["impactPlate_heavy_000", "impactPlate_heavy_001"], "db": -4.0, "pitch": 0.08, "gap": 0.2},
+	"web": {"files": ["slime_000"], "db": -6.0, "pitch": 0.15, "gap": 0.15},
+	"fire": {"files": ["thrusterFire_000"], "db": -10.0, "pitch": 0.15, "gap": 0.15},
 	"click": {"files": ["click_001"], "db": -8.0, "pitch": 0.05, "gap": 0.05},
 	"select": {"files": ["select_001"], "db": -6.0, "pitch": 0.0, "gap": 0.05},
 }
@@ -40,6 +43,18 @@ var last_played := {}
 var players: Array[AudioStreamPlayer] = []
 var next_player := 0
 var jingle_player: AudioStreamPlayer
+var music_player: AudioStreamPlayer
+var music_id := ""
+var music_tween: Tween
+
+# 배경 음악(OpenGameArt, CC0). 필드와 보스 방에서 바꿔 튼다.
+const MUSIC := {
+	"field": "res://legion/audio/music/field_8bit_battle_loop.ogg",
+	"boss": "res://legion/audio/music/boss_basilisk_battle_loop.ogg",
+}
+const MUSIC_DB := -10.0
+const MUSIC_DUCK_DB := -22.0
+const MUSIC_FADE := 1.0
 
 
 func _ready() -> void:
@@ -60,6 +75,38 @@ func _ready() -> void:
 	jingle_player = AudioStreamPlayer.new()
 	jingle_player.bus = "Music"
 	add_child(jingle_player)
+	music_player = AudioStreamPlayer.new()
+	music_player.bus = "Music"
+	add_child(music_player)
+
+
+## 배경 음악을 바꾼다. 같은 곡이면 그대로 두고, 다른 곡이면 잠깐 줄였다가 바꿔 키운다.
+func play_music(id: String) -> void:
+	if id == music_id:
+		return
+	music_id = id
+	_kill_music_tween()
+	music_tween = create_tween()
+	if music_player.playing:
+		music_tween.tween_property(music_player, "volume_db", -40.0, MUSIC_FADE * 0.5)
+	music_tween.tween_callback(func() -> void:
+		music_player.stream = load(MUSIC[id])
+		music_player.volume_db = -40.0
+		music_player.play())
+	music_tween.tween_property(music_player, "volume_db", MUSIC_DB, MUSIC_FADE)
+
+
+func stop_music() -> void:
+	music_id = ""
+	_kill_music_tween()
+	music_tween = create_tween()
+	music_tween.tween_property(music_player, "volume_db", -40.0, MUSIC_FADE)
+	music_tween.tween_callback(music_player.stop)
+
+
+func _kill_music_tween() -> void:
+	if music_tween != null and music_tween.is_valid():
+		music_tween.kill()
 
 
 func play(id: String) -> void:
@@ -78,9 +125,16 @@ func play(id: String) -> void:
 	player.play()
 
 
+## 짧은 음악 신호. 배경 음악과 겹치지 않게 그동안 배경 음악을 줄였다가 되돌린다.
 func play_jingle(id: String) -> void:
 	jingle_player.stream = jingle_streams[id]
 	jingle_player.play()
+	if music_player.playing and music_id != "":
+		_kill_music_tween()
+		music_tween = create_tween()
+		music_tween.tween_property(music_player, "volume_db", MUSIC_DUCK_DB, 0.1)
+		music_tween.tween_interval(jingle_streams[id].get_length())
+		music_tween.tween_property(music_player, "volume_db", MUSIC_DB, 0.6)
 
 
 ## sim 이벤트 중 소리를 낼 것을 골라 재생한다.
@@ -93,7 +147,19 @@ func handle(event: Dictionary) -> void:
 			if not event.hostile:
 				play("aura")
 		"lightning":
-			play("lightning")
+			match event.get("source", ""):
+				"boss_meteor":
+					play("fire")
+				"boss_boulder":
+					play("boss_kill")
+				"boss_quake":
+					pass
+				_:
+					play("lightning")
+		"boss_slash":
+			play("slash")
+		"boss_web", "web_land":
+			play("web")
 		"kill":
 			match event.kind:
 				"ghost":
@@ -132,17 +198,22 @@ func handle(event: Dictionary) -> void:
 			play("ult_charge")
 		"boss_room":
 			play("ghost")
+			play_music("boss")
 		"boss_blink":
 			play("ghost")
 		"ultimate":
 			play("ult_fire")
 		"awaken":
 			play_jingle("awaken")
+		"round":
+			play_music("field")
 		"round_clear":
 			play_jingle("round_clear")
 		"won":
+			stop_music()
 			play_jingle("win")
 		"lost":
+			stop_music()
 			play_jingle("lose")
 
 

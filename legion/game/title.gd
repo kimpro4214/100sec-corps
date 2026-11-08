@@ -33,6 +33,7 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sfx = Sfx.new()
 	add_child(sfx)
+	sfx.play_music("field")
 	for i in 14:
 		marchers.append({"x": randf() * 1600.0, "lane": randf_range(0.62, 0.92), "sprite": randi() % MARCHERS.size(), "seed": randf() * TAU})
 	_build_ui()

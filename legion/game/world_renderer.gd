@@ -24,6 +24,7 @@ const SPRITES := {
 	"chest_open": preload("res://legion/art/chest_open.png"),
 	"casino": preload("res://legion/art/mimic.png"),
 	"shrine": preload("res://legion/art/shrine.png"),
+	"sword": preload("res://legion/art/sword.png"),
 }
 const FLOORS := [
 	preload("res://legion/art/floor.png"),
@@ -42,6 +43,7 @@ const FRENZY_TINT := Color(1.35, 0.75, 0.55)
 const COIN := Color("ffd23f")
 const COIN_EDGE := Color("8a5a00")
 const SHRINE_TINT := Color(1.3, 0.55, 0.55)
+const WEB_COLOR := Color(0.93, 0.93, 0.97)
 
 
 ## 지금 서 있는 공간(필드나 보스 방)의 바닥, 벽, 포탈. 그을음 같은 바닥 효과가 이 위, 캐릭터 아래에 깔린다.
@@ -116,6 +118,8 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 		if strike.hostile:
 			canvas.draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, Palette.HOSTILE, 3.0)
 			canvas.draw_circle(strike.pos, strike.radius, Color(Palette.HOSTILE, 0.15))
+	for zone in sim.zones:
+		_draw_zone(canvas, zone)
 	_draw_auras(canvas, sim, data, player)
 	_draw_boss_telegraph(canvas, sim)
 	var t: float = sim.time + alpha * sim.tick
@@ -264,6 +268,71 @@ static func _draw_boss_telegraph(canvas: CanvasItem, sim) -> void:
 			var progress := clampf(1.0 - sim.boss_timer / maxf(float(pattern.windup), 0.01), 0.0, 1.0)
 			canvas.draw_circle(sim.boss.pos, radius * progress, Color(Palette.BOSS, 0.25))
 			canvas.draw_arc(sim.boss.pos, radius, 0.0, TAU, 64, Palette.BOSS, 4.0)
+		"slash":
+			# 칼이 닿는 부채꼴이 준비 동안 차오르고, 칼을 등 뒤로 치켜든다.
+			var reach := float(pattern.range)
+			var arc := float(pattern.arc)
+			var progress := clampf(1.0 - sim.boss_timer / maxf(float(pattern.windup), 0.01), 0.0, 1.0)
+			var facing: float = sim.charge_dir.angle()
+			_draw_sector(canvas, sim.boss.pos, reach * progress, facing, arc, Color(Palette.BOSS, 0.25))
+			_draw_sector(canvas, sim.boss.pos, reach, facing, arc, Color(Palette.BOSS, 0.0), Palette.BOSS)
+			draw_sword_at(canvas, sim.boss.pos, facing - arc * 0.5 - 0.7 * progress, sim.boss.radius * 1.6)
+
+
+## 중심에서 angle 방향으로 arc 폭만큼 벌어진 부채꼴.
+static func _draw_sector(canvas: CanvasItem, center: Vector2, reach: float, angle: float, arc: float, fill: Color, outline := Color(0, 0, 0, 0)) -> void:
+	var points := PackedVector2Array([center])
+	var steps := 16
+	for i in steps + 1:
+		points.append(center + Vector2.from_angle(angle - arc * 0.5 + arc * i / steps) * reach)
+	if fill.a > 0.0:
+		canvas.draw_colored_polygon(points, fill)
+	if outline.a > 0.0:
+		points.append(center)
+		canvas.draw_polyline(points, outline, 3.0)
+
+
+## 칼 스프라이트를 angle 방향으로 뻗어 그린다. 원본은 칼날이 위(-y)를 향한다.
+static func draw_sword_at(canvas: CanvasItem, center: Vector2, angle: float, length: float, tint := Color.WHITE) -> void:
+	# 칼자루가 center에 오도록 칼 길이의 절반만큼 앞으로 민다.
+	draw_rotated(canvas, SPRITES.sword, center + Vector2.from_angle(angle) * length * 0.5, Vector2(length * 0.5, length), angle + PI * 0.5, tint)
+
+
+## 회전한 텍스처를 네 꼭짓점 다각형으로 그린다.
+## draw_set_transform을 쓰면 캔버스에 걸어 둔 카메라 변환이 덮어써지므로, 월드 캔버스에서는 이 함수를 쓴다.
+static func draw_rotated(canvas: CanvasItem, tex: Texture2D, center: Vector2, size: Vector2, angle: float, tint := Color.WHITE) -> void:
+	var half := size * 0.5
+	var corners := PackedVector2Array()
+	for corner in [Vector2(-half.x, -half.y), Vector2(half.x, -half.y), Vector2(half.x, half.y), Vector2(-half.x, half.y)]:
+		corners.append(center + corner.rotated(angle))
+	var uvs := PackedVector2Array([Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
+	canvas.draw_polygon(corners, PackedColorArray([tint]), uvs, tex)
+
+
+## 거미줄: 날아가는 동안은 거미줄 뭉치와 떨어질 자리, 깔린 뒤에는 바닥의 거미줄.
+static func _draw_zone(canvas: CanvasItem, zone) -> void:
+	if zone.delay > 0.0:
+		var t: float = 1.0 - zone.delay / maxf(zone.travel, 0.01)
+		var flying: Vector2 = zone.origin.lerp(zone.pos, t) - Vector2(0, sin(t * PI) * 90.0)
+		canvas.draw_arc(zone.pos, zone.radius, 0.0, TAU, 32, Color(WEB_COLOR, 0.35), 2.0)
+		_draw_web(canvas, flying, 16.0, 0.9)
+		return
+	var fade := clampf(zone.time / 0.8, 0.0, 1.0)
+	_draw_web(canvas, zone.pos, zone.radius, 0.6 * fade)
+
+
+static func _draw_web(canvas: CanvasItem, center: Vector2, radius: float, alpha: float) -> void:
+	var color := Color(WEB_COLOR, alpha)
+	var spokes := 8
+	for i in spokes:
+		canvas.draw_line(center, center + Vector2.from_angle(TAU * i / spokes) * radius, color, 2.0)
+	for ring in [0.35, 0.65, 1.0]:
+		var points := PackedVector2Array()
+		for i in spokes + 1:
+			# 바큇살 사이가 살짝 처지게 해서 거미줄처럼 보이게 한다.
+			var sag := 0.92 if i % 2 == 1 else 1.0
+			points.append(center + Vector2.from_angle(TAU * i / spokes) * radius * ring * sag)
+		canvas.draw_polyline(points, color, 1.5)
 
 
 ## 과거의 나는 플레이어 그림을, 보스는 라운드별 보스 정의의 그림을 쓴다.
