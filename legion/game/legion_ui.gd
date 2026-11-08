@@ -9,7 +9,6 @@ signal menu_pressed
 
 const Palette := preload("res://legion/game/palette.gd")
 const UiTheme := preload("res://legion/game/ui_theme.gd")
-const MenuPanels := preload("res://legion/game/menu_panels.gd")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 const BANNER_SECONDS := 2.5
 
@@ -57,8 +56,6 @@ var end_panel: PanelContainer
 var end_label: Label
 var end_title: Label
 var end_again: Button
-var end_credits: Button
-var root_control: Control
 
 
 func setup(balance: Dictionary) -> void:
@@ -68,7 +65,6 @@ func setup(balance: Dictionary) -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	root.theme = UiTheme.build()
-	root_control = root
 	add_child(root)
 
 	hud = Label.new()
@@ -135,14 +131,6 @@ func setup(balance: Dictionary) -> void:
 	end_again.text = "다시 하기"
 	end_again.pressed.connect(restart_pressed.emit)
 	buttons.add_child(end_again)
-	end_credits = Button.new()
-	end_credits.text = "크레딧"
-	end_credits.pressed.connect(func() -> void:
-		end_panel.hide()
-		root_control.add_child(MenuPanels.build_credits(func() -> void:
-			end_panel.show()
-			end_again.grab_focus())))
-	buttons.add_child(end_credits)
 	var menu := Button.new()
 	menu.text = "타이틀로"
 	menu.pressed.connect(menu_pressed.emit)
@@ -298,7 +286,7 @@ func show_summary(sim) -> void:
 	summary_panel.show()
 
 
-## 결과 화면: 이긴 판이면 크레딧으로 이어지고, 진 판이면 무엇에 쓰러졌는지 알려 준다.
+## 결과 화면: 플레이 기록과 최종 빌드를 보여 주고, 진 판이면 무엇에 쓰러졌는지 알려 준다.
 func show_end(sim) -> void:
 	var won: bool = sim.state == "won"
 	end_title.text = "승리! 군단을 넘어섰습니다" if won else "패배: 라운드 %d" % sim.round_index
@@ -315,7 +303,6 @@ func show_end(sim) -> void:
 	lines.append("")
 	lines.append("최종 빌드\n" + _build_text(sim, sim.build))
 	end_label.text = "\n".join(lines)
-	end_credits.visible = won
 	hide_round_panels()
 	end_panel.show()
 	end_again.grab_focus()

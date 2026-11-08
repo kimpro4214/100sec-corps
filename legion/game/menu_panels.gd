@@ -1,5 +1,5 @@
 extends RefCounted
-## 타이틀과 게임 화면이 함께 쓰는 창: 설정, 게임 방법, 크레딧.
+## 타이틀에서 여는 창: 설정, 게임 방법.
 ## 각 함수는 화면 전체를 덮는 창을 만들어 돌려준다. 닫기를 누르면 창이 스스로 사라지고 on_close가 불린다.
 
 const UiTheme := preload("res://legion/game/ui_theme.gd")
@@ -31,7 +31,6 @@ const HOW_TO_PAGES := [
 		"body": "적이 떨어뜨린 금화로 보물상자와 미믹 룰렛을,\n체력으로 피의 제단을 쓸 수 있습니다. 위에 1초 서 있으면 작동합니다.\n\n상자와 룰렛의 레벨 업은 과거의 나에게도 복사됩니다.\n보호막, 광폭, 폭탄 같은 1회용 효과는 복사되지 않습니다.",
 	},
 ]
-const CREDITS := "기획, 문제 정의, 재미 판단: 사람\n구현과 데이터 초안, 밸런스 봇: AI (Claude)\n\n그래픽 - Kenney (CC0)\nTiny Dungeon, Particle Pack\nUI Pack - Pixel Adventure\n소리 - Kenney (CC0)\nSci-Fi, Impact, Interface Sounds, Music Jingles\n글꼴 - 갈무리11, 이민서 (OFL 1.1)\n엔진 - Godot Engine"
 
 
 static func build_settings(settings: Node, on_close: Callable) -> Control:
@@ -94,14 +93,6 @@ static func build_how_to(on_close: Callable) -> Control:
 				show_page.call(state.page + 1))
 	show_page.call(0)
 	next.call_deferred("grab_focus")
-	return window
-
-
-static func build_credits(on_close: Callable) -> Control:
-	var window := _window("크레딧", on_close)
-	var box: VBoxContainer = window.get_meta("box")
-	box.add_child(_text(CREDITS, UiTheme.FONT_NORMAL))
-	_add_close(window, box, on_close)
 	return window
 
 

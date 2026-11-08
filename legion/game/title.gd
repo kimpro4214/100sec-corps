@@ -79,7 +79,6 @@ func _build_ui() -> void:
 	_add_button("시작하기", _start)
 	_add_button("게임 방법", _open.bind("how_to"))
 	_add_button("설정", _open.bind("settings"))
-	_add_button("크레딧", _open.bind("credits"))
 	# 웹 빌드에서는 브라우저 탭을 닫으면 되므로 종료 버튼을 숨긴다.
 	if not OS.has_feature("web"):
 		_add_button("종료", get_tree().quit)
@@ -111,8 +110,6 @@ func _open(kind: String) -> void:
 			window = MenuPanels.build_how_to(reopen)
 		"settings":
 			window = MenuPanels.build_settings(get_node("/root/Settings"), reopen)
-		"credits":
-			window = MenuPanels.build_credits(reopen)
 	ui_root.add_child(window)
 
 
