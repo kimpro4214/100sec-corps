@@ -88,7 +88,7 @@ static func _run_pattern(sim, enemy: Entities.Enemy) -> void:
 			sim.boss_timer = float(pattern.duration)
 			return
 		"ring":
-			_fire_ring(sim, enemy.pos, pattern, damage, "boss_ring")
+			_fire_ring(sim, enemy.pos, pattern, damage, pattern.get("source", "boss_ring"))
 		"spray":
 			# 준비 때 정한 방향으로 부채꼴 탄막.
 			var count := int(pattern.count)
@@ -96,22 +96,43 @@ static func _run_pattern(sim, enemy: Entities.Enemy) -> void:
 			for i in count:
 				var offset := 0.0 if count == 1 else (i / float(count - 1) - 0.5) * spread
 				Combat.add_projectile(sim, enemy.pos, sim.charge_dir.rotated(offset) * float(pattern.speed), damage,
-						float(pattern.radius), float(pattern.life), true, "boss_spray")
+						float(pattern.radius), float(pattern.life), true, pattern.get("source", "boss_spray"))
 		"blink":
 			# 플레이어 근처로 순간이동한 뒤 원형탄.
 			var angle: float = sim.rng.randf() * TAU
 			enemy.pos = sim.clamp_to_arena(sim.player_pos + Vector2.from_angle(angle) * float(pattern.distance))
 			enemy.prev = enemy.pos
 			sim.emit_event({"type": "boss_blink", "pos": enemy.pos})
-			_fire_ring(sim, enemy.pos, pattern, damage, "boss_blink")
+			_fire_ring(sim, enemy.pos, pattern, damage, pattern.get("source", "boss_blink"))
 		"quake":
 			# 자기 주변을 내리찍는 광역 공격. 준비 동안 범위가 예고된다.
 			Combat.add_strike(sim, enemy.pos, 0.05, damage, float(pattern.radius), "boss_quake")
 			sim.emit_event({"type": "boss_quake", "pos": enemy.pos, "radius": float(pattern.radius)})
+		"web":
+			# 거미줄 뭉치를 플레이어 주변으로 던진다. 날아가 깔린 뒤 밟으면 느려진다.
+			for i in int(pattern.count):
+				var zone := Entities.Zone.new()
+				zone.origin = enemy.pos
+				var offset: Vector2 = Vector2.ZERO if i == 0 else sim.random_offset(float(pattern.spread))
+				zone.pos = sim.clamp_to_arena(sim.player_pos + offset)
+				zone.radius = float(pattern.radius)
+				zone.travel = float(pattern.travel)
+				zone.delay = zone.travel
+				zone.time = float(pattern.duration)
+				zone.slow = float(pattern.slow)
+				sim.zones.append(zone)
+			sim.emit_event({"type": "boss_web", "pos": enemy.pos})
+		"slash":
+			# 준비 때 정한 방향으로 칼을 휘두른다. 부채꼴 안에 있으면 맞는다.
+			var to_player: Vector2 = sim.player_pos - enemy.pos
+			var reach := float(pattern.range) + float(sim.data.player.radius)
+			if to_player.length() <= reach and absf(sim.charge_dir.angle_to(to_player)) <= float(pattern.arc) * 0.5:
+				Combat.hurt_player(sim, damage, "boss_slash")
+			sim.emit_event({"type": "boss_slash", "pos": enemy.pos, "angle": sim.charge_dir.angle(), "range": float(pattern.range), "arc": float(pattern.arc)})
 		"strikes":
 			for i in int(pattern.count):
 				var offset: Vector2 = Vector2.ZERO if i == 0 else sim.random_offset(float(pattern.spread))
-				Combat.add_strike(sim, sim.player_pos + offset, float(pattern.delay), damage, float(pattern.radius), "boss_strike")
+				Combat.add_strike(sim, sim.player_pos + offset, float(pattern.delay), damage, float(pattern.radius), pattern.get("source", "boss_strike"))
 		"summon":
 			for i in int(pattern.grunts):
 				if sim.enemies.size() < int(sim.data.spawn.max_enemies):

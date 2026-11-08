@@ -213,12 +213,34 @@ static func update_strikes(sim) -> void:
 		if strike.delay > 0.0:
 			alive.append(strike)
 			continue
-		sim.emit_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius, "hostile": strike.hostile})
+		sim.emit_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius, "hostile": strike.hostile, "source": strike.source})
 		if not strike.hostile:
 			damage_area(sim, strike.pos, strike.radius, strike.damage, strike.source)
 		elif strike.pos.distance_to(sim.player_pos) <= strike.radius + float(sim.data.player.radius):
 			hurt_player(sim, strike.damage, strike.source)
 	sim.strikes = alive
+
+
+## 거미줄: 날아가는 동안(delay)은 아무 일도 없고, 깔린 뒤 time 동안 밟으면 느려진다.
+static func update_zones(sim) -> void:
+	var alive: Array[Entities.Zone] = []
+	var player_radius := float(sim.data.player.radius)
+	for zone: Entities.Zone in sim.zones:
+		if zone.delay > 0.0:
+			zone.delay -= sim.tick
+			if zone.delay <= 0.0:
+				sim.emit_event({"type": "web_land", "pos": zone.pos, "radius": zone.radius})
+			alive.append(zone)
+			continue
+		zone.time -= sim.tick
+		if zone.pos.distance_to(sim.player_pos) <= zone.radius + player_radius:
+			# 이미 다른 감속(과거의 나의 빙결) 중이면 더 센 쪽을 쓴다.
+			var was_slowed: bool = sim.player_slow_time > 0.0
+			sim.player_slow_amount = maxf(sim.player_slow_amount, zone.slow) if was_slowed else zone.slow
+			sim.player_slow_time = maxf(sim.player_slow_time, 0.15)
+		if zone.time > 0.0:
+			alive.append(zone)
+	sim.zones = alive
 
 
 ## 체력이 0 이하인 적을 치우고 처치 기록, 궁극기 충전, 경험치 보석, 드롭을 남긴다.

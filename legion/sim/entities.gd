@@ -52,6 +52,17 @@ class Strike:
 	var hostile := true
 
 
+## 거미 여왕의 거미줄. origin에서 날아가 delay 뒤 pos에 깔리고, time 동안 밟은 플레이어를 느리게 한다.
+class Zone:
+	var origin := Vector2.ZERO
+	var pos := Vector2.ZERO
+	var radius := 1.0
+	var travel := 0.5
+	var delay := 0.5
+	var time := 1.0
+	var slow := 0.5
+
+
 class Gem:
 	var pos := Vector2.ZERO
 	var value := 1

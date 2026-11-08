@@ -56,6 +56,7 @@ var pending_choices: Array = []
 var enemies: Array[Entities.Enemy] = []
 var projectiles: Array[Entities.Projectile] = []
 var strikes: Array[Entities.Strike] = []
+var zones: Array[Entities.Zone] = []
 var gems: Array[Entities.Gem] = []
 var pickups: Array[Entities.Pickup] = []
 var pickup_timer := 0.0
@@ -227,6 +228,7 @@ func step(move_dir: Vector2) -> void:
 	EnemyAI.update(self)
 	Combat.update_projectiles(self)
 	Combat.update_strikes(self)
+	Combat.update_zones(self)
 	Combat.resolve_deaths(self)
 	Loot.update_pickups(self)
 	Loot.collect_gems(self)
@@ -277,6 +279,7 @@ func _finish_round() -> void:
 	enemies = []
 	projectiles = []
 	strikes = []
+	zones.clear()
 	pickups = []
 	ghost_queue = []
 	wave_queue = []

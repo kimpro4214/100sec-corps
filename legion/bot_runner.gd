@@ -138,6 +138,15 @@ func _survivor_move(bot: String, sim) -> Vector2:
 	for shot in sim.projectiles:
 		if shot.hostile and pos.distance_to(shot.pos) < 150.0:
 			move += shot.vel.normalized().orthogonal() * 1.5
+	# 거미줄은 깔릴 자리와 깔린 자리 모두 피하고, 칼을 치켜들면 사거리 밖으로 물러난다.
+	for zone in sim.zones:
+		var away_zone: Vector2 = pos - zone.pos
+		if away_zone.length() < zone.radius + 30.0:
+			move += (away_zone.normalized() if away_zone != Vector2.ZERO else Vector2.RIGHT) * 4.0
+	if sim.boss != null and sim.boss_state == "windup" and sim.boss_pattern.type == "slash":
+		var away_boss: Vector2 = pos - sim.boss.pos
+		if away_boss.length() < float(sim.boss_pattern.range) + 60.0:
+			move += away_boss.normalized() * 8.0
 	for strike in sim.strikes:
 		var away: Vector2 = pos - strike.pos
 		if away.length() < strike.radius + 40.0:

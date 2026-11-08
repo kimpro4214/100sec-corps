@@ -52,6 +52,7 @@ static func _enter(sim, forced: bool) -> void:
 	sim.enemies.clear()
 	sim.projectiles.clear()
 	sim.strikes.clear()
+	sim.zones.clear()
 	sim.pickups.clear()
 	sim.in_boss_room = true
 	sim.area = room_rect(sim.data)

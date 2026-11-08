@@ -143,14 +143,15 @@
       "id": "spider", "name": "거미 여왕", "title": "둥지의 주인", "sprite": "boss_spider", "radius": 38, "speed": 88,
       "patterns": [
         { "type": "charge", "windup": 0.9, "speed": 600, "duration": 0.6, "damage": 18 },
-        { "type": "spray", "windup": 0.6, "count": 7, "spread": 0.9, "speed": 230, "life": 3.0, "radius": 7, "damage": 8 }
+        { "type": "web", "windup": 0.7, "count": 3, "spread": 150, "travel": 0.7, "radius": 85, "slow": 0.55, "duration": 5.0 },
+        { "type": "spray", "windup": 0.6, "count": 7, "spread": 0.9, "speed": 230, "life": 3.0, "radius": 7, "damage": 8, "source": "boss_venom" }
       ]
     },
     {
       "id": "wraith", "name": "망령", "title": "잊힌 나의 그림자", "sprite": "boss_wraith", "radius": 36, "speed": 60,
       "patterns": [
-        { "type": "blink", "windup": 0.8, "distance": 200, "count": 12, "speed": 170, "life": 3.5, "radius": 7, "damage": 9 },
-        { "type": "ring", "windup": 0.7, "count": 14, "speed": 175, "life": 3.5, "radius": 7, "damage": 9 },
+        { "type": "blink", "windup": 0.8, "distance": 200, "count": 12, "speed": 170, "life": 3.5, "radius": 7, "damage": 9, "source": "boss_soul" },
+        { "type": "ring", "windup": 0.7, "count": 14, "speed": 175, "life": 3.5, "radius": 7, "damage": 9, "source": "boss_soul" },
         { "type": "summon", "windup": 0.6, "grunts": 2, "ghost_hp_mult": 0.3 }
       ]
     },
@@ -159,24 +160,25 @@
       "patterns": [
         { "type": "quake", "windup": 1.1, "radius": 170, "damage": 24 },
         { "type": "charge", "windup": 1.0, "speed": 520, "duration": 0.7, "damage": 24 },
-        { "type": "strikes", "windup": 0.2, "count": 4, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16 }
+        { "type": "strikes", "windup": 0.2, "count": 4, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16, "source": "boss_boulder" }
       ]
     },
     {
       "id": "knight", "name": "타락한 기사", "title": "군단의 선봉", "sprite": "boss_knight", "radius": 40, "speed": 80,
       "patterns": [
         { "type": "charge", "windup": 0.7, "speed": 720, "duration": 0.5, "damage": 22 },
-        { "type": "spray", "windup": 0.6, "count": 9, "spread": 1.2, "speed": 250, "life": 3.0, "radius": 7, "damage": 9 },
-        { "type": "ring", "windup": 0.7, "count": 18, "speed": 185, "life": 3.5, "radius": 7, "damage": 9 }
+        { "type": "slash", "windup": 0.6, "range": 150, "arc": 2.2, "damage": 26 },
+        { "type": "spray", "windup": 0.6, "count": 5, "spread": 0.8, "speed": 300, "life": 2.5, "radius": 10, "damage": 11, "source": "boss_sword_wave" },
+        { "type": "slash", "windup": 0.5, "range": 150, "arc": 2.2, "damage": 26 }
       ]
     },
     {
       "id": "legion", "name": "군단장", "title": "100초의 끝", "sprite": "boss", "radius": 42, "speed": 72,
       "patterns": [
         { "type": "charge", "windup": 1.0, "speed": 560, "duration": 0.7, "damage": 22 },
-        { "type": "ring", "windup": 0.7, "count": 16, "speed": 175, "life": 3.5, "radius": 7, "damage": 9 },
-        { "type": "strikes", "windup": 0.2, "count": 5, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16 },
-        { "type": "spray", "windup": 0.6, "count": 9, "spread": 1.0, "speed": 240, "life": 3.0, "radius": 7, "damage": 9 },
+        { "type": "ring", "windup": 0.7, "count": 16, "speed": 175, "life": 3.5, "radius": 7, "damage": 9, "source": "boss_fire" },
+        { "type": "strikes", "windup": 0.2, "count": 5, "spread": 180, "delay": 1.0, "radius": 72, "damage": 16, "source": "boss_meteor" },
+        { "type": "spray", "windup": 0.6, "count": 9, "spread": 1.0, "speed": 240, "life": 3.0, "radius": 7, "damage": 9, "source": "boss_fire" },
         { "type": "summon", "windup": 0.6, "grunts": 4, "ghost_hp_mult": 0.3 }
       ]
     }
