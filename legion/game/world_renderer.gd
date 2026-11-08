@@ -3,6 +3,7 @@ extends RefCounted
 
 const Palette := preload("res://legion/game/palette.gd")
 const Animator := preload("res://legion/game/animator.gd")
+const Interactables := preload("res://legion/sim/interactables.gd")
 
 const TILE := 16
 const FONT := preload("res://legion/art/font/Galmuri11.ttf")
@@ -14,8 +15,15 @@ const SPRITES := {
 	"swarmling": preload("res://legion/art/swarmling.png"),
 	"brute": preload("res://legion/art/brute.png"),
 	"boss": preload("res://legion/art/boss.png"),
+	"boss_spider": preload("res://legion/art/boss_spider.png"),
+	"boss_wraith": preload("res://legion/art/boss_wraith.png"),
+	"boss_knight": preload("res://legion/art/boss_knight.png"),
 	"magnet": preload("res://legion/art/magnet.png"),
 	"potion": preload("res://legion/art/potion.png"),
+	"chest": preload("res://legion/art/chest.png"),
+	"chest_open": preload("res://legion/art/chest_open.png"),
+	"casino": preload("res://legion/art/mimic.png"),
+	"shrine": preload("res://legion/art/shrine.png"),
 }
 const FLOORS := [
 	preload("res://legion/art/floor.png"),
@@ -23,20 +31,80 @@ const FLOORS := [
 	preload("res://legion/art/floor_pebbles.png"),
 ]
 const FLOOR_TINT := Color(0.36, 0.34, 0.42)
+const FLOOR_ROOM := preload("res://legion/art/floor_room.png")
+const ROOM_TINT := Color(0.32, 0.21, 0.23)
+const WALL := preload("res://legion/art/wall.png")
+const WALL_TINT := Color(0.55, 0.52, 0.6)
 const GHOST_TINT := Color(0.85, 0.55, 1.0, 0.8)
 const AWAKEN_TINT := Color(1.0, 0.9, 0.45)
 const FLASH_TINT := Color(4.0, 4.0, 4.0)
+const FRENZY_TINT := Color(1.35, 0.75, 0.55)
+const COIN := Color("ffd23f")
+const COIN_EDGE := Color("8a5a00")
+const SHRINE_TINT := Color(1.3, 0.55, 0.55)
 
 
-## 경기장 바닥. 그을음 같은 바닥 효과가 이 위, 캐릭터 아래에 깔린다.
-static func draw_floor(canvas: CanvasItem, data: Dictionary) -> void:
-	_draw_arena(canvas, data)
+## 지금 서 있는 공간(필드나 보스 방)의 바닥, 벽, 포탈. 그을음 같은 바닥 효과가 이 위, 캐릭터 아래에 깔린다.
+## view는 월드 좌표로 화면에 보이는 영역이다. 넓은 필드라도 보이는 칸만 그린다.
+static func draw_floor(canvas: CanvasItem, sim, view: Rect2) -> void:
+	var area: Rect2 = sim.area
+	var step := TILE * FLOOR_SCALE
+	var room: bool = sim.in_boss_room
+	var visible := area.intersection(view.grow(step))
+	var x0 := int(floor((visible.position.x - area.position.x) / step))
+	var y0 := int(floor((visible.position.y - area.position.y) / step))
+	var x1 := int(ceil((visible.end.x - area.position.x) / step))
+	var y1 := int(ceil((visible.end.y - area.position.y) / step))
+	for gx in range(x0, x1):
+		for gy in range(y0, y1):
+			var tex: Texture2D = FLOOR_ROOM
+			var tint := ROOM_TINT
+			if not room:
+				# 칸 좌표로 정한 고정 무늬. 매 프레임 같은 바닥이 나온다.
+				var roll := hash(Vector2i(gx, gy)) % 60
+				tex = FLOORS[1] if roll == 0 else (FLOORS[2] if roll == 1 else FLOORS[0])
+				tint = FLOOR_TINT
+			canvas.draw_texture_rect(tex, Rect2(area.position + Vector2(gx * step, gy * step), Vector2(step, step)), false, tint)
+	_draw_walls(canvas, area, view, step)
+	if sim.portal_open and not room:
+		_draw_portal(canvas, sim)
+
+
+## 공간 바깥 둘레를 돌벽으로 두른다.
+static func _draw_walls(canvas: CanvasItem, area: Rect2, view: Rect2, step: int) -> void:
+	var outer := area.grow(step)
+	for x in range(int(outer.position.x), int(outer.end.x), step):
+		for y in [outer.position.y, area.end.y]:
+			var cell := Rect2(x, y, step, step)
+			if cell.intersects(view):
+				canvas.draw_texture_rect(WALL, cell, false, WALL_TINT)
+	for y in range(int(area.position.y), int(area.end.y), step):
+		for x in [outer.position.x, area.end.x]:
+			var cell := Rect2(x, y, step, step)
+			if cell.intersects(view):
+				canvas.draw_texture_rect(WALL, cell, false, WALL_TINT)
+
+
+## 바닥에 뚫린 포탈 구멍과 남은 시간. 빛나는 소용돌이는 Fx가 그린다.
+static func _draw_portal(canvas: CanvasItem, sim) -> void:
+	var radius := float(sim.data.boss_room.portal_radius)
+	canvas.draw_circle(sim.portal_pos, radius * 1.4, Color(0.08, 0.0, 0.12, 0.9))
+	canvas.draw_arc(sim.portal_pos, radius * 1.4, 0.0, TAU, 48, Palette.GHOST, 3.0)
+	var left := maxf(0.0, float(sim.data.round_seconds) - sim.round_time)
+	canvas.draw_string(FONT, sim.portal_pos + Vector2(-120, -radius * 1.4 - 14), "보스 방 (강제 입장 %d초)" % ceili(left), HORIZONTAL_ALIGNMENT_CENTER, 240, 12)
 
 
 ## 플레이어 아래에 깔리는 것들: 보석, 아이템, 낙뢰 예고, 오라, 군단장 예고, 적. 탄은 Fx의 빛 레이어가 그린다.
 static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, player: Vector2) -> void:
+	if not sim.in_boss_room:
+		for item in sim.interactables:
+			_draw_interactable(canvas, sim, item)
 	for gem in sim.gems:
-		canvas.draw_circle(gem.pos, 4.0, Palette.GEM)
+		if gem.gold:
+			canvas.draw_circle(gem.pos, 5.0, COIN_EDGE)
+			canvas.draw_circle(gem.pos, 3.5, COIN)
+		else:
+			canvas.draw_circle(gem.pos, 4.0, Palette.GEM)
 	for item in sim.pickups:
 		var item_color := Palette.MAGNET if item.kind == "magnet" else Palette.POTION
 		canvas.draw_circle(item.pos, float(data.items.radius), Color(item_color, 0.2))
@@ -59,9 +127,55 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 ## moving: 이번 틱에 움직였으면 걷고, 아니면 제자리에서 숨 쉰다.
 static func draw_player(canvas: CanvasItem, sim, data: Dictionary, player: Vector2, facing: float, moving: bool, t: float) -> void:
 	var tint := AWAKEN_TINT if sim.is_awakened(sim.build) else Color.WHITE
+	if sim.frenzy_time > 0.0:
+		tint = FRENZY_TINT
 	var pose := Animator.hop("player", t, 0.0) if moving else Animator.breathe(t, 0.0)
 	pose = Animator.with_hit(pose, sim.player_flash)
 	_draw_character(canvas, SPRITES.player, player, float(data.player.radius), FLASH_TINT if sim.player_flash > 0.0 else tint, facing, pose)
+
+
+## 보물상자, 룰렛, 제단. 위에 서 있으면 고리가 차오르고, 대가를 낼 수 없으면 흐리게 보인다.
+static func _draw_interactable(canvas: CanvasItem, sim, item) -> void:
+	var def: Dictionary = sim.data.interactables.kinds[item.kind]
+	var key: String = item.kind
+	if item.kind == "chest" and item.used:
+		key = "chest_open"
+	var tint := SHRINE_TINT if item.kind == "shrine" else Color.WHITE
+	var affordable: bool = Interactables.can_afford(sim, item.kind)
+	if item.used:
+		tint = Color(0.5, 0.5, 0.5, 0.6)
+	elif not affordable:
+		tint = Color(tint.r * 0.6, tint.g * 0.6, tint.b * 0.6, 0.8)
+	_draw_character(canvas, SPRITES[key], item.pos, 16.0, tint, 1.0)
+	if item.used:
+		return
+	var radius := float(sim.data.interactables.radius)
+	canvas.draw_arc(item.pos, radius, 0.0, TAU, 32, Color(COIN, 0.35), 2.0)
+	if item.progress > 0.0:
+		var ratio: float = item.progress / float(sim.data.interactables.activate_seconds)
+		canvas.draw_arc(item.pos, radius, -PI * 0.5, -PI * 0.5 + TAU * ratio, 32, COIN, 5.0)
+	var cost := "체력 %d%%" % int(float(def.cost_hp) * 100.0) if def.has("cost_hp") else "금화 %d" % Interactables.gold_cost(sim, item.kind)
+	var color := Color.WHITE if affordable else Color(1, 0.5, 0.5)
+	canvas.draw_string(FONT, item.pos + Vector2(-110, -radius - 14), "%s (%s)" % [def.name, cost], HORIZONTAL_ALIGNMENT_CENTER, 220, 12, color)
+
+
+## 포탈이 화면 밖에 있으면 화면 가장자리에 방향 화살표를 띄운다. 화면 좌표로 그린다.
+static func draw_portal_pointer(canvas: CanvasItem, sim, world_offset: Vector2, world_scale: Vector2, view: Vector2) -> void:
+	if not sim.portal_open or sim.in_boss_room:
+		return
+	var screen: Vector2 = world_offset + sim.portal_pos * world_scale
+	var inner := Rect2(Vector2.ZERO, view).grow(-40.0)
+	if inner.has_point(screen):
+		return
+	var center := view * 0.5
+	var dir := (screen - center).normalized()
+	# 화면 안쪽 사각형의 테두리와 만나는 점에 화살표를 둔다.
+	var scale_x := (inner.size.x * 0.5) / maxf(absf(dir.x), 0.001)
+	var scale_y := (inner.size.y * 0.5) / maxf(absf(dir.y), 0.001)
+	var tip := center + dir * minf(scale_x, scale_y)
+	var side := dir.orthogonal() * 12.0
+	canvas.draw_colored_polygon([tip + dir * 14.0, tip - dir * 10.0 + side, tip - dir * 10.0 - side], Palette.GHOST)
+	canvas.draw_string(FONT, tip - dir * 36.0 + Vector2(-40, 6), "보스 방", HORIZONTAL_ALIGNMENT_CENTER, 80, 12)
 
 
 ## 화면 좌표로 그리는 체력, 경험치, 궁극기, 군단장 체력 막대.
@@ -90,18 +204,6 @@ static func draw_bars(canvas: CanvasItem, sim, data: Dictionary, view: Vector2) 
 		canvas.draw_string(FONT, Vector2(boss_bar.position.x, boss_bar.position.y - 8), title, HORIZONTAL_ALIGNMENT_CENTER, width, 24)
 		canvas.draw_rect(boss_bar, Color.BLACK)
 		canvas.draw_rect(Rect2(boss_bar.position, Vector2(width * sim.boss.hp / sim.boss.max_hp, 18)), Palette.BOSS)
-
-
-static func _draw_arena(canvas: CanvasItem, data: Dictionary) -> void:
-	var size := Vector2(float(data.arena.w), float(data.arena.h))
-	var step := TILE * FLOOR_SCALE
-	for x in range(0, int(size.x), step):
-		for y in range(0, int(size.y), step):
-			# 칸 좌표로 정한 고정 무늬. 매 프레임 같은 바닥이 나온다.
-			var roll := hash(Vector2i(x, y)) % 60
-			var floor_tex: Texture2D = FLOORS[1] if roll == 0 else (FLOORS[2] if roll == 1 else FLOORS[0])
-			canvas.draw_texture_rect(floor_tex, Rect2(x, y, step, step), false, FLOOR_TINT)
-	canvas.draw_rect(Rect2(Vector2.ZERO, size), Color.WHITE, false, 2.0)
 
 
 ## 반지름에 맞춰 정수 배율로 키운 캐릭터와 발밑 그림자. pose는 Animator가 계산한 자세다.
@@ -150,12 +252,34 @@ static func _draw_boss_telegraph(canvas: CanvasItem, sim) -> void:
 			canvas.draw_arc(sim.boss.pos, sim.boss.radius + 26.0, 0.0, TAU, 48, Palette.HOSTILE, 5.0)
 		"summon":
 			canvas.draw_arc(sim.boss.pos, 120.0, 0.0, TAU, 48, Palette.GHOST, 3.0)
+		"spray":
+			# 부채꼴로 날아갈 방향을 미리 보여 준다.
+			var count := int(pattern.count)
+			for i in count:
+				var offset := 0.0 if count == 1 else (i / float(count - 1) - 0.5) * float(pattern.spread)
+				canvas.draw_line(sim.boss.pos, sim.boss.pos + sim.charge_dir.rotated(offset) * 260.0, Color(Palette.HOSTILE, 0.35), 3.0)
+		"quake":
+			# 내리찍을 범위가 준비 시간 동안 안쪽부터 차오른다.
+			var radius := float(pattern.radius)
+			var progress := clampf(1.0 - sim.boss_timer / maxf(float(pattern.windup), 0.01), 0.0, 1.0)
+			canvas.draw_circle(sim.boss.pos, radius * progress, Color(Palette.BOSS, 0.25))
+			canvas.draw_arc(sim.boss.pos, radius, 0.0, TAU, 64, Palette.BOSS, 4.0)
+
+
+## 과거의 나는 플레이어 그림을, 보스는 라운드별 보스 정의의 그림을 쓴다.
+static func _sprite_key(sim, enemy) -> String:
+	match enemy.kind:
+		"ghost":
+			return "player"
+		"boss":
+			return sim.boss_def.get("sprite", "boss")
+	return enemy.kind
 
 
 ## 적은 항상 플레이어를 바라본다. 쫓거나 노리는 대상이 플레이어이기 때문이다.
 static func _draw_enemy(canvas: CanvasItem, sim, enemy, alpha: float, player: Vector2, t: float) -> void:
 	var pos: Vector2 = enemy.prev.lerp(enemy.pos, alpha)
-	var tex: Texture2D = SPRITES.player if enemy.kind == "ghost" else SPRITES[enemy.kind]
+	var tex: Texture2D = SPRITES[_sprite_key(sim, enemy)]
 	var tint := Color.WHITE
 	if enemy.kind == "ghost":
 		tint = AWAKEN_TINT * GHOST_TINT if sim.is_awakened(enemy.build) else GHOST_TINT

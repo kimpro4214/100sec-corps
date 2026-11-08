@@ -27,6 +27,17 @@ const TEXT_DARK := Color("3d2a1e")
 const FONT_SMALL := 12
 const FONT_NORMAL := 24
 const FONT_TITLE := 72
+const REWARD_TEXT := {
+	"level": "레벨 업! (과거의 나에게도 복사됩니다)",
+	"jackpot": "잭팟! 레벨 업 2회",
+	"heal": "체력 회복",
+	"shield": "보호막: 잠시 무적",
+	"frenzy": "광폭: 공격 속도 증가",
+	"bomb": "폭탄! 주변을 쓸어버립니다",
+	"refund": "당첨! 금화 2배",
+	"nothing": "꽝...",
+	"ambush": "꽝! 매복이다",
+}
 
 var data: Dictionary
 var banner_time := 0.0
@@ -37,6 +48,8 @@ var build_label: Label
 var banner: Label
 var cinema_title: Label
 var cinema_sub: Label
+var cinema_title_y := 0.0
+var cinema_sub_y := 0.0
 var choice_panel: PanelContainer
 var choice_box: VBoxContainer
 var summary_panel: PanelContainer
@@ -72,6 +85,8 @@ func setup(balance: Dictionary) -> void:
 
 	cinema_title = _cinema_label(root, FONT_TITLE, -48.0)
 	cinema_sub = _cinema_label(root, FONT_NORMAL, 36.0)
+	cinema_title_y = cinema_title.position.y
+	cinema_sub_y = cinema_sub.position.y
 
 	_build_start_panel(root)
 
@@ -163,11 +178,18 @@ func handle_event(event: Dictionary) -> void:
 		"wave":
 			show_banner("웨이브: %s!" % event.name)
 		"boss_warning":
-			show_banner("경고: 군단장이 접근합니다")
+			show_banner("곧 보스 방 포탈이 열립니다")
+		"portal":
+			show_banner("포탈 개방! 100초가 되면 강제로 끌려갑니다")
+		"boss_room":
+			if event.forced:
+				show_banner("시간 초과! 보스 방으로 끌려갑니다")
 		"boss":
 			show_banner("%s 등장! 과거의 나 총출동" % event.label)
 		"round":
 			show_banner("라운드 %d: 지난 빌드가 돌아옵니다" % event.round)
+		"interact":
+			show_banner(REWARD_TEXT.get(event.reward, event.reward))
 
 
 func tick_banner(delta: float, allowed: bool) -> void:
@@ -176,15 +198,22 @@ func tick_banner(delta: float, allowed: bool) -> void:
 
 
 func update_hud(sim, visible_now: bool) -> void:
-	hud.text = "라운드 %d/%d   %s\n레벨 %d   처치 %d   과거의 나 처치 %d" % [
-		sim.round_index, int(data.rounds), _time_text(sim), sim.level, sim.kills, sim.ghost_kills,
+	var buffs := ""
+	if sim.frenzy_time > 0.0:
+		buffs += "   광폭 %d초" % ceili(sim.frenzy_time)
+	hud.text = "라운드 %d/%d   %s\n레벨 %d   처치 %d   과거의 나 %d   금화 %d%s" % [
+		sim.round_index, int(data.rounds), _time_text(sim), sim.level, sim.kills, sim.ghost_kills, sim.gold, buffs,
 	]
 	build_label.text = "빌드: " + _build_text(sim, sim.build)
 	hud.visible = visible_now
 	build_label.visible = visible_now
 
 
-func show_cinema_text(title: String, sub: String) -> void:
+## lower가 true면 화면 아래쪽에 띄운다. 가운데의 대상(보스 등)을 가리지 않게 할 때 쓴다.
+func show_cinema_text(title: String, sub: String, lower := false) -> void:
+	var shift := 170.0 if lower else 0.0
+	cinema_title.position.y = cinema_title_y + shift
+	cinema_sub.position.y = cinema_sub_y + shift
 	cinema_title.text = title
 	cinema_sub.text = sub
 	cinema_title.show()
@@ -358,9 +387,11 @@ func _ui_style(region: Rect2, margin: float, content: float, tint := Color.WHITE
 func _time_text(sim) -> String:
 	var limit := float(data.round_seconds)
 	if sim.round_time > limit:
-		return "시간 초과 +%d초: 군단장 광폭화" % int(sim.round_time - limit)
+		return "시간 초과 +%d초: 보스 광폭화" % int(sim.round_time - limit)
 	if sim.round_time < float(data.boss_at):
-		return "군단장까지 %d초" % ceili(float(data.boss_at) - sim.round_time)
+		return "포탈까지 %d초" % ceili(float(data.boss_at) - sim.round_time)
+	if not sim.in_boss_room:
+		return "포탈 열림! 강제 입장 %d초" % ceili(limit - sim.round_time)
 	return "보너스 제한 %d초" % ceili(limit - sim.round_time)
 
 

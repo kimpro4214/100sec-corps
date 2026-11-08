@@ -24,6 +24,11 @@ const TEX := {
 	"smoke": preload("res://legion/art/fx/smoke_01.png"),
 }
 const LIGHTNING_COLOR := Color(0.65, 0.85, 1.0)
+const REWARD_COLOR := {
+	"level": Color("ffd23f"), "jackpot": Color("ffd23f"), "refund": Color("ffd23f"),
+	"heal": Color("7ee081"), "shield": Color(0.8, 0.95, 1.0), "frenzy": Color("ff8a5b"),
+	"bomb": Color("ffe066"), "nothing": Color(0.6, 0.6, 0.6), "ambush": Color("ff5d8f"),
+}
 const MAX_PARTICLES := 900
 const MAX_DECALS := 60
 const KILL_JUICE := {
@@ -80,6 +85,30 @@ func handle(event: Dictionary, director: CinemaDirector) -> void:
 			_add_effect("shock", event.pos, event.radius, 0.6, Palette.AWAKEN)
 			_add_effect("magic_burst", event.pos, event.radius, 0.8, Palette.AWAKEN)
 			_spawn_particles(event.pos, 40, Palette.AWAKEN, event.radius * 2.2, 18.0, true)
+		"interact":
+			var color: Color = REWARD_COLOR.get(event.reward, Palette.AWAKEN)
+			_add_effect("burst", event.pos, 90.0, 0.5, color)
+			_spawn_particles(event.pos, 16, color, 260.0, 14.0, true)
+			if event.reward == "bomb":
+				_add_effect("shock", event.pos, 420.0, 0.6, Palette.AWAKEN)
+				director.add_shake(16.0)
+			elif event.reward == "nothing":
+				_add_decal("smoke", event.pos, 50.0, 0.8, Color(0.5, 0.5, 0.5, 0.6))
+		"portal":
+			_add_effect("burst", event.pos, 160.0, 0.6, Palette.GHOST)
+			_add_effect("shock", event.pos, 200.0, 0.6, Palette.GHOST)
+		"boss_room":
+			# 필드에 남은 효과는 보스 방과 상관없으니 지우고, 검은 화면에서 밝아지며 넘어간다.
+			reset()
+			director.add_flash(Color.BLACK, 1.0)
+		"boss_quake":
+			_add_effect("shock", event.pos, event.radius, 0.5, Palette.BOSS)
+			for i in 6:
+				_add_decal("smoke", event.pos + Vector2.from_angle(TAU * i / 6.0) * event.radius * 0.6, event.radius * 0.5, 0.8, Color(0.55, 0.45, 0.4, 0.5))
+			director.add_shake(14.0)
+		"boss_blink":
+			_add_effect("burst", event.pos, 120.0, 0.4, Palette.GHOST)
+			_add_effect("magic_burst", event.pos, 140.0, 0.5, Palette.GHOST)
 		"ultimate":
 			_add_effect("burst", event.pos, 220.0, 0.5, Palette.AWAKEN)
 			_add_effect("shock", event.pos, 180.0, 0.4, Color.WHITE)
@@ -128,6 +157,16 @@ func draw_glow(canvas: CanvasItem, sim, alpha: float, director: CinemaDirector) 
 		return
 	_draw_auras(canvas, sim)
 	_draw_boss_telegraph(canvas, sim)
+	if sim.ult_guard > 0.0:
+		# 무적(보호막, 궁극기 직후) 동안 플레이어를 감싸는 빛.
+		var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
+		_tex(canvas, TEX.ring, player, 70.0 + 6.0 * sin(time * 10.0), Color(0.8, 0.95, 1.0, 0.7))
+		_tex(canvas, TEX.glow, player, 90.0, Color(0.8, 0.95, 1.0, 0.25))
+	if sim.portal_open and not sim.in_boss_room:
+		var radius := float(sim.data.boss_room.portal_radius)
+		_tex(canvas, TEX.glow, sim.portal_pos, radius * 6.0, Color(Palette.GHOST, 0.5 + 0.2 * sin(time * 4.0)))
+		_tex(canvas, TEX.twirl, sim.portal_pos, radius * 4.0, Color(Palette.GHOST, 0.9), -time * 4.0)
+		_tex(canvas, TEX.magic, sim.portal_pos, radius * 5.0, Color(Palette.GHOST, 0.5), time * 1.2)
 	for shot in sim.projectiles:
 		_draw_projectile(canvas, shot, shot.prev.lerp(shot.pos, alpha))
 	for effect in effects:

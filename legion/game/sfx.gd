@@ -114,6 +114,26 @@ func handle(event: Dictionary) -> void:
 			play("boss_warning")
 		"boss_windup":
 			play("boss_windup")
+		"boss_quake":
+			play("boss_kill")
+		"interact":
+			match event.reward:
+				"nothing":
+					play("click")
+				"ambush":
+					play("wave")
+				"bomb":
+					play("ult_fire")
+				"jackpot":
+					play_jingle("awaken")
+				_:
+					play("pickup")
+		"portal":
+			play("ult_charge")
+		"boss_room":
+			play("ghost")
+		"boss_blink":
+			play("ghost")
 		"ultimate":
 			play("ult_fire")
 		"awaken":

@@ -123,6 +123,10 @@ func _process(delta: float) -> void:
 		var moved_x: float = sim.player_pos.x - sim.player_prev.x
 		if absf(moved_x) > 0.01:
 			player_facing = signf(moved_x)
+		# 이번 틱에 컷신이 시작됐으면 남은 시간을 버리고 멈춘다.
+		if director.blocks_sim():
+			acc = 0.0
+			break
 	if sim.is_over():
 		pass
 	elif not sim.pending_choices.is_empty():
@@ -171,8 +175,10 @@ func _update_cinema(delta: float) -> void:
 			_end_intro()
 		"fire_ult":
 			sim.use_ultimate()
-		"ult_done":
+		"ult_done", "boss_intro_done":
 			ui.hide_cinema_text()
+		"boss_roar":
+			sfx.play("boss_kill")
 		"show_end":
 			if not ui.is_end_visible():
 				ui.hide_cinema_text()
@@ -184,7 +190,7 @@ func _update_cinema(delta: float) -> void:
 func _end_intro() -> void:
 	director.end_intro()
 	ui.hide_cinema_text()
-	ui.show_banner("이동: WASD / 방향키   궁극기: Space   70초에 군단장이 등장합니다")
+	ui.show_banner("이동: WASD / 방향키   궁극기: Space   70초에 보스 방 포탈이 열립니다")
 
 
 func _start_ending() -> void:
@@ -216,6 +222,10 @@ func _consume_events() -> void:
 		fx.handle(event, director)
 		ui.handle_event(event)
 		sfx.handle(event)
+		if event.type == "boss" and not sim.is_over():
+			director.start_boss_intro(event.pos)
+			ui.show_cinema_text(event.label, event.title, true)
+			ui.set_cinema_style(0.0, 1.0)
 	sim.events.clear()
 
 
@@ -241,7 +251,7 @@ func _draw() -> void:
 	var alpha: float = clampf(acc / sim.tick, 0.0, 1.0)
 	var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
 	draw_set_transform(world_offset, 0.0, world_scale)
-	WorldRenderer.draw_floor(self, data)
+	WorldRenderer.draw_floor(self, sim, Rect2(-world_offset / world_scale, view / world_scale))
 	fx.draw_under(self)
 	WorldRenderer.draw_world(self, sim, data, alpha, player)
 	fx.draw_debris(self)
@@ -268,3 +278,4 @@ func _draw_overlay(canvas: CanvasItem) -> void:
 	director.draw_screen(canvas, view)
 	if director.cinema == "" or director.cinema == "ult":
 		WorldRenderer.draw_bars(canvas, sim, data, view)
+		WorldRenderer.draw_portal_pointer(canvas, sim, world_offset, world_scale, view)

@@ -11,11 +11,16 @@ const ENDING_PANEL_AT := 2.8
 const ULT_ZOOM := 1.7
 const ENDING_ZOOM := 1.8
 const MAX_SHAKE := 24.0
+const BOSS_INTRO_SECONDS := 2.6
+const BOSS_PAN_SECONDS := 0.5
+const BOSS_ZOOM := 1.6
 
-var cinema := "" # "", intro, ult, ending
+var cinema := "" # "", intro, ult, boss_intro, ending
 var cinema_time := 0.0
 var ult_fired := false
+var roared := false
 var ending_focus := Vector2.ZERO
+var boss_focus := Vector2.ZERO
 
 var zoom := 1.0
 var focus := Vector2.ZERO
@@ -62,6 +67,14 @@ func end_intro() -> void:
 	cinema = ""
 
 
+## 보스 등장: 보스에게 카메라가 날아가 이름을 보여 주고 돌아온다.
+func start_boss_intro(target: Vector2) -> void:
+	start("boss_intro")
+	boss_focus = target
+	roared = false
+	text_alpha = 0.0
+
+
 ## 시네마틱 중 sim을 멈출지. 궁극기는 발동 순간부터 다시 진행한다.
 func blocks_sim() -> bool:
 	return not (cinema == "" or (cinema == "ult" and ult_fired))
@@ -83,7 +96,7 @@ func world_delta(delta: float) -> float:
 
 
 ## 타임라인을 진행하고, 이번 프레임에 화면이 처리할 일을 돌려준다.
-## "intro_done", "fire_ult", "ult_done", "show_end" 또는 "".
+## "intro_done", "fire_ult", "ult_done", "boss_roar", "boss_intro_done", "show_end" 또는 "".
 func update(delta: float, player: Vector2, view: Vector2, arena: Vector2) -> String:
 	if cinema == "":
 		zoom = lerpf(zoom, 1.0, 1.0 - exp(-8.0 * delta))
@@ -125,6 +138,23 @@ func update(delta: float, player: Vector2, view: Vector2, arena: Vector2) -> Str
 					cinema = ""
 					title_scale = 1.0
 					return "ult_done"
+		"boss_intro":
+			var back_at := BOSS_INTRO_SECONDS - BOSS_PAN_SECONDS
+			var into := ease_in_out(clampf(cinema_time / BOSS_PAN_SECONDS, 0.0, 1.0))
+			var out := ease_in_out(clampf((cinema_time - back_at) / BOSS_PAN_SECONDS, 0.0, 1.0))
+			var t := into - out
+			focus = player.lerp(boss_focus, t)
+			zoom = lerpf(1.0, BOSS_ZOOM, t)
+			letterbox = t
+			text_alpha = clampf((cinema_time - BOSS_PAN_SECONDS) / 0.3, 0.0, 1.0) * (1.0 - clampf((cinema_time - back_at + 0.2) / 0.3, 0.0, 1.0))
+			if not roared and cinema_time >= BOSS_PAN_SECONDS:
+				roared = true
+				shake = MAX_SHAKE * 0.8
+				add_flash(Color(Palette.BOSS), 0.45)
+				return "boss_roar"
+			if cinema_time >= BOSS_INTRO_SECONDS:
+				cinema = ""
+				return "boss_intro_done"
 		"ending":
 			var t := ease_out(clampf(cinema_time / 1.4, 0.0, 1.0))
 			zoom = lerpf(1.0, ENDING_ZOOM, t)
