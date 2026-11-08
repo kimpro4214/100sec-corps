@@ -6,9 +6,11 @@ signal option_chosen(index: int)
 signal continue_pressed
 signal restart_pressed
 signal menu_pressed
+signal resume_pressed
 
 const Palette := preload("res://legion/game/palette.gd")
 const UiTheme := preload("res://legion/game/ui_theme.gd")
+const MenuPanels := preload("res://legion/game/menu_panels.gd")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
 const BANNER_SECONDS := 2.5
 
@@ -60,6 +62,9 @@ var choice_box: VBoxContainer
 var summary_panel: PanelContainer
 var summary_label: Label
 var end_panel: PanelContainer
+var pause_panel: PanelContainer
+var pause_label: Label
+var pause_resume: Button
 var end_label: Label
 var end_title: Label
 var end_again: Button
@@ -143,6 +148,93 @@ func setup(balance: Dictionary) -> void:
 	menu.pressed.connect(menu_pressed.emit)
 	buttons.add_child(menu)
 
+	_build_pause_panel(root)
+
+
+## Esc로 여는 일시정지 창. 지금 빌드의 레벨과 다음 라운드의 과거의 나를 보여 준다.
+func _build_pause_panel(root: Control) -> void:
+	pause_panel = _centered_panel(root)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 12)
+	pause_panel.add_child(box)
+	var title := Label.new()
+	title.theme_type_variation = "PanelLabel"
+	title.text = "일시정지"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", UiTheme.FONT_LARGE)
+	box.add_child(title)
+	pause_label = Label.new()
+	pause_label.theme_type_variation = "PanelLabel"
+	pause_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	pause_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	pause_label.custom_minimum_size = Vector2(680, 0)
+	box.add_child(pause_label)
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 12)
+	box.add_child(buttons)
+	pause_resume = Button.new()
+	pause_resume.text = "계속하기 (Esc)"
+	pause_resume.pressed.connect(resume_pressed.emit)
+	buttons.add_child(pause_resume)
+	var settings_button := Button.new()
+	settings_button.text = "설정"
+	settings_button.pressed.connect(func() -> void:
+		pause_panel.hide()
+		root.add_child(MenuPanels.build_settings(get_node("/root/Settings"), func() -> void:
+			pause_panel.show()
+			pause_resume.grab_focus())))
+	buttons.add_child(settings_button)
+	var menu := Button.new()
+	menu.text = "타이틀로"
+	menu.pressed.connect(menu_pressed.emit)
+	buttons.add_child(menu)
+
+
+func show_pause(sim) -> void:
+	pause_label.text = _pause_text(sim)
+	pause_panel.show()
+	pause_resume.grab_focus()
+
+
+func hide_pause() -> void:
+	pause_panel.hide()
+
+
+func _pause_text(sim) -> String:
+	var lines: Array = []
+	lines.append("라운드 %d/%d   레벨 %d   금화 %d   궁극기 %d%%" % [
+		sim.round_index, int(data.rounds), sim.level, sim.gold, int(100.0 * sim.ult_charge / float(data.ultimate.charge_kills)),
+	])
+	lines.append("")
+	var main_id: String = sim.main_weapon
+	var main_max := int(data.max_levels.main)
+	var main_level: int = sim.option_level(main_id)
+	if main_level >= main_max:
+		lines.append("메인 무기: 각성 %s (Lv%d)" % [data.weapons[main_id].awaken.name, main_level])
+	else:
+		lines.append("메인 무기: %s Lv%d/%d (각성까지 %d레벨)" % [data.weapons[main_id].name, main_level, main_max, main_max - main_level])
+	lines.append(_level_line("보조 무기", sim, sim.WEAPON_IDS.filter(func(id: String) -> bool: return id != main_id), int(data.max_levels.sub)))
+	var traits: Array = []
+	for trait_id in data.traits:
+		if data.traits[trait_id].weapon == main_id:
+			traits.append(trait_id)
+	lines.append(_level_line("특성", sim, traits, int(data.max_levels.trait)))
+	lines.append(_level_line("강화", sim, sim.UPGRADE_IDS, int(data.max_levels.upgrade)))
+	lines.append("")
+	lines.append("다음 라운드의 과거의 나: %s" % _preview_text(sim.ghost_preview("")))
+	return "\n".join(lines)
+
+
+## 레벨이 1 이상인 것만 "이름 Lv현재/최대"로 나열한다.
+func _level_line(heading: String, sim, ids: Array, max_level: int) -> String:
+	var parts: Array = []
+	for id in ids:
+		var level: int = sim.option_level(id)
+		if level > 0:
+			parts.append("%s Lv%d/%d" % [sim.option_def(id).name, level, max_level])
+	return "%s: %s" % [heading, ", ".join(parts) if not parts.is_empty() else "없음"]
+
 
 ## 무기 선택 화면으로 돌아간다.
 func reset() -> void:
@@ -150,6 +242,7 @@ func reset() -> void:
 	hud.text = ""
 	build_label.text = ""
 	end_panel.hide()
+	pause_panel.hide()
 	choice_panel.hide()
 	summary_panel.hide()
 	banner.hide()

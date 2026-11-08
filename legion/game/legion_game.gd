@@ -29,6 +29,7 @@ var overlay: DrawLayer
 var sfx: Sfx
 var world_offset := Vector2.ZERO
 var world_scale := Vector2.ONE
+var paused := false
 
 
 func _ready() -> void:
@@ -37,6 +38,7 @@ func _ready() -> void:
 	var settings := get_node_or_null("/root/Settings")
 	if settings != null:
 		director.motion = settings.screen_shake
+		settings.changed.connect(func() -> void: director.motion = settings.screen_shake)
 	glow = DrawLayer.new()
 	glow.additive = true
 	glow.draw_fn = _draw_glow
@@ -55,11 +57,13 @@ func _ready() -> void:
 	ui.continue_pressed.connect(_continue_round)
 	ui.restart_pressed.connect(_start_run)
 	ui.menu_pressed.connect(_to_menu)
+	ui.resume_pressed.connect(_set_paused.bind(false))
 	_start_run()
 
 
 func _start_run() -> void:
 	sim = null
+	paused = false
 	fx.reset()
 	director.reset()
 	ui.reset()
@@ -86,7 +90,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	if event.physical_keycode == KEY_ESCAPE:
-		_to_menu()
+		# 판이 진행 중이면 일시정지, 무기 선택이나 결과 화면이면 타이틀로.
+		if sim == null or sim.is_over():
+			_to_menu()
+		else:
+			_set_paused(not paused)
+	elif paused:
+		return
 	elif sim == null:
 		var main_index: int = event.physical_keycode - KEY_1
 		if main_index >= 0 and main_index < LegionUI.MAIN_WEAPONS.size():
@@ -109,8 +119,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		ui.show_cinema_text(ult.name, ult.desc)
 
 
+## 일시정지 중에는 게임 시간, 컷신, 이펙트가 모두 멈추고 창만 움직인다.
+func _set_paused(on: bool) -> void:
+	paused = on
+	if on:
+		ui.show_pause(sim)
+	else:
+		ui.hide_pause()
+
+
 func _process(delta: float) -> void:
-	if sim == null:
+	if sim == null or paused:
 		return
 	_update_cinema(delta)
 	var world_delta := director.world_delta(delta)
