@@ -4,10 +4,12 @@ extends RefCounted
 const Palette := preload("res://legion/game/palette.gd")
 const Animator := preload("res://legion/game/animator.gd")
 const Interactables := preload("res://legion/sim/interactables.gd")
+const EnemyAI := preload("res://legion/sim/enemy_ai.gd")
 
 const TILE := 16
 const FONT := preload("res://legion/art/font/Galmuri11.ttf")
 const FLOOR_SCALE := 3
+const GHOST_PATH_DOTS := 8 # 경로 샘플 간격(0.25초) 기준으로 2초 앞까지
 const SPRITES := {
 	"player": preload("res://legion/art/player.png"),
 	"grunt": preload("res://legion/art/grunt.png"),
@@ -128,6 +130,9 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 	_draw_auras(canvas, sim, data, player)
 	_draw_boss_telegraph(canvas, sim)
 	var t: float = sim.time + alpha * sim.tick
+	for enemy in sim.enemies:
+		if enemy.kind == "ghost" and enemy.on_path:
+			_draw_ghost_path(canvas, sim, enemy)
 	for enemy in sim.enemies:
 		_draw_enemy(canvas, sim, enemy, alpha, player, t)
 	_draw_sword_windup(canvas, sim, t)
@@ -382,6 +387,17 @@ static func _draw_web(canvas: CanvasItem, center: Vector2, radius: float, alpha:
 			var sag := 0.92 if i % 2 == 1 else 1.0
 			points.append(center + Vector2.from_angle(TAU * i / spokes) * radius * ring * sag)
 		canvas.draw_polyline(points, color, 1.5)
+
+
+## 경로를 걷는 과거의 나 앞에, 지난 라운드의 내가 곧 지나갈 자리를 발자국 점으로 보여 준다.
+static func _draw_ghost_path(canvas: CanvasItem, sim, ghost) -> void:
+	var sample := float(sim.data.ghost.path_sample)
+	for i in range(1, GHOST_PATH_DOTS + 1):
+		var at: float = sim.round_time + i * sample
+		if not EnemyAI.has_path_point(sim, ghost.path, at):
+			return
+		var fade := 1.0 - float(i) / (GHOST_PATH_DOTS + 1)
+		canvas.draw_circle(EnemyAI.path_point(sim, ghost.path, at), 3.5, Color(Palette.GHOST, 0.75 * fade))
 
 
 ## 과거의 나는 플레이어 그림을, 보스는 라운드별 보스 정의의 그림을 쓴다.
