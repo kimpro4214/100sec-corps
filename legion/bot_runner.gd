@@ -54,14 +54,31 @@ func _play(bot: String, data: Dictionary, run_seed: int) -> Dictionary:
 				wander_time = bot_rng.randf_range(0.5, 2.0)
 			sim.step(wander)
 		else:
+			if _wants_ultimate(sim):
+				sim.use_ultimate()
 			sim.step(_survivor_move(bot, sim))
 	return {
 		"bot": bot, "seed": run_seed, "won": sim.state == "won", "round": sim.round_index,
 		"time": sim.time, "level": sim.level, "kills": sim.kills, "ghost_kills": sim.ghost_kills,
 		"ghost_ttk_total": sim.ghost_ttk_total, "death": "" if sim.state == "won" else sim.last_hit,
 		"picks": sim.picks, "build": sim.build, "boss_log": sim.boss_log, "damage": sim.damage_by_source,
-		"main": main, "awaken_round": sim.awaken_round, "pickups": sim.pickups_taken,
+		"main": main, "awaken_round": sim.awaken_round, "pickups": sim.pickups_taken, "ultimates": sim.ultimates_used,
 	}
+
+
+## 궁극기가 찼을 때 적에게 둘러싸였거나, 군단장 근처거나, 체력이 낮으면 쓴다.
+func _wants_ultimate(sim) -> bool:
+	if not sim.ultimate_ready():
+		return false
+	if sim.hp < sim.max_hp * 0.35:
+		return true
+	if sim.boss != null and sim.boss.hp > 0.0 and sim.boss.pos.distance_to(sim.player_pos) < 400.0:
+		return true
+	var near := 0
+	for enemy in sim.enemies:
+		if enemy.pos.distance_to(sim.player_pos) < 300.0:
+			near += 1
+	return near >= 15
 
 
 func _pick(bot: String, sim, bot_rng: RandomNumberGenerator) -> int:
@@ -158,7 +175,7 @@ func _write_runs(out: String, runs: Array) -> void:
 
 
 func _write_summary(out: String, runs: Array, bots: Array, rounds: int) -> void:
-	var header := "bot,runs,win_rate,avg_level,avg_ghost_kills,avg_ghost_ttk"
+	var header := "bot,runs,win_rate,avg_level,avg_ghost_kills,avg_ghost_ttk,avg_ultimates"
 	for r in range(2, rounds + 1):
 		header += ",reach_round_%d" % r
 	var lines := [header]
@@ -169,6 +186,7 @@ func _write_summary(out: String, runs: Array, bots: Array, rounds: int) -> void:
 		var levels := 0.0
 		var ghost_kills := 0.0
 		var ghost_ttk := 0.0
+		var ultimates := 0.0
 		var reached := {}
 		var deaths := {}
 		for run in runs:
@@ -179,11 +197,12 @@ func _write_summary(out: String, runs: Array, bots: Array, rounds: int) -> void:
 			levels += run.level
 			ghost_kills += run.ghost_kills
 			ghost_ttk += run.ghost_ttk_total
+			ultimates += run.ultimates
 			for r in range(2, int(run.round) + 1):
 				reached[r] = reached.get(r, 0) + 1
 			if not run.won:
 				deaths[run.death] = deaths.get(run.death, 0) + 1
-		var line := "%s,%d,%.3f,%.1f,%.2f,%.1f" % [bot, total, float(wins) / total, levels / total, ghost_kills / total, ghost_ttk / maxf(ghost_kills, 1.0)]
+		var line := "%s,%d,%.3f,%.1f,%.2f,%.1f,%.1f" % [bot, total, float(wins) / total, levels / total, ghost_kills / total, ghost_ttk / maxf(ghost_kills, 1.0), ultimates / total]
 		for r in range(2, rounds + 1):
 			line += ",%.3f" % (float(reached.get(r, 0)) / total)
 		lines.append(line)
