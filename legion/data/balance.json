@@ -123,7 +123,7 @@
   },
   "ghost": {
     "first_at": 15, "last_at": 62, "radius": 18, "contact": 12, "xp": 12,
-    "hp_min": 90, "target_ttk": 5, "hp_per_age": 0.25, "damage_mult": 0.38, "strike_delay": 0.8, "strike_spread": 90,
+    "hp_min": 90, "target_ttk": 5, "hp_per_age": 0.25, "damage_mult": 0.45, "strike_delay": 0.8, "strike_spread": 90,
     "slow_seconds": 0.8,
     "path_sample": 0.25, "path_leash": 480, "path_speed_mult": 1.0,
     "age_per_copy": 2, "copy_hp_mult": 0.4, "copy_damage_mult": 0.5, "boss_wave_hp_mult": 0.65,
