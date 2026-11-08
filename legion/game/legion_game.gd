@@ -46,13 +46,14 @@ func _ready() -> void:
 	add_child(overlay)
 	sfx = Sfx.new()
 	add_child(sfx)
+	sfx.watch_buttons()
 	ui = LegionUI.new()
 	add_child(ui)
 	ui.setup(data)
 	ui.main_chosen.connect(_begin_run)
 	ui.option_chosen.connect(_choose)
 	ui.continue_pressed.connect(_continue_round)
-	ui.restart_pressed.connect(_restart)
+	ui.restart_pressed.connect(_start_run)
 	ui.menu_pressed.connect(_to_menu)
 	_start_run()
 
@@ -63,11 +64,6 @@ func _start_run() -> void:
 	director.reset()
 	ui.reset()
 	_redraw_all()
-
-
-func _restart() -> void:
-	sfx.play("click")
-	_start_run()
 
 
 func _begin_run(main_id: String) -> void:

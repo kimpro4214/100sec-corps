@@ -26,6 +26,7 @@ const SOUNDS := {
 	"web": {"files": ["slime_000"], "db": -6.0, "pitch": 0.15, "gap": 0.15},
 	"fire": {"files": ["thrusterFire_000"], "db": -10.0, "pitch": 0.15, "gap": 0.15},
 	"click": {"files": ["click_001"], "db": -8.0, "pitch": 0.05, "gap": 0.05},
+	"hover": {"files": ["tick_001"], "db": -20.0, "pitch": 0.05, "gap": 0.04},
 	"select": {"files": ["select_001"], "db": -6.0, "pitch": 0.0, "gap": 0.05},
 }
 # 길이만 보고 고른 배치라, 들어 보고 바꿀 수 있게 한곳에 둔다.
@@ -78,6 +79,25 @@ func _ready() -> void:
 	music_player = AudioStreamPlayer.new()
 	music_player.bus = "Music"
 	add_child(music_player)
+
+
+## 화면의 모든 버튼에 소리를 붙인다. 누르면 딸깍, 마우스를 올리면 작게 틱. 나중에 생기는 버튼도 붙는다.
+func watch_buttons() -> void:
+	for node in get_tree().root.find_children("*", "BaseButton", true, false):
+		_hook_button(node)
+	get_tree().node_added.connect(func(node: Node) -> void:
+		if node is BaseButton:
+			_hook_button(node))
+
+
+func _hook_button(button: BaseButton) -> void:
+	if button.has_meta("sfx_hooked"):
+		return
+	button.set_meta("sfx_hooked", true)
+	button.pressed.connect(play.bind("click"))
+	button.mouse_entered.connect(func() -> void:
+		if not button.disabled:
+			play("hover"))
 
 
 ## 배경 음악을 바꾼다. 같은 곡이면 그대로 두고, 다른 곡이면 잠깐 줄였다가 바꿔 키운다.

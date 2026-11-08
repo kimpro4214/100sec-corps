@@ -34,6 +34,7 @@ func _ready() -> void:
 	sfx = Sfx.new()
 	add_child(sfx)
 	sfx.play_music("field")
+	sfx.watch_buttons()
 	for i in 14:
 		marchers.append({"x": randf() * 1600.0, "lane": randf_range(0.62, 0.92), "sprite": randi() % MARCHERS.size(), "seed": randf() * TAU})
 	_build_ui()
@@ -90,9 +91,7 @@ func _add_button(text: String, action: Callable) -> void:
 	var button := Button.new()
 	button.text = text
 	button.custom_minimum_size = Vector2(320, 0)
-	button.pressed.connect(func() -> void:
-		sfx.play("click")
-		action.call())
+	button.pressed.connect(action)
 	menu.add_child(button)
 
 
