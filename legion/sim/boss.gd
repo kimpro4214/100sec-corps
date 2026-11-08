@@ -128,7 +128,7 @@ static func _run_pattern(sim, enemy: Entities.Enemy) -> void:
 			var reach := float(pattern.range) + float(sim.data.player.radius)
 			if to_player.length() <= reach and absf(sim.charge_dir.angle_to(to_player)) <= float(pattern.arc) * 0.5:
 				Combat.hurt_player(sim, damage, "boss_slash")
-			sim.emit_event({"type": "boss_slash", "pos": enemy.pos, "angle": sim.charge_dir.angle(), "range": float(pattern.range), "arc": float(pattern.arc)})
+			sim.emit_event({"type": "boss_slash", "pos": enemy.pos, "radius": enemy.radius, "angle": sim.charge_dir.angle(), "range": float(pattern.range), "arc": float(pattern.arc)})
 		"strikes":
 			for i in int(pattern.count):
 				var offset: Vector2 = Vector2.ZERO if i == 0 else sim.random_offset(float(pattern.spread))

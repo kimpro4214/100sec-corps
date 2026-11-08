@@ -33,6 +33,10 @@ const WEB_GLOW := Color(0.85, 0.85, 0.95)
 const VENOM_COLOR := Color(0.55, 1.0, 0.35)
 const SOUL_COLOR := Color(0.75, 0.5, 1.0)
 const SWORD_WAVE_COLOR := Color(0.8, 0.9, 1.0)
+const SLASH_COLOR := Color(1.0, 0.45, 0.4)
+const SLASH_LIFE := 0.45
+const SWORD_AFTERIMAGES := 4
+const SWORD_AFTERIMAGE_LAG := 0.018
 const WorldRenderer := preload("res://legion/game/world_renderer.gd")
 const REWARD_COLOR := {
 	"level": Color("ffd23f"), "jackpot": Color("ffd23f"), "refund": Color("ffd23f"),
@@ -87,10 +91,14 @@ func handle(event: Dictionary, director: CinemaDirector) -> void:
 					_add_decal("scorch", event.pos, event.radius * 1.4, 2.5, Color(0, 0, 0, 0.45))
 					_spawn_particles(event.pos, 4, color, 220.0, 10.0, true)
 		"boss_slash":
-			var effect := _add_effect("slash", event.pos, event.range, 0.25, Color(1.0, 0.85, 0.85))
-			effect.angle = event.angle
-			effect.arc = event.arc
+			# 준비 때 머리 위로 치켜든 각도에서 시작해 부채꼴 아래쪽을 조금 지나칠 때까지 내리긋는다.
+			var effect := _add_effect("slash", WorldRenderer.sword_pivot(event.pos, event.radius), event.range, SLASH_LIFE, SLASH_COLOR)
+			var swing_range := WorldRenderer.sword_swing_range(event.angle, event.arc)
+			effect.start = swing_range.x
+			effect.end = swing_range.y
+			effect.length = WorldRenderer.sword_length(event.radius)
 			director.add_shake(7.0)
+			director.hitstop = maxf(director.hitstop, 0.05)
 		"boss_web":
 			_add_effect("burst", event.pos, 70.0, 0.3, WEB_GLOW)
 		"web_land":
@@ -186,10 +194,7 @@ func draw_debris(canvas: CanvasItem, sim) -> void:
 			canvas.draw_circle(particle.pos, particle.size * particle.time / particle.max, particle.color)
 	for effect in effects:
 		if effect.kind == "slash":
-			# 칼이 부채꼴 한쪽 끝에서 반대쪽 끝까지 빠르게 지나간다.
-			var swing := clampf(1.0 - (effect.time - effect.max * 0.4) / (effect.max * 0.6), 0.0, 1.0)
-			var angle: float = effect.angle - effect.arc * 0.5 + effect.arc * CinemaDirector.ease_out(swing)
-			WorldRenderer.draw_sword_at(canvas, effect.pos, angle, effect.radius * 0.75)
+			_draw_sword_swing(canvas, effect)
 	if sim == null:
 		return
 	for strike in sim.strikes:
@@ -206,6 +211,15 @@ func draw_glow(canvas: CanvasItem, sim, alpha: float, director: CinemaDirector) 
 		return
 	_draw_auras(canvas, sim)
 	_draw_boss_telegraph(canvas, sim)
+	if WorldRenderer.is_sword_windup(sim):
+		# 준비가 끝나 갈 때 칼끝이 번쩍인다. 곧 휘두른다는 신호다.
+		var progress: float = 1.0 - sim.boss_timer / maxf(float(sim.boss_pattern.windup), 0.01)
+		if progress > 0.55:
+			var t: float = sim.time + alpha * sim.tick
+			var radius: float = sim.boss.radius
+			var tip: Vector2 = WorldRenderer.sword_pivot(sim.boss.pos, radius) + Vector2.from_angle(WorldRenderer.sword_windup_angle(sim, t)) * WorldRenderer.sword_length(radius) * 0.95
+			var glint := (progress - 0.55) / 0.45
+			_tex(canvas, TEX.star, tip, 30.0 + 40.0 * glint, Color(1, 1, 1, glint), time * 4.0)
 	if sim.ult_guard > 0.0:
 		# 무적(보호막, 궁극기 직후) 동안 플레이어를 감싸는 빛.
 		var player: Vector2 = sim.player_prev.lerp(sim.player_pos, alpha)
@@ -319,10 +333,7 @@ func _draw_effect(canvas: CanvasItem, effect: Dictionary) -> void:
 		"magic_burst":
 			_tex(canvas, TEX.magic, effect.pos, radius * 2.0 * lerpf(0.5, 1.1, grow), Color(color, fade), grow * 2.0)
 		"slash":
-			# 칼이 지나간 자리의 초승달 궤적. 휘두르는 방향 가운데에 놓는다.
-			var center: Vector2 = effect.pos + Vector2.from_angle(effect.angle) * radius * 0.45
-			_tex(canvas, TEX.slash, center, radius * 1.7 * (0.85 + grow * 0.2), Color(color, fade), effect.angle + PI * 0.5)
-			_tex(canvas, TEX.glow, center, radius * 1.2, Color(Palette.BOSS, 0.35 * fade))
+			_draw_slash_trail(canvas, effect)
 		"dirt":
 			_tex(canvas, TEX.dirt, effect.pos, radius * 2.0 * lerpf(0.6, 1.1, grow), Color(color, fade), effect.spin)
 			_tex(canvas, TEX.ring, effect.pos, radius * 2.0 * grow, Color(color, 0.6 * fade))
@@ -339,6 +350,56 @@ func _draw_effect(canvas: CanvasItem, effect: Dictionary) -> void:
 			canvas.draw_texture_rect(TEX.bolt, bolt_rect, false, Color(1, 1, 1, fade * 0.6))
 			_tex(canvas, TEX.glow, effect.pos, radius * 3.0, Color(color, fade))
 			_tex(canvas, TEX.zap, effect.pos, radius * 2.6 * (0.8 + grow * 0.4), Color(color, fade), effect.spin)
+
+
+## 칼 휘두르기: 0.12초 동안 빠르게 베고, 잠깐 멈춘 뒤 사라진다. 휘두르는 동안 뒤로 잔상이 남는다.
+func _swing_angle(effect: Dictionary, elapsed: float) -> float:
+	var swing := clampf(elapsed / WorldRenderer.SWORD_SWING_SECONDS, 0.0, 1.0)
+	return lerpf(effect.start, effect.end, CinemaDirector.ease_out(swing))
+
+
+func _draw_sword_swing(canvas: CanvasItem, effect: Dictionary) -> void:
+	var elapsed: float = effect.max - effect.time
+	var swing_end := WorldRenderer.SWORD_SWING_SECONDS
+	# 다 휘두른 뒤 잠깐 멈췄다가 흐려진다.
+	var alpha := 1.0 - clampf((elapsed - swing_end - 0.12) / (effect.max - swing_end - 0.12), 0.0, 1.0)
+	if elapsed < swing_end + SWORD_AFTERIMAGE_LAG * SWORD_AFTERIMAGES:
+		for k in range(SWORD_AFTERIMAGES, 0, -1):
+			var lag_angle := _swing_angle(effect, elapsed - k * SWORD_AFTERIMAGE_LAG)
+			var ghost := Color(1.0, 0.85, 0.85, 0.5 - k * 0.1)
+			WorldRenderer.draw_sword_at(canvas, effect.pos, lag_angle, effect.length, ghost)
+	WorldRenderer.draw_sword_at(canvas, effect.pos, _swing_angle(effect, elapsed), effect.length, Color(1, 1, 1, alpha))
+
+
+## 칼끝이 지나간 자리의 초승달 궤적. 칼 쪽이 가장 밝고 뒤로 갈수록 옅어진다.
+func _draw_slash_trail(canvas: CanvasItem, effect: Dictionary) -> void:
+	var elapsed: float = effect.max - effect.time
+	var swing_end := WorldRenderer.SWORD_SWING_SECONDS
+	var head := _swing_angle(effect, elapsed)
+	var fade := 1.0 - clampf((elapsed - swing_end) / (effect.max - swing_end), 0.0, 1.0)
+	var reach: float = effect.radius
+	_draw_crescent(canvas, effect.pos, effect.start, head, reach * 0.45, reach, Color(SLASH_COLOR, 0.8 * fade))
+	_draw_crescent(canvas, effect.pos, effect.start, head, reach * 0.8, reach * 0.97, Color(1, 1, 1, 0.9 * fade))
+	if elapsed < swing_end:
+		_tex(canvas, TEX.star, effect.pos + Vector2.from_angle(head) * reach, 46.0, Color(1, 1, 1, 0.9), time * 6.0)
+
+
+## from 각도에서 to 각도까지의 고리 조각. to 쪽 끝이 진하고 from 쪽은 투명하다.
+func _draw_crescent(canvas: CanvasItem, center: Vector2, from: float, to: float, inner: float, outer: float, color: Color) -> void:
+	if absf(to - from) < 0.01 or color.a <= 0.0:
+		return
+	var steps := 20
+	var points := PackedVector2Array()
+	var colors := PackedColorArray()
+	for i in steps + 1:
+		var t := i / float(steps)
+		points.append(center + Vector2.from_angle(lerpf(from, to, t)) * outer)
+		colors.append(Color(color, color.a * t * t))
+	for i in range(steps, -1, -1):
+		var t := i / float(steps)
+		points.append(center + Vector2.from_angle(lerpf(from, to, t)) * inner)
+		colors.append(Color(color, color.a * t * t * 0.4))
+	canvas.draw_polygon(points, colors)
 
 
 ## 가운데를 기준으로 크기와 회전을 주어 텍스처를 그린다.

@@ -44,6 +44,11 @@ const COIN := Color("ffd23f")
 const COIN_EDGE := Color("8a5a00")
 const SHRINE_TINT := Color(1.3, 0.55, 0.55)
 const WEB_COLOR := Color(0.93, 0.93, 0.97)
+# 기사의 칼: 준비 때 어깨 뒤로 당기는 각도, 휘두른 뒤 지나치는 각도, 휘두르는 시간, 칼날 폭(길이 대비).
+const SWORD_PULLBACK := 0.9
+const SWORD_OVERSHOOT := 0.3
+const SWORD_SWING_SECONDS := 0.12
+const SWORD_WIDTH := 0.32
 
 
 ## 지금 서 있는 공간(필드나 보스 방)의 바닥, 벽, 포탈. 그을음 같은 바닥 효과가 이 위, 캐릭터 아래에 깔린다.
@@ -125,6 +130,7 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 	var t: float = sim.time + alpha * sim.tick
 	for enemy in sim.enemies:
 		_draw_enemy(canvas, sim, enemy, alpha, player, t)
+	_draw_sword_windup(canvas, sim, t)
 
 
 ## facing: 1이면 오른쪽, -1이면 왼쪽을 바라본다. 스프라이트 원본은 오른쪽을 본다.
@@ -276,7 +282,6 @@ static func _draw_boss_telegraph(canvas: CanvasItem, sim) -> void:
 			var facing: float = sim.charge_dir.angle()
 			_draw_sector(canvas, sim.boss.pos, reach * progress, facing, arc, Color(Palette.BOSS, 0.25))
 			_draw_sector(canvas, sim.boss.pos, reach, facing, arc, Color(Palette.BOSS, 0.0), Palette.BOSS)
-			draw_sword_at(canvas, sim.boss.pos, facing - arc * 0.5 - 0.7 * progress, sim.boss.radius * 1.6)
 
 
 ## 중심에서 angle 방향으로 arc 폭만큼 벌어진 부채꼴.
@@ -295,7 +300,51 @@ static func _draw_sector(canvas: CanvasItem, center: Vector2, reach: float, angl
 ## 칼 스프라이트를 angle 방향으로 뻗어 그린다. 원본은 칼날이 위(-y)를 향한다.
 static func draw_sword_at(canvas: CanvasItem, center: Vector2, angle: float, length: float, tint := Color.WHITE) -> void:
 	# 칼자루가 center에 오도록 칼 길이의 절반만큼 앞으로 민다.
-	draw_rotated(canvas, SPRITES.sword, center + Vector2.from_angle(angle) * length * 0.5, Vector2(length * 0.5, length), angle + PI * 0.5, tint)
+	draw_rotated(canvas, SPRITES.sword, center + Vector2.from_angle(angle) * length * 0.5, Vector2(length * SWORD_WIDTH, length), angle + PI * 0.5, tint)
+
+
+## 칼을 쥔 손의 위치. 몸 가운데보다 조금 위(가슴)에서 휘두른다.
+static func sword_pivot(boss_pos: Vector2, radius: float) -> Vector2:
+	return boss_pos + Vector2(0, -radius * 0.25)
+
+
+static func sword_length(radius: float) -> float:
+	return radius * 2.6
+
+
+## 칼을 머리 위쪽에서 아래로 내리긋도록, 바라보는 방향에 따라 휘두르는 쪽을 정한다.
+## 오른쪽을 보면 각도가 줄어드는 쪽(위), 왼쪽을 보면 늘어나는 쪽(위)에서 시작한다.
+static func sword_side(facing: float) -> float:
+	return 1.0 if cos(facing) >= 0.0 else -1.0
+
+
+## 휘두르기 시작 각도와 끝 각도. 부채꼴 위쪽 끝 너머(어깨 뒤)에서 아래쪽 끝을 조금 지나칠 때까지.
+static func sword_swing_range(facing: float, arc: float) -> Vector2:
+	var side := sword_side(facing)
+	return Vector2(facing - side * (arc * 0.5 + SWORD_PULLBACK), facing + side * (arc * 0.5 + SWORD_OVERSHOOT))
+
+
+## 휘두르기 준비 중인 칼의 각도: 부채꼴 위쪽 끝에서 어깨 뒤로 치켜들고, 끝 무렵에는 힘을 모으듯 떤다.
+static func sword_windup_angle(sim, t: float) -> float:
+	var pattern: Dictionary = sim.boss_pattern
+	var progress := clampf(1.0 - sim.boss_timer / maxf(float(pattern.windup), 0.01), 0.0, 1.0)
+	var facing: float = sim.charge_dir.angle()
+	var side := sword_side(facing)
+	var ready := facing - side * float(pattern.arc) * 0.5
+	var tremble := sin(t * 90.0) * 0.05 * progress * progress
+	return ready - side * SWORD_PULLBACK * (1.0 - pow(1.0 - progress, 3.0)) + tremble
+
+
+static func is_sword_windup(sim) -> bool:
+	return sim.boss != null and sim.boss_state == "windup" and sim.boss_pattern.get("type", "") == "slash"
+
+
+## 기사가 칼을 등 뒤로 치켜드는 모습. 캐릭터 위에 그려야 보인다.
+static func _draw_sword_windup(canvas: CanvasItem, sim, t: float) -> void:
+	if not is_sword_windup(sim):
+		return
+	var radius: float = sim.boss.radius
+	draw_sword_at(canvas, sword_pivot(sim.boss.pos, radius), sword_windup_angle(sim, t), sword_length(radius))
 
 
 ## 회전한 텍스처를 네 꼭짓점 다각형으로 그린다.
