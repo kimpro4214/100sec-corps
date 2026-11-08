@@ -1,0 +1,13 @@
+배경 음악 출처 (모두 CC0 1.0, 출처 표기 의무 없음)
+
+field_8bit_battle_loop.ogg
+  원제: 8-Bit Battle Loop
+  작가: Wolfgang_
+  출처: https://opengameart.org/content/8-bit-battle-loop
+  라이선스: CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/)
+
+boss_basilisk_battle_loop.ogg
+  원제: Basilisk Boss Battle Loop
+  작가: beardalaxy
+  출처: https://opengameart.org/content/basilisk-boss-battle-loop
+  라이선스: CC0 1.0 (http://creativecommons.org/publicdomain/zero/1.0/)
