@@ -23,6 +23,7 @@ var fx := Fx.new()
 
 func _ready() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string(DATA_PATH))
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	ui = LegionUI.new()
 	add_child(ui)
 	ui.setup(data)

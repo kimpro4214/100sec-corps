@@ -2,7 +2,6 @@ extends RefCounted
 ## 100초 군단 화면에서 함께 쓰는 색.
 
 const BG := Color("15171f")
-const GRID := Color("232733")
 const PLAYER := Color("5ad1ff")
 const GHOST := Color("c77dff")
 const GRUNT := Color("e0604c")

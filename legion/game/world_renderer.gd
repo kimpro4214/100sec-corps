@@ -1,7 +1,29 @@
 extends RefCounted
-## sim 상태를 도형으로 그린다. 에셋이 생기면 이 파일만 스프라이트로 바꾸면 된다.
+## sim 상태를 그린다. 캐릭터와 아이템은 Kenney Tiny Dungeon(CC0) 16px 스프라이트, 탄과 보석은 도형.
 
 const Palette := preload("res://legion/game/palette.gd")
+
+const TILE := 16
+const FLOOR_SCALE := 3
+const SPRITES := {
+	"player": preload("res://legion/art/player.png"),
+	"grunt": preload("res://legion/art/grunt.png"),
+	"runner": preload("res://legion/art/runner.png"),
+	"swarmling": preload("res://legion/art/swarmling.png"),
+	"brute": preload("res://legion/art/brute.png"),
+	"boss": preload("res://legion/art/boss.png"),
+	"magnet": preload("res://legion/art/magnet.png"),
+	"potion": preload("res://legion/art/potion.png"),
+}
+const FLOORS := [
+	preload("res://legion/art/floor.png"),
+	preload("res://legion/art/floor_rocks.png"),
+	preload("res://legion/art/floor_pebbles.png"),
+]
+const FLOOR_TINT := Color(0.36, 0.34, 0.42)
+const GHOST_TINT := Color(0.85, 0.55, 1.0, 0.8)
+const AWAKEN_TINT := Color(1.0, 0.9, 0.45)
+const FLASH_TINT := Color(4.0, 4.0, 4.0)
 
 
 ## 플레이어 아래에 깔리는 것들: 경기장, 보석, 아이템, 낙뢰 예고, 오라, 군단장 예고, 적, 탄.
@@ -11,9 +33,10 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 		canvas.draw_circle(gem.pos, 4.0, Palette.GEM)
 	for item in sim.pickups:
 		var item_color := Palette.MAGNET if item.kind == "magnet" else Palette.POTION
-		canvas.draw_circle(item.pos, float(data.items.radius), Color(item_color, 0.3))
+		canvas.draw_circle(item.pos, float(data.items.radius), Color(item_color, 0.2))
 		canvas.draw_arc(item.pos, float(data.items.radius), 0.0, TAU, 24, item_color, 2.0)
-		canvas.draw_string(ThemeDB.fallback_font, item.pos + Vector2(-40, 5), "자석" if item.kind == "magnet" else "포션", HORIZONTAL_ALIGNMENT_CENTER, 80, 13)
+		_draw_sprite(canvas, SPRITES[item.kind], item.pos, 2, Color.WHITE)
+		canvas.draw_string(ThemeDB.fallback_font, item.pos + Vector2(-40, 34), "자석" if item.kind == "magnet" else "포션", HORIZONTAL_ALIGNMENT_CENTER, 80, 13)
 	for strike in sim.strikes:
 		var strike_color := Palette.HOSTILE if strike.hostile else Palette.AWAKEN
 		canvas.draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, strike_color, 3.0)
@@ -27,8 +50,8 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 
 
 static func draw_player(canvas: CanvasItem, sim, data: Dictionary, player: Vector2) -> void:
-	var player_color := Palette.AWAKEN if sim.is_awakened(sim.build) else Palette.PLAYER
-	canvas.draw_circle(player, float(data.player.radius), Color.WHITE if sim.player_flash > 0.0 else player_color)
+	var tint := AWAKEN_TINT if sim.is_awakened(sim.build) else Color.WHITE
+	_draw_character(canvas, SPRITES.player, player, float(data.player.radius), FLASH_TINT if sim.player_flash > 0.0 else tint)
 
 
 ## 화면 좌표로 그리는 체력, 경험치, 궁극기, 군단장 체력 막대.
@@ -61,11 +84,27 @@ static func draw_bars(canvas: CanvasItem, sim, data: Dictionary, view: Vector2) 
 
 static func _draw_arena(canvas: CanvasItem, data: Dictionary) -> void:
 	var size := Vector2(float(data.arena.w), float(data.arena.h))
-	for x in range(0, int(size.x) + 1, 100):
-		canvas.draw_line(Vector2(x, 0), Vector2(x, size.y), Palette.GRID)
-	for y in range(0, int(size.y) + 1, 100):
-		canvas.draw_line(Vector2(0, y), Vector2(size.x, y), Palette.GRID)
+	var step := TILE * FLOOR_SCALE
+	for x in range(0, int(size.x), step):
+		for y in range(0, int(size.y), step):
+			# 칸 좌표로 정한 고정 무늬. 매 프레임 같은 바닥이 나온다.
+			var roll := hash(Vector2i(x, y)) % 60
+			var floor_tex: Texture2D = FLOORS[1] if roll == 0 else (FLOORS[2] if roll == 1 else FLOORS[0])
+			canvas.draw_texture_rect(floor_tex, Rect2(x, y, step, step), false, FLOOR_TINT)
 	canvas.draw_rect(Rect2(Vector2.ZERO, size), Color.WHITE, false, 2.0)
+
+
+## 반지름에 맞춰 정수 배율로 키운 캐릭터와 발밑 그림자.
+static func _draw_character(canvas: CanvasItem, tex: Texture2D, pos: Vector2, radius: float, tint: Color) -> void:
+	var scale := maxi(2, roundi(radius * 3.0 / TILE))
+	var size := float(TILE * scale)
+	canvas.draw_circle(pos + Vector2(0, size * 0.36), size * 0.26, Color(0, 0, 0, 0.35))
+	_draw_sprite(canvas, tex, pos, scale, tint)
+
+
+static func _draw_sprite(canvas: CanvasItem, tex: Texture2D, pos: Vector2, scale: int, tint: Color) -> void:
+	var size := Vector2.ONE * TILE * scale
+	canvas.draw_texture_rect(tex, Rect2(pos - size * 0.5, size), false, tint)
 
 
 static func _draw_auras(canvas: CanvasItem, sim, data: Dictionary, player: Vector2) -> void:
@@ -94,10 +133,11 @@ static func _draw_boss_telegraph(canvas: CanvasItem, sim) -> void:
 
 static func _draw_enemy(canvas: CanvasItem, sim, enemy, alpha: float) -> void:
 	var pos: Vector2 = enemy.prev.lerp(enemy.pos, alpha)
-	var color := Palette.enemy_color(enemy.kind)
-	if enemy.kind == "ghost" and sim.is_awakened(enemy.build):
-		color = Palette.AWAKEN
-	canvas.draw_circle(pos, enemy.radius, Color.WHITE if enemy.flash > 0.0 else color)
+	var tex: Texture2D = SPRITES.player if enemy.kind == "ghost" else SPRITES[enemy.kind]
+	var tint := Color.WHITE
+	if enemy.kind == "ghost":
+		tint = AWAKEN_TINT * GHOST_TINT if sim.is_awakened(enemy.build) else GHOST_TINT
+	_draw_character(canvas, tex, pos, enemy.radius, FLASH_TINT if enemy.flash > 0.0 else tint)
 	if enemy.kind == "ghost":
 		var font := ThemeDB.fallback_font
 		canvas.draw_string(font, pos + Vector2(-80, -enemy.radius - 18), enemy.label, HORIZONTAL_ALIGNMENT_CENTER, 160, 14)
