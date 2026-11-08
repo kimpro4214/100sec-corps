@@ -72,6 +72,7 @@ static func _start_pattern(sim, enemy: Entities.Enemy) -> void:
 	sim.boss_state = "windup"
 	sim.boss_timer = float(sim.boss_pattern.windup)
 	sim.charge_dir = (sim.player_pos - enemy.pos).normalized()
+	sim.emit_event({"type": "boss_windup", "pattern": sim.boss_pattern.type})
 
 
 static func _run_pattern(sim, enemy: Entities.Enemy) -> void:

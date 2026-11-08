@@ -61,6 +61,7 @@ static func _fire_bolt(sim, origin: Vector2, weapon: Dictionary, stats: Dictiona
 			shot.pierce = stats.pierce
 			shot.splash_radius = stats.splash_radius
 			shot.splash_mult = stats.splash_mult
+	sim.emit_event({"type": "bolt", "hostile": hostile})
 	return true
 
 
@@ -140,7 +141,7 @@ static func _fire_lightning(sim, origin: Vector2, weapon: Dictionary, stats: Dic
 		return false
 	for i in count:
 		var center: Entities.Enemy = in_range[sim.rng.randi_range(0, in_range.size() - 1)]
-		sim.emit_event({"type": "lightning", "pos": center.pos, "radius": radius})
+		sim.emit_event({"type": "lightning", "pos": center.pos, "radius": radius, "hostile": false})
 		damage_area(sim, center.pos, radius, damage)
 		if echo_delay > 0.0:
 			add_strike(sim, center.pos, echo_delay, damage, radius, "", false)
@@ -209,7 +210,7 @@ static func update_strikes(sim) -> void:
 		if strike.delay > 0.0:
 			alive.append(strike)
 			continue
-		sim.emit_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius})
+		sim.emit_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius, "hostile": strike.hostile})
 		if not strike.hostile:
 			damage_area(sim, strike.pos, strike.radius, strike.damage, strike.source)
 		elif strike.pos.distance_to(sim.player_pos) <= strike.radius + float(sim.data.player.radius):
