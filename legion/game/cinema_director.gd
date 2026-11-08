@@ -33,6 +33,8 @@ var hurt_tint := 0.0
 var letterbox := 0.0
 var text_alpha := 1.0
 var title_scale := 1.0
+# 설정에서 화면 흔들림을 끄면 false. 흔들림이 없어지고 번쩍임이 약해진다.
+var motion := true
 
 
 func reset() -> void:
@@ -184,7 +186,7 @@ func add_shake(amount: float) -> void:
 
 ## 월드 좌표를 화면에 그릴 때의 이동량. 흔들림이 섞여 있다.
 func world_offset(view: Vector2, center: Vector2) -> Vector2:
-	var shake_offset := Vector2(randf_range(-shake, shake), randf_range(-shake, shake))
+	var shake_offset := Vector2(randf_range(-shake, shake), randf_range(-shake, shake)) if motion else Vector2.ZERO
 	return view * 0.5 - center * zoom + shake_offset
 
 
@@ -196,7 +198,7 @@ func draw_screen(canvas: CanvasItem, view: Vector2) -> void:
 		canvas.draw_polygon([Vector2.ZERO, Vector2(w, 0), Vector2(w, view.y), Vector2(0, view.y)], [edge, clear, clear, edge])
 		canvas.draw_polygon([Vector2(view.x - w, 0), Vector2(view.x, 0), Vector2(view.x, view.y), Vector2(view.x - w, view.y)], [clear, edge, edge, clear])
 	if flash > 0.0:
-		canvas.draw_rect(Rect2(Vector2.ZERO, view), Color(flash_color, minf(flash, 0.8)))
+		canvas.draw_rect(Rect2(Vector2.ZERO, view), Color(flash_color, minf(flash, 0.8) * (1.0 if motion else 0.35)))
 	if letterbox > 0.0:
 		var bar := view.y * 0.11 * letterbox
 		canvas.draw_rect(Rect2(0, 0, view.x, bar), Color.BLACK)
