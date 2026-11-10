@@ -11,13 +11,14 @@ signal resume_pressed
 const Palette := preload("res://legion/game/palette.gd")
 const UiTheme := preload("res://legion/game/ui_theme.gd")
 const MenuPanels := preload("res://legion/game/menu_panels.gd")
-const MAIN_WEAPONS := ["bolt", "aura", "lightning"]
+const MAIN_WEAPONS := ["bolt", "aura", "lightning", "thread"]
 const BANNER_SECONDS := 2.5
 
 const CAUSE_TEXT := {
 	"ghost_aura": "과거의 나의 가시 오라",
 	"ghost_bolt": "과거의 나의 마력탄",
 	"ghost_lightning": "과거의 나의 낙뢰",
+	"ghost_thread": "과거의 나의 시간의 실",
 	"ghost": "과거의 나와 부딪힘",
 	"boss_contact": "보스와 부딪힘",
 	"boss_charge": "보스의 돌진",
@@ -425,7 +426,7 @@ func _build_start_panel(root: Control) -> void:
 	start_panel.add_child(box)
 	var title := Label.new()
 	title.theme_type_variation = "PanelLabel"
-	title.text = "메인 무기를 고르세요 (1, 2, 3)\n레벨 업 선택지가 이 무기 위주로 나옵니다"
+	title.text = "메인 무기를 고르세요 (1~4)\n레벨 업 선택지가 이 무기 위주로 나옵니다"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 	for i in MAIN_WEAPONS.size():
