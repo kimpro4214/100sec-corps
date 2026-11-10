@@ -13,6 +13,7 @@ const UiTheme := preload("res://legion/game/ui_theme.gd")
 const MenuPanels := preload("res://legion/game/menu_panels.gd")
 const MAIN_WEAPONS := ["bolt", "aura", "lightning", "thread"]
 const BANNER_SECONDS := 2.5
+const BUILD_LINE_CHARS := 26 # 창 안의 빌드 한 줄 최대 글자 수
 
 const CAUSE_TEXT := {
 	"ghost_aura": "과거의 나의 가시 오라",
@@ -115,6 +116,8 @@ func setup(balance: Dictionary) -> void:
 	summary_label = Label.new()
 	summary_label.theme_type_variation = "PanelLabel"
 	summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	summary_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	summary_label.custom_minimum_size = Vector2(680, 0)
 	summary_box.add_child(summary_label)
 	var next_round := Button.new()
 	next_round.text = "다음 라운드 (Space)"
@@ -316,7 +319,7 @@ func update_hud(sim, visible_now: bool) -> void:
 	hud.text = "라운드 %d/%d   %s\n레벨 %d   처치 %d   과거의 나 %d   금화 %d%s" % [
 		sim.round_index, int(data.rounds), _time_text(sim), sim.level, sim.kills, sim.ghost_kills, sim.gold, buffs,
 	]
-	build_label.text = "빌드: " + _build_text(sim, sim.build)
+	build_label.text = "빌드: " + _build_text(sim, sim.build, 0)
 	hud.visible = visible_now
 	build_label.visible = visible_now
 
@@ -381,7 +384,7 @@ func show_summary(sim) -> void:
 	var summary: Dictionary = sim.round_summary
 	var preview: Dictionary = sim.ghost_preview("")
 	var bonus := "제한 시간 안에 처치! 보너스 레벨 업 획득" if summary.in_time else "제한 시간 초과: 보너스 없음"
-	summary_label.text = "라운드 %d 돌파!\n군단장 처치 %d초   %s\n\n이번 빌드\n%s\n\n다음 라운드에 돌아오는 과거의 나\n%s" % [
+	summary_label.text = "라운드 %d 돌파!\n군단장 처치 %d초\n%s\n\n이번 빌드\n%s\n\n다음 라운드에 돌아오는 과거의 나\n%s" % [
 		summary.round, int(summary.fight_time), bonus, _build_text(sim, sim.build), _preview_text(preview),
 	]
 	summary_panel.show()
@@ -475,7 +478,8 @@ func _time_text(sim) -> String:
 	return "보너스 제한 %d초" % ceili(limit - sim.round_time)
 
 
-func _build_text(sim, target_build: Dictionary) -> String:
+## line_chars가 0이면 한 줄로, 아니면 그 글자 수 안에서 항목 단위로 줄을 나눈다.
+func _build_text(sim, target_build: Dictionary, line_chars := BUILD_LINE_CHARS) -> String:
 	var parts: Array = []
 	var main_id: String = target_build.main
 	if sim.is_awakened(target_build):
@@ -491,7 +495,14 @@ func _build_text(sim, target_build: Dictionary) -> String:
 	for upgrade_id in sim.UPGRADE_IDS:
 		if int(target_build.upgrades[upgrade_id]) > 0:
 			parts.append("%s %d" % [data.upgrades[upgrade_id].name, int(target_build.upgrades[upgrade_id])])
-	return " / ".join(parts)
+	# 한글은 글자 사이에서도 줄이 바뀌므로, 항목이 중간에 끊기지 않게 항목 단위로 직접 줄을 나눈다.
+	var lines: Array = [parts[0]]
+	for i in range(1, parts.size()):
+		if line_chars > 0 and lines[-1].length() + 3 + parts[i].length() > line_chars:
+			lines.append(parts[i])
+		else:
+			lines[-1] += " / " + parts[i]
+	return "\n".join(lines)
 
 
 func _preview_text(preview: Dictionary) -> String:
