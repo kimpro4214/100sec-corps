@@ -3,8 +3,12 @@ extends SceneTree
 
 const LegionSim := preload("res://legion/sim/legion_sim.gd")
 const Interactables := preload("res://legion/sim/interactables.gd")
-const BOTS := ["random", "survivor", "delay_awaken", "focus_bolt", "focus_aura", "focus_lightning"]
-const MAINS := ["bolt", "aura", "lightning"]
+const BOTS := ["random", "survivor", "delay_awaken", "focus_bolt", "focus_aura", "focus_lightning", "focus_thread"]
+const MAINS := ["bolt", "aura", "lightning", "thread"]
+# 실이 메인일 때의 움직임: 피하는 힘의 비중과, 거기에 섞는 원 그리기의 빠르기(rad/초).
+const THREAD_FLEE := 8.0
+const THREAD_TURN := 3.2
+const THREAD_AVOID := 70.0 # 과거의 나의 실에서 이 거리 안이면 물러난다
 
 
 func _init() -> void:
@@ -126,6 +130,12 @@ func _survivor_move(bot: String, sim) -> Vector2:
 			if int(enemy.build.weapons.aura) > 0:
 				reach = maxf(reach, sim.weapon_stats("aura", enemy.build).radius * float(sim.data.weapons.aura.hostile_radius_mult) + 50.0)
 			weight = 3.0
+			# 과거의 나가 남긴 실은 밟으면 베이므로 가까운 실에서 물러난다.
+			for point in enemy.trail:
+				var from_thread: Vector2 = pos - point
+				var thread_dist := from_thread.length()
+				if thread_dist < THREAD_AVOID and thread_dist > 0.01:
+					move += from_thread / thread_dist * (THREAD_AVOID - thread_dist) / THREAD_AVOID
 		elif enemy.kind == "boss":
 			reach = 130.0 if melee else 260.0
 			weight = 4.0
@@ -176,6 +186,11 @@ func _survivor_move(bot: String, sim) -> Vector2:
 			move += to_target.normalized() * 2.5
 	var center: Vector2 = sim.area.get_center()
 	move += (center - pos) / (sim.area.size.length() * 0.5) * 1.2
+	if sim.main_weapon == "thread":
+		# 도망치며 뒤따르는 적을 실로 베는 것이 기본이고, 살짝 휘어 걸어 가끔 고리가 닫히게 한다.
+		# 적 무리를 노려서 둘러싸지는 못한다. 고리의 가치는 사람이 플레이해서 확인해야 한다.
+		# 보스 둘레를 돌게 하면 보스는 절반 시간에 잡지만 몸에 부딪혀 죽는다(ai_log 2026-11-10). 그래서 넣지 않았다.
+		move = move.normalized() * THREAD_FLEE + Vector2.from_angle(sim.time * THREAD_TURN)
 	return move.normalized() if move != Vector2.ZERO else Vector2.ZERO
 
 
@@ -198,16 +213,16 @@ func _wanted_interactable(sim):
 
 
 func _write_runs(out: String, runs: Array) -> void:
-	var lines := ["bot,seed,main,awaken_round,pickups,won,round,time,level,kills,ghost_kills,avg_ghost_ttk,bosses_killed,bosses_in_time,death,bolt,aura,lightning,might,haste,vitality"]
+	var lines := ["bot,seed,main,awaken_round,pickups,won,round,time,level,kills,ghost_kills,avg_ghost_ttk,bosses_killed,bosses_in_time,death,bolt,aura,lightning,thread,might,haste,vitality"]
 	for run in runs:
 		var build: Dictionary = run.build
 		var in_time := 0
 		for entry in run.boss_log:
 			in_time += 1 if entry.in_time else 0
-		lines.append("%s,%d,%s,%d,%d,%d,%d,%.1f,%d,%d,%d,%.1f,%d,%d,%s,%d,%d,%d,%d,%d,%d" % [
+		lines.append("%s,%d,%s,%d,%d,%d,%d,%.1f,%d,%d,%d,%.1f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d" % [
 			run.bot, run.seed, run.main, run.awaken_round, run.pickups, 1 if run.won else 0, run.round, run.time, run.level, run.kills, run.ghost_kills,
 			run.ghost_ttk_total / maxi(run.ghost_kills, 1), run.boss_log.size(), in_time, run.death,
-			build.weapons.bolt, build.weapons.aura, build.weapons.lightning,
+			build.weapons.bolt, build.weapons.aura, build.weapons.lightning, build.weapons.thread,
 			build.upgrades.might, build.upgrades.haste, build.upgrades.vitality,
 		])
 	_write(out.path_join("runs.csv"), lines)
