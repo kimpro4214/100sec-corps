@@ -90,6 +90,21 @@ func handle(event: Dictionary, director: CinemaDirector) -> void:
 					_add_effect("lightning", event.pos, event.radius, 0.3, color)
 					_add_decal("scorch", event.pos, event.radius * 1.4, 2.5, Color(0, 0, 0, 0.45))
 					_spawn_particles(event.pos, 4, color, 220.0, 10.0, true)
+		"loop":
+			# 시간의 실 고리가 터진다. 많이 가둘수록 세게 흔들린다.
+			var color := Palette.HOSTILE if event.hostile else (Palette.AWAKEN if event.get("awakened", false) else Palette.PLAYER)
+			var effect := _add_effect("loop", event.pos, 0.0, 0.45, color)
+			effect.points = event.points
+			effect.hits = event.hits
+			effect.fill = not Geometry2D.triangulate_polygon(event.points).is_empty()
+			for i in range(0, event.points.size(), 3):
+				_spawn_particles(event.points[i], 1, color.lightened(0.3), 120.0, 12.0, true)
+			if event.hits > 0 or event.hostile:
+				_add_effect("burst", event.pos, 50.0 + minf(event.hits, 20) * 6.0, 0.35, color.lightened(0.3))
+			if event.hits >= 4:
+				director.add_shake(minf(2.0 + event.hits * 0.4, 10.0))
+			if event.hits >= 10:
+				director.hitstop = maxf(director.hitstop, 0.04)
 		"boss_slash":
 			# 준비 때 머리 위로 치켜든 각도에서 시작해 부채꼴 아래쪽을 조금 지나칠 때까지 내리긋는다.
 			var effect := _add_effect("slash", WorldRenderer.sword_pivot(event.pos, event.radius), event.range, SLASH_LIFE, SLASH_COLOR)
@@ -210,6 +225,7 @@ func draw_glow(canvas: CanvasItem, sim, alpha: float, director: CinemaDirector) 
 	if sim == null:
 		return
 	_draw_auras(canvas, sim)
+	_draw_threads(canvas, sim, alpha)
 	_draw_boss_telegraph(canvas, sim)
 	if WorldRenderer.is_sword_windup(sim):
 		# 준비가 끝나 갈 때 칼끝이 번쩍인다. 곧 휘두른다는 신호다.
@@ -263,6 +279,33 @@ func _draw_auras(canvas: CanvasItem, sim) -> void:
 		if enemy.kind == "ghost" and int(enemy.build.weapons.aura) > 0:
 			var radius: float = sim.weapon_stats("aura", enemy.build).radius * float(sim.data.weapons.aura.hostile_radius_mult)
 			_tex(canvas, TEX.magic, enemy.pos, radius * 2.3, Color(Palette.HOSTILE, 0.25), -time * 0.9)
+
+
+## 시간의 실: 나와 과거의 나가 걸어온 자리에 남은 실. 오래된 쪽일수록 옅다.
+func _draw_threads(canvas: CanvasItem, sim, alpha: float) -> void:
+	if int(sim.build.weapons.thread) > 0:
+		var color := Palette.AWAKEN if sim.main_weapon == "thread" and sim.is_awakened(sim.build) else Palette.PLAYER
+		_draw_thread(canvas, sim.trail, sim.player_prev.lerp(sim.player_pos, alpha), color)
+	for enemy in sim.enemies:
+		if enemy.kind == "ghost" and int(enemy.build.weapons.thread) > 0:
+			_draw_thread(canvas, enemy.trail, enemy.prev.lerp(enemy.pos, alpha), Palette.HOSTILE)
+
+
+func _draw_thread(canvas: CanvasItem, trail: PackedVector2Array, head: Vector2, color: Color) -> void:
+	if trail.is_empty():
+		return
+	var points := trail.duplicate()
+	points.append(head)
+	var soft := PackedColorArray()
+	var core := PackedColorArray()
+	for i in points.size():
+		var t := float(i) / (points.size() - 1)
+		soft.append(Color(color, 0.1 + 0.25 * t))
+		core.append(Color(color.lightened(0.5), 0.25 + 0.75 * t))
+	canvas.draw_polyline_colors(points, soft, 12.0)
+	canvas.draw_polyline_colors(points, core, 3.0)
+	# 실의 꼬리. 실 끝이 실의 어느 곳에든 다시 닿으면 고리가 닫힌다.
+	_tex(canvas, TEX.star, points[0], 22.0, Color(color, 0.8), time * 3.0)
 
 
 func _draw_boss_telegraph(canvas: CanvasItem, sim) -> void:
@@ -334,6 +377,17 @@ func _draw_effect(canvas: CanvasItem, effect: Dictionary) -> void:
 			_tex(canvas, TEX.magic, effect.pos, radius * 2.0 * lerpf(0.5, 1.1, grow), Color(color, fade), grow * 2.0)
 		"slash":
 			_draw_slash_trail(canvas, effect)
+		"loop":
+			# 고리 안쪽이 번쩍이고, 굵던 테두리가 가늘어지며 사라진다.
+			if effect.fill:
+				canvas.draw_colored_polygon(effect.points, Color(color, 0.45 * fade * fade))
+			var outline: PackedVector2Array = effect.points.duplicate()
+			outline.append(outline[0])
+			canvas.draw_polyline(outline, Color(color.lightened(0.5), fade), 2.0 + 10.0 * fade)
+			if effect.hits >= 3:
+				# 한 번에 가둔 수. 많이 가둘수록 크게 뜨고, 위로 떠오르며 사라진다.
+				var size := mini(20 + effect.hits * 2, 56)
+				canvas.draw_string(WorldRenderer.FONT, effect.pos + Vector2(-100, -30.0 * grow), "x%d" % effect.hits, HORIZONTAL_ALIGNMENT_CENTER, 200, size, Color(1, 1, 1, fade))
 		"dirt":
 			_tex(canvas, TEX.dirt, effect.pos, radius * 2.0 * lerpf(0.6, 1.1, grow), Color(color, fade), effect.spin)
 			_tex(canvas, TEX.ring, effect.pos, radius * 2.0 * grow, Color(color, 0.6 * fade))

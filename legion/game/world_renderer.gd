@@ -122,7 +122,9 @@ static func draw_world(canvas: CanvasItem, sim, data: Dictionary, alpha: float, 
 		canvas.draw_string(FONT, item.pos + Vector2(-40, 34), "자석" if item.kind == "magnet" else "포션", HORIZONTAL_ALIGNMENT_CENTER, 80, 12)
 	# 낙뢰 예고는 피해야 하는 적의 공격만 보여 준다. 내 낙뢰는 떨어질 때 Fx가 그린다.
 	for strike in sim.strikes:
-		if strike.hostile:
+		if not strike.polygon.is_empty():
+			_draw_loop_warning(canvas, sim, strike)
+		elif strike.hostile:
 			canvas.draw_arc(strike.pos, strike.radius, 0.0, TAU, 48, Palette.HOSTILE, 3.0)
 			canvas.draw_circle(strike.pos, strike.radius, Color(Palette.HOSTILE, 0.15))
 	for zone in sim.zones:
@@ -387,6 +389,17 @@ static func _draw_web(canvas: CanvasItem, center: Vector2, radius: float, alpha:
 			var sag := 0.92 if i % 2 == 1 else 1.0
 			points.append(center + Vector2.from_angle(TAU * i / spokes) * radius * ring * sag)
 		canvas.draw_polyline(points, color, 1.5)
+
+
+## 과거의 나가 닫은 고리. 터질 때가 가까울수록 안쪽이 진해진다. 고리 밖으로 나가면 피한다.
+static func _draw_loop_warning(canvas: CanvasItem, sim, strike) -> void:
+	var progress := clampf(1.0 - strike.delay / float(sim.data.ghost.strike_delay), 0.0, 1.0)
+	# 꼬인 고리는 삼각형으로 나눌 수 없어 채우지 못한다. 그때는 테두리만 그린다.
+	if not Geometry2D.triangulate_polygon(strike.polygon).is_empty():
+		canvas.draw_colored_polygon(strike.polygon, Color(Palette.HOSTILE, 0.12 + 0.3 * progress))
+	var outline: PackedVector2Array = strike.polygon.duplicate()
+	outline.append(outline[0])
+	canvas.draw_polyline(outline, Palette.HOSTILE, 4.0)
 
 
 ## 경로를 걷는 과거의 나 앞에, 지난 라운드의 내가 곧 지나갈 자리를 발자국 점으로 보여 준다.

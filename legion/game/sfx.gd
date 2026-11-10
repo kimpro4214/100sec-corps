@@ -11,6 +11,7 @@ const SOUNDS := {
 	"bolt": {"files": ["laserSmall_000", "laserSmall_001", "laserSmall_002", "laserSmall_003", "laserSmall_004"], "db": -18.0, "pitch": 0.12, "gap": 0.07},
 	"aura": {"files": ["forceField_000"], "db": -24.0, "pitch": 0.08, "gap": 0.3},
 	"lightning": {"files": ["explosionCrunch_000", "explosionCrunch_001", "explosionCrunch_002", "explosionCrunch_003", "explosionCrunch_004"], "db": -14.0, "pitch": 0.15, "gap": 0.05},
+	"loop": {"files": ["impactMetal_heavy_003", "impactMetal_heavy_004"], "db": -9.0, "pitch": 0.2, "gap": 0.1},
 	"kill": {"files": ["impactSoft_medium_000", "impactSoft_medium_001", "impactSoft_medium_002", "impactSoft_medium_003", "impactSoft_medium_004"], "db": -14.0, "pitch": 0.18, "gap": 0.03},
 	"ghost_kill": {"files": ["impactMetal_heavy_000", "impactMetal_heavy_001", "impactMetal_heavy_002"], "db": -6.0, "pitch": 0.05, "gap": 0.1},
 	"boss_kill": {"files": ["lowFrequency_explosion_000"], "db": -2.0, "pitch": 0.0, "gap": 0.5},
@@ -176,6 +177,8 @@ func handle(event: Dictionary) -> void:
 					pass
 				_:
 					play("lightning")
+		"loop":
+			play("loop")
 		"boss_slash":
 			play("slash")
 		"boss_web", "web_land":
