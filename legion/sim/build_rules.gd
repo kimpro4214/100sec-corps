@@ -4,6 +4,8 @@ extends RefCounted
 
 const WEAPON_IDS := ["bolt", "aura", "lightning", "thread"]
 const UPGRADE_IDS := ["might", "haste", "vitality"]
+# 모든 선택지를 다 올린 뒤에만 나오는 작은 강화. 상한 없이 쌓인다.
+const MINOR_IDS := ["might_shard", "haste_shard", "vitality_shard"]
 
 
 static func new_build(data: Dictionary, main_id: String) -> Dictionary:
@@ -15,6 +17,7 @@ static func new_build(data: Dictionary, main_id: String) -> Dictionary:
 		"weapons": {"bolt": 0, "aura": 0, "lightning": 0, "thread": 0},
 		"traits": trait_levels,
 		"upgrades": {"might": 0, "haste": 0, "vitality": 0},
+		"minor": {"might_shard": 0, "haste_shard": 0, "vitality_shard": 0},
 	}
 	build.weapons[main_id] = 1
 	return build
@@ -25,6 +28,8 @@ static func level_of(data: Dictionary, build: Dictionary, option_id: String) -> 
 		return int(build.weapons[option_id])
 	if data.traits.has(option_id):
 		return int(build.traits[option_id])
+	if option_id in MINOR_IDS:
+		return int(build.minor[option_id])
 	return int(build.upgrades[option_id])
 
 
@@ -33,6 +38,8 @@ static func option_def(data: Dictionary, option_id: String) -> Dictionary:
 		return data.weapons[option_id]
 	if data.traits.has(option_id):
 		return data.traits[option_id]
+	if option_id in MINOR_IDS:
+		return data.minor_upgrades[option_id]
 	return data.upgrades[option_id]
 
 
@@ -51,6 +58,8 @@ static func apply_option(data: Dictionary, build: Dictionary, option_id: String)
 		build.weapons[option_id] += 1
 	elif data.traits.has(option_id):
 		build.traits[option_id] += 1
+	elif option_id in MINOR_IDS:
+		build.minor[option_id] += 1
 	else:
 		build.upgrades[option_id] += 1
 
@@ -157,9 +166,11 @@ static func copy_build(build: Dictionary) -> Dictionary:
 
 
 static func _might_mult(data: Dictionary, build: Dictionary) -> float:
-	return 1.0 + float(data.upgrades.might.value) * int(build.upgrades.might)
+	return 1.0 + float(data.upgrades.might.value) * int(build.upgrades.might) \
+		+ float(data.minor_upgrades.might_shard.value) * int(build.minor.might_shard)
 
 
 static func _cooldown_mult(data: Dictionary, build: Dictionary) -> float:
-	var reduced := 1.0 - float(data.upgrades.haste.value) * int(build.upgrades.haste)
+	var reduced := 1.0 - float(data.upgrades.haste.value) * int(build.upgrades.haste) \
+		- float(data.minor_upgrades.haste_shard.value) * int(build.minor.haste_shard)
 	return maxf(float(data.min_cooldown_mult), reduced)

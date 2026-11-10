@@ -495,6 +495,9 @@ func _build_text(sim, target_build: Dictionary, line_chars := BUILD_LINE_CHARS) 
 	for upgrade_id in sim.UPGRADE_IDS:
 		if int(target_build.upgrades[upgrade_id]) > 0:
 			parts.append("%s %d" % [data.upgrades[upgrade_id].name, int(target_build.upgrades[upgrade_id])])
+	for minor_id in data.minor_upgrades:
+		if int(target_build.minor[minor_id]) > 0:
+			parts.append("%s %d" % [data.minor_upgrades[minor_id].name, int(target_build.minor[minor_id])])
 	# 한글은 글자 사이에서도 줄이 바뀌므로, 항목이 중간에 끊기지 않게 항목 단위로 직접 줄을 나눈다.
 	var lines: Array = [parts[0]]
 	for i in range(1, parts.size()):

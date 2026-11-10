@@ -78,6 +78,11 @@
     "haste": { "name": "가속", "desc": "재사용 대기시간 -8%", "value": 0.08 },
     "vitality": { "name": "활력", "desc": "최대 체력 +25, 즉시 회복", "value": 25 }
   },
+  "minor_upgrades": {
+    "might_shard": { "name": "힘의 조각", "desc": "모든 피해 +3% (끝없이 쌓임)", "value": 0.03 },
+    "haste_shard": { "name": "가속의 조각", "desc": "재사용 대기시간 -2% (끝없이 쌓임)", "value": 0.02 },
+    "vitality_shard": { "name": "활력의 조각", "desc": "최대 체력 +8, 즉시 회복 (끝없이 쌓임)", "value": 8 }
+  },
   "items": {
     "interval": 16, "life": 18, "radius": 16, "min_distance": 180, "max_distance": 480, "ghost_drop_chance": 0.3,
     "magnet": { "name": "자석", "weight": 1.0, "speed": 900 },

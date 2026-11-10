@@ -213,17 +213,18 @@ func _wanted_interactable(sim):
 
 
 func _write_runs(out: String, runs: Array) -> void:
-	var lines := ["bot,seed,main,awaken_round,pickups,won,round,time,level,kills,ghost_kills,avg_ghost_ttk,bosses_killed,bosses_in_time,death,bolt,aura,lightning,thread,might,haste,vitality"]
+	var lines := ["bot,seed,main,awaken_round,pickups,won,round,time,level,kills,ghost_kills,avg_ghost_ttk,bosses_killed,bosses_in_time,death,bolt,aura,lightning,thread,might,haste,vitality,shards"]
 	for run in runs:
 		var build: Dictionary = run.build
 		var in_time := 0
 		for entry in run.boss_log:
 			in_time += 1 if entry.in_time else 0
-		lines.append("%s,%d,%s,%d,%d,%d,%d,%.1f,%d,%d,%d,%.1f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d" % [
+		lines.append("%s,%d,%s,%d,%d,%d,%d,%.1f,%d,%d,%d,%.1f,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d,%d" % [
 			run.bot, run.seed, run.main, run.awaken_round, run.pickups, 1 if run.won else 0, run.round, run.time, run.level, run.kills, run.ghost_kills,
 			run.ghost_ttk_total / maxi(run.ghost_kills, 1), run.boss_log.size(), in_time, run.death,
 			build.weapons.bolt, build.weapons.aura, build.weapons.lightning, build.weapons.thread,
 			build.upgrades.might, build.upgrades.haste, build.upgrades.vitality,
+			build.minor.might_shard + build.minor.haste_shard + build.minor.vitality_shard,
 		])
 	_write(out.path_join("runs.csv"), lines)
 

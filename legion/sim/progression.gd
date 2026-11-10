@@ -25,8 +25,9 @@ static func offer_next_level(sim) -> void:
 			available.append(option_id)
 			weights.append(_option_weight(sim, option_id))
 	sim.queued_levels -= 1
+	# 모두 다 올렸으면 상한 없는 작은 강화를 고르게 한다.
 	if available.is_empty():
-		sim.queued_levels = 0
+		sim.pending_choices = BuildRules.MINOR_IDS.duplicate()
 		return
 	sim.pending_choices = []
 	while sim.pending_choices.size() < 3 and not available.is_empty():
@@ -40,8 +41,8 @@ static func choose(sim, index: int) -> void:
 	sim.picks.append({"offered": sim.pending_choices.duplicate(), "chosen": option_id})
 	var awakens: bool = sim.is_awakening_option(option_id)
 	BuildRules.apply_option(sim.data, sim.build, option_id)
-	if option_id == "vitality":
-		var bonus := float(sim.data.upgrades.vitality.value)
+	if option_id == "vitality" or option_id == "vitality_shard":
+		var bonus := float(BuildRules.option_def(sim.data, option_id).value)
 		sim.max_hp += bonus
 		sim.hp = minf(sim.hp + bonus, sim.max_hp)
 	if awakens:
