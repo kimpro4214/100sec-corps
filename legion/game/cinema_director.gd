@@ -14,6 +14,12 @@ const MAX_SHAKE := 24.0
 const BOSS_INTRO_SECONDS := 2.6
 const BOSS_PAN_SECONDS := 0.5
 const BOSS_ZOOM := 1.6
+# 승리 엔딩: 지난 라운드의 과거의 나들이 차례로 나타났다가 함께 사라진다.
+const FAREWELL_START := 2.4
+const FAREWELL_STEP := 1.3
+const FAREWELL_RADIUS := 95.0
+const OUTRO_SECONDS := 3.0
+const OUTRO_FADE := 1.4
 
 var cinema := "" # "", intro, ult, boss_intro, ending
 var cinema_time := 0.0
@@ -21,6 +27,9 @@ var ult_fired := false
 var roared := false
 var ending_focus := Vector2.ZERO
 var boss_focus := Vector2.ZERO
+var farewell_count := 0
+var farewell_shown := 0
+var outro_started := false
 
 var zoom := 1.0
 var focus := Vector2.ZERO
@@ -55,9 +64,13 @@ func start(kind: String) -> void:
 	title_scale = 1.0
 
 
-func start_ending(won: bool, target: Vector2) -> void:
+## farewells: 엔딩에 나올 과거의 나 수. 0이면 퇴장 연출 없이 바로 결과 창으로 간다.
+func start_ending(won: bool, target: Vector2, farewells := 0) -> void:
 	start("ending")
 	ending_focus = target
+	farewell_count = farewells if won else 0
+	farewell_shown = 0
+	outro_started = false
 	if won:
 		add_flash(Color.WHITE, 0.9)
 	else:
@@ -98,7 +111,7 @@ func world_delta(delta: float) -> float:
 
 
 ## 타임라인을 진행하고, 이번 프레임에 화면이 처리할 일을 돌려준다.
-## "intro_done", "fire_ult", "ult_done", "boss_roar", "boss_intro_done", "show_end" 또는 "".
+## "intro_done", "fire_ult", "ult_done", "boss_roar", "boss_intro_done", "farewell", "farewell_outro", "show_end" 또는 "".
 func update(delta: float, player: Vector2, view: Vector2, arena: Vector2) -> String:
 	if cinema == "":
 		zoom = lerpf(zoom, 1.0, 1.0 - exp(-8.0 * delta))
@@ -163,9 +176,61 @@ func update(delta: float, player: Vector2, view: Vector2, arena: Vector2) -> Str
 			focus = player.lerp(ending_focus, t)
 			letterbox = t
 			text_alpha = clampf((cinema_time - 0.6) / 0.5, 0.0, 1.0)
+			if farewell_count > 0:
+				return _update_farewell(player)
 			if cinema_time >= ENDING_PANEL_AT:
 				return "show_end"
 	return ""
+
+
+## 퇴장 연출 진행. 카메라가 플레이어로 돌아오고, 과거의 나가 하나씩 나타나 자막을 띄운 뒤 함께 사라진다.
+func _update_farewell(player: Vector2) -> String:
+	if cinema_time >= ending_end_at():
+		return "show_end"
+	var back := ease_in_out(clampf((cinema_time - FAREWELL_START + 0.6) / 0.6, 0.0, 1.0))
+	focus = ending_focus.lerp(player, back)
+	var outro_at := _outro_at()
+	if cinema_time < FAREWELL_START:
+		# 처음의 "승리" 문구는 퇴장이 시작되기 전에 사라진다.
+		text_alpha *= 1.0 - clampf((cinema_time - FAREWELL_START + 0.4) / 0.3, 0.0, 1.0)
+	elif cinema_time < outro_at:
+		var local := fmod(cinema_time - FAREWELL_START, FAREWELL_STEP)
+		text_alpha = clampf(local / 0.2, 0.0, 1.0) * clampf((FAREWELL_STEP - local) / 0.2, 0.0, 1.0)
+	else:
+		text_alpha = clampf((cinema_time - outro_at) / 0.5, 0.0, 1.0)
+	if farewell_shown < farewell_count and cinema_time >= FAREWELL_START + farewell_shown * FAREWELL_STEP:
+		farewell_shown += 1
+		return "farewell"
+	if not outro_started and cinema_time >= outro_at:
+		outro_started = true
+		return "farewell_outro"
+	return ""
+
+
+func _outro_at() -> float:
+	return FAREWELL_START + farewell_count * FAREWELL_STEP
+
+
+func ending_end_at() -> float:
+	if farewell_count == 0:
+		return ENDING_PANEL_AT
+	return _outro_at() + OUTRO_SECONDS
+
+
+## Space로 엔딩을 건너뛴다. 다음 update에서 결과 창이 뜬다.
+func skip_ending() -> void:
+	cinema_time = maxf(cinema_time, ending_end_at())
+
+
+## i번째 과거의 나의 불투명도. 나타날 때 차오르고, 마무리 문구와 함께 사라진다.
+func farewell_alpha(i: int) -> float:
+	var appear := clampf((cinema_time - FAREWELL_START - i * FAREWELL_STEP) / 0.35, 0.0, 1.0)
+	return appear * (1.0 - farewell_rise_t())
+
+
+## 마무리 문구가 뜬 뒤 과거의 나들이 떠오르며 사라지는 진행도(0~1).
+func farewell_rise_t() -> float:
+	return clampf((cinema_time - _outro_at()) / OUTRO_FADE, 0.0, 1.0)
 
 
 ## 흔들림, 플래시, 피격 테두리는 실제 시간 기준으로 줄어든다.

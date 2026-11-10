@@ -336,6 +336,11 @@ func show_cinema_text(title: String, sub: String, lower := false) -> void:
 	set_cinema_style(1.0, 1.0)
 
 
+## 승리 엔딩에서 i번째 과거의 나가 나타날 때의 자막. 그 라운드의 빌드를 보여 준다.
+func show_farewell(sim, index: int) -> void:
+	show_cinema_text("라운드 %d의 나" % (index + 1), _build_text(sim, sim.past_builds[index], 40), true)
+
+
 func set_cinema_style(alpha: float, title_scale: float) -> void:
 	cinema_title.modulate.a = alpha
 	cinema_sub.modulate.a = alpha

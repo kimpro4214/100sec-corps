@@ -107,6 +107,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif director.cinema == "intro":
 		if event.physical_keycode == KEY_SPACE:
 			_end_intro()
+	elif director.cinema == "ending" and not ui.is_end_visible():
+		if event.physical_keycode == KEY_SPACE:
+			director.skip_ending()
 	elif director.cinema != "":
 		return
 	elif not sim.pending_choices.is_empty():
@@ -205,6 +208,12 @@ func _update_cinema(delta: float) -> void:
 			ui.hide_cinema_text()
 		"boss_roar":
 			sfx.play("boss_kill")
+		"farewell":
+			sfx.play("ghost")
+			ui.show_farewell(sim, director.farewell_shown - 1)
+		"farewell_outro":
+			sfx.play_jingle("round_clear")
+			ui.show_cinema_text("군단을 넘어섰습니다", "%d번의 100초, 모두 나였다" % int(data.rounds), true)
 		"show_end":
 			if not ui.is_end_visible():
 				ui.hide_cinema_text()
@@ -221,7 +230,7 @@ func _end_intro() -> void:
 
 func _start_ending() -> void:
 	var won: bool = sim.state == "won"
-	director.start_ending(won, sim.boss.pos if won and sim.boss != null else sim.player_pos)
+	director.start_ending(won, sim.boss.pos if won and sim.boss != null else sim.player_pos, sim.past_builds.size())
 	ui.hide_round_panels()
 	if won:
 		ui.show_cinema_text("승리", "군단을 넘어섰습니다")
@@ -296,7 +305,26 @@ func _draw() -> void:
 		draw_set_transform(world_offset, 0.0, world_scale)
 	var moving: bool = sim.player_pos.distance_squared_to(sim.player_prev) > 0.01
 	WorldRenderer.draw_player(self, sim, data, player, player_facing, moving, sim.time + alpha * sim.tick)
+	_draw_farewell(player)
 	draw_set_transform(Vector2.ZERO)
+
+
+## 승리 엔딩: 과거의 나들이 플레이어 위쪽 반원에 왼쪽부터 차례로 서고, 마지막에 떠오르며 사라진다.
+## 자막이 화면 아래에 뜨므로 아래쪽은 비워 둔다.
+func _draw_farewell(player: Vector2) -> void:
+	if director.cinema != "ending" or director.farewell_count == 0:
+		return
+	var rise: float = director.farewell_rise_t() * 60.0
+	var t: float = director.cinema_time
+	for i in director.farewell_count:
+		var a: float = director.farewell_alpha(i)
+		if a <= 0.0:
+			continue
+		var spread := 0.5 if director.farewell_count == 1 else float(i) / (director.farewell_count - 1)
+		var angle := lerpf(-PI * 0.9, -PI * 0.1, spread)
+		var pos := player + Vector2.from_angle(angle) * CinemaDirector.FAREWELL_RADIUS - Vector2(0, rise)
+		var facing := 1.0 if player.x >= pos.x else -1.0
+		WorldRenderer.draw_farewell_ghost(self, data, pos, sim.is_awakened(sim.past_builds[i]), a, facing, t, i * 1.7)
 
 
 func _draw_glow(canvas: CanvasItem) -> void:

@@ -239,6 +239,13 @@ static func _draw_character(canvas: CanvasItem, tex: Texture2D, pos: Vector2, ra
 	canvas.draw_texture_rect(tex, rect, false, tint * pose.tint)
 
 
+## 승리 엔딩의 과거의 나. 싸울 때와 같은 모습으로, alpha만큼 흐리게 그린다.
+static func draw_farewell_ghost(canvas: CanvasItem, data: Dictionary, pos: Vector2, awakened: bool, alpha: float, facing: float, t: float, seed: float) -> void:
+	var tint := AWAKEN_TINT * GHOST_TINT if awakened else GHOST_TINT
+	tint.a *= alpha
+	_draw_character(canvas, SPRITES.player, pos, float(data.ghost.radius), tint, facing, Animator.float_ghost(t, seed))
+
+
 ## 너비를 음수로 주면 좌우가 뒤집힌다. 위치는 그대로 왼쪽 위 모서리로 쓰인다.
 static func _draw_sprite(canvas: CanvasItem, tex: Texture2D, pos: Vector2, scale: int, tint: Color, facing := 1.0) -> void:
 	var size := Vector2.ONE * TILE * scale
