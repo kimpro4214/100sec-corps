@@ -46,6 +46,7 @@ var player_flash := 0.0
 var main_weapon := ""
 var build := {}
 var timers := {}
+var trail := PackedVector2Array() # 내가 남기는 시간의 실
 var player_slow_time := 0.0
 var player_slow_amount := 0.0
 var level := 1
@@ -119,7 +120,7 @@ func _init(balance: Dictionary, run_seed: int, main_id: String) -> void:
 	wave_index = rng.randi_range(0, data.waves.formations.size() - 1)
 	Spawner.schedule_waves(self)
 	Interactables.place(self)
-	timers = {"bolt": 0.0, "aura": 0.0, "lightning": 0.0}
+	timers = {"bolt": 0.0, "aura": 0.0, "lightning": 0.0, "thread": 0.0}
 
 
 # --- 화면과 봇이 쓰는 조회 API ---
@@ -224,7 +225,7 @@ func step(move_dir: Vector2) -> void:
 	frenzy_time = maxf(0.0, frenzy_time - tick)
 	_move_player(move_dir)
 	_record_path()
-	Combat.fire_weapons(self, player_pos, build, timers, false, 1.0)
+	Combat.fire_weapons(self, self, player_pos, false, 1.0)
 	Spawner.spawn_enemies(self)
 	Spawner.spawn_waves(self)
 	Spawner.spawn_ghosts(self)

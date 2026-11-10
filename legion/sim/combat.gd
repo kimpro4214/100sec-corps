@@ -6,19 +6,27 @@ const BuildRules := preload("res://legion/sim/build_rules.gd")
 const Loot := preload("res://legion/sim/loot.gd")
 
 
-static func fire_weapons(sim, origin: Vector2, owner_build: Dictionary, owner_timers: Dictionary, hostile: bool, hostile_mult: float) -> void:
+## owner는 무기를 쓰는 쪽이다. 플레이어면 sim, 과거의 나면 그 Enemy이고, 둘 다 build, timers, trail을 가진다.
+static func fire_weapons(sim, owner, origin: Vector2, hostile: bool, hostile_mult: float) -> void:
+	var owner_build: Dictionary = owner.build
+	var owner_timers: Dictionary = owner.timers
 	for weapon_id in BuildRules.WEAPON_IDS:
 		var weapon_level := int(owner_build.weapons[weapon_id])
 		if weapon_level <= 0:
 			continue
 		owner_timers[weapon_id] -= sim.tick
-		if owner_timers[weapon_id] > 0.0:
+		# 실은 쿨다운과 상관없이 매 틱 이어진다. 쿨다운은 실이 베는 간격이다.
+		if owner_timers[weapon_id] > 0.0 and weapon_id != "thread":
 			continue
 		var weapon: Dictionary = sim.data.weapons[weapon_id]
 		var stats := BuildRules.weapon_stats(sim.data, weapon_id, owner_build)
 		var damage: float = stats.damage * hostile_mult
 		if hostile:
 			damage *= float(weapon.hostile_damage_mult)
+		if weapon_id == "thread":
+			_lay_thread(sim, owner, origin, weapon, stats, damage, hostile)
+			if owner_timers[weapon_id] > 0.0:
+				continue
 		var fired := false
 		match weapon_id:
 			"bolt":
@@ -27,6 +35,8 @@ static func fire_weapons(sim, origin: Vector2, owner_build: Dictionary, owner_ti
 				fired = _fire_aura(sim, origin, stats, damage, hostile)
 			"lightning":
 				fired = _fire_lightning(sim, origin, weapon, stats, damage, hostile)
+			"thread":
+				fired = _cut_thread(sim, owner.trail, stats, damage, hostile)
 		var cooldown: float = stats.cooldown
 		if hostile:
 			cooldown *= float(weapon.hostile_cooldown_mult)
@@ -151,6 +161,103 @@ static func _fire_lightning(sim, origin: Vector2, weapon: Dictionary, stats: Dic
 	return true
 
 
+## 시간의 실: 걸어온 자리에 실을 잇는다. 실 끝이 오래된 실에 닿아 고리가 닫히면 안쪽이 터지고 실은 처음부터 다시 풀린다.
+## 과거의 나의 고리는 바로 터지지 않고, 예고 뒤에 터진다.
+static func _lay_thread(sim, owner, origin: Vector2, weapon: Dictionary, stats: Dictionary, damage: float, hostile: bool) -> void:
+	var trail: PackedVector2Array = owner.trail
+	var spacing := float(weapon.spacing)
+	if not trail.is_empty():
+		var moved := origin.distance_to(trail[trail.size() - 1])
+		if moved < spacing:
+			return
+		if moved > float(weapon.break_distance):
+			# 보스 방 이동처럼 순간이동했으면 실이 끊긴다.
+			trail = PackedVector2Array()
+	trail.append(origin)
+	var length: float = stats.length * (float(weapon.hostile_length_mult) if hostile else 1.0)
+	var max_points := int(length / spacing) + 1
+	if trail.size() > max_points:
+		trail = trail.slice(trail.size() - max_points)
+	owner.trail = trail
+	var loop := _closed_loop(trail, weapon)
+	if loop.is_empty():
+		return
+	owner.trail = PackedVector2Array([origin])
+	var center := Vector2.ZERO
+	for point in loop:
+		center += point
+	center /= loop.size()
+	var loop_damage: float = damage * stats.loop_mult
+	if hostile:
+		var reach := 0.0
+		for point in loop:
+			reach = maxf(reach, center.distance_to(point))
+		add_strike(sim, center, float(sim.data.ghost.strike_delay), loop_damage, reach, "ghost_thread")
+		sim.strikes[-1].polygon = loop
+		return
+	# 고리 안쪽과 고리에 걸친 적이 모두 맞는다. 바로 뒤를 쫓던 적도 함께 터진다.
+	var hits := 0
+	for enemy: Entities.Enemy in sim.enemies:
+		if not Geometry2D.is_point_in_polygon(enemy.pos, loop) and not _touches_trail(loop, enemy.pos, stats.radius + enemy.radius):
+			continue
+		hits += 1
+		enemy.looped = true
+		damage_enemy(sim, enemy, loop_damage)
+		if stats.pull > 0.0 and enemy.kind != "boss":
+			enemy.pos = enemy.pos.lerp(center, stats.pull)
+	sim.emit_event({"type": "loop", "points": loop, "pos": center, "hits": hits, "hostile": false, "awakened": stats.pull > 0.0})
+
+
+## 실 끝에서 가장 오래된 닿는 지점까지를 고리로 돌려준다. 고리가 아니면 빈 배열.
+## 온 길을 되짚어 걸으면 넓이가 거의 없으므로 고리로 치지 않는다.
+static func _closed_loop(trail: PackedVector2Array, weapon: Dictionary) -> PackedVector2Array:
+	var head := trail[trail.size() - 1]
+	var close_sq := float(weapon.close_distance) * float(weapon.close_distance)
+	for i in trail.size() - int(weapon.min_loop_points):
+		if head.distance_squared_to(trail[i]) > close_sq:
+			continue
+		var loop := trail.slice(i)
+		var area := 0.0
+		for k in loop.size():
+			area += loop[k].cross(loop[(k + 1) % loop.size()])
+		if absf(area) * 0.5 >= float(weapon.min_loop_area):
+			return loop
+		break
+	return PackedVector2Array()
+
+
+## 실에 닿아 있는 상대를 벤다.
+static func _cut_thread(sim, trail: PackedVector2Array, stats: Dictionary, damage: float, hostile: bool) -> bool:
+	if trail.size() < 2:
+		return false
+	var reach: float = stats.radius
+	if hostile:
+		# 닿을 때까지 매 틱 확인해서, 실을 밟는 순간 바로 벤다.
+		if not _touches_trail(trail, sim.player_pos, reach + float(sim.data.player.radius)):
+			return false
+		hurt_player(sim, damage, "ghost_thread")
+		if stats.slow > 0.0:
+			sim.player_slow_time = float(sim.data.ghost.slow_seconds)
+			sim.player_slow_amount = stats.slow
+		return true
+	for enemy: Entities.Enemy in sim.enemies:
+		if not _touches_trail(trail, enemy.pos, reach + enemy.radius):
+			continue
+		damage_enemy(sim, enemy, damage)
+		if stats.slow > 0.0:
+			enemy.slow_time = 1.0
+			enemy.slow_amount = stats.slow
+	return true
+
+
+static func _touches_trail(trail: PackedVector2Array, pos: Vector2, reach: float) -> bool:
+	var reach_sq := reach * reach
+	for i in trail.size() - 1:
+		if Geometry2D.get_closest_point_to_segment(pos, trail[i], trail[i + 1]).distance_squared_to(pos) <= reach_sq:
+			return true
+	return false
+
+
 static func damage_area(sim, center: Vector2, radius: float, damage: float, source := "") -> void:
 	for enemy: Entities.Enemy in sim.enemies:
 		if center.distance_to(enemy.pos) <= radius + enemy.radius:
@@ -213,6 +320,12 @@ static func update_strikes(sim) -> void:
 		if strike.delay > 0.0:
 			alive.append(strike)
 			continue
+		if not strike.polygon.is_empty():
+			# 과거의 나가 닫은 고리. 터질 때 안쪽에 있으면 맞는다.
+			sim.emit_event({"type": "loop", "points": strike.polygon, "pos": strike.pos, "hits": 0, "hostile": true})
+			if Geometry2D.is_point_in_polygon(sim.player_pos, strike.polygon):
+				hurt_player(sim, strike.damage, strike.source)
+			continue
 		sim.emit_event({"type": "lightning", "pos": strike.pos, "radius": strike.radius, "hostile": strike.hostile, "source": strike.source})
 		if not strike.hostile:
 			damage_area(sim, strike.pos, strike.radius, strike.damage, strike.source)
@@ -264,6 +377,8 @@ static func resolve_deaths(sim) -> void:
 		var gem := Entities.Gem.new()
 		gem.pos = enemy.pos
 		gem.value = enemy.xp
+		# 고리로 잡은 적의 보석은 주우러 돌아가지 않아도 날아온다.
+		gem.attracted = enemy.looped
 		sim.gems.append(gem)
 		_drop_gold(sim, enemy)
 	sim.enemies = alive

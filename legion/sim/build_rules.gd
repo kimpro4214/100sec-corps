@@ -2,7 +2,7 @@ extends RefCounted
 ## 빌드(무기, 특성, 공통 강화 레벨)에서 수치를 계산하는 순수 함수 모음.
 ## 게임 상태를 읽거나 바꾸지 않으므로, 플레이어 빌드와 과거의 나 빌드에 똑같이 쓴다.
 
-const WEAPON_IDS := ["bolt", "aura", "lightning"]
+const WEAPON_IDS := ["bolt", "aura", "lightning", "thread"]
 const UPGRADE_IDS := ["might", "haste", "vitality"]
 
 
@@ -12,7 +12,7 @@ static func new_build(data: Dictionary, main_id: String) -> Dictionary:
 		trait_levels[trait_id] = 0
 	var build := {
 		"main": main_id,
-		"weapons": {"bolt": 0, "aura": 0, "lightning": 0},
+		"weapons": {"bolt": 0, "aura": 0, "lightning": 0, "thread": 0},
 		"traits": trait_levels,
 		"upgrades": {"might": 0, "haste": 0, "vitality": 0},
 	}
@@ -74,6 +74,8 @@ static func weapon_stats(data: Dictionary, weapon_id: String, build: Dictionary)
 		"cooldown": float(weapon.cooldown),
 		"pierce": 0, "leech": 0.0, "slow": 0.0, "knockback": 0.0,
 		"splash_radius": 0.0, "splash_mult": 0.0, "echo_delay": 0.0,
+		"length": float(weapon.get("length", 0.0)) + float(weapon.get("length_per_level", 0.0)) * (weapon_level - 1),
+		"loop_mult": float(weapon.get("loop_mult", 0.0)), "pull": 0.0,
 	}
 	if weapon.has("count_every_levels"):
 		stats.count += int((weapon_level - 1) / float(weapon.count_every_levels))
@@ -98,6 +100,10 @@ static func weapon_stats(data: Dictionary, weapon_id: String, build: Dictionary)
 				stats.slow += amount
 			"damage":
 				stats.damage *= 1.0 + amount
+			"length":
+				stats.length += amount
+			"loop":
+				stats.loop_mult += amount
 	if weapon_level >= int(data.max_levels.main):
 		var awaken: Dictionary = weapon.awaken
 		stats.damage *= float(awaken.get("damage_mult", 1.0))
@@ -107,6 +113,8 @@ static func weapon_stats(data: Dictionary, weapon_id: String, build: Dictionary)
 		stats.splash_radius = float(awaken.get("splash_radius", 0.0))
 		stats.splash_mult = float(awaken.get("splash_mult", 0.0))
 		stats.echo_delay = float(awaken.get("echo_delay", 0.0))
+		stats.length *= float(awaken.get("length_mult", 1.0))
+		stats.pull = float(awaken.get("pull", 0.0))
 	stats.damage *= _might_mult(data, build)
 	stats.cooldown *= _cooldown_mult(data, build)
 	return stats

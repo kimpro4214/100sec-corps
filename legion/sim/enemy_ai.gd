@@ -22,7 +22,7 @@ static func update(sim) -> void:
 				Boss.update(sim, enemy)
 			"ghost":
 				_move_ghost(sim, enemy)
-				Combat.fire_weapons(sim, enemy.pos, enemy.build, enemy.timers, true, enemy.damage_mult)
+				Combat.fire_weapons(sim, enemy, enemy.pos, true, enemy.damage_mult)
 			_:
 				enemy.pos += (player_pos - enemy.pos).normalized() * enemy.current_speed() * tick
 		# 이웃 한 쌍만 밀어내 O(n)으로 겹침을 줄인다.

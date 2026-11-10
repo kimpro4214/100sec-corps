@@ -23,6 +23,8 @@ class Enemy:
 	var slow_amount := 0.0
 	var path := PackedVector2Array() # 과거의 나가 따라 걷는 그 라운드의 내 경로
 	var on_path := false
+	var trail := PackedVector2Array() # 과거의 나가 남기는 시간의 실
+	var looped := false # 내 고리에 맞은 적. 죽으면 보석이 나에게 날아온다
 
 	func current_speed() -> float:
 		if slow_time > 0.0:
@@ -52,6 +54,7 @@ class Strike:
 	var radius := 1.0
 	var source := ""
 	var hostile := true
+	var polygon := PackedVector2Array() # 비어 있지 않으면 원 대신 이 고리 안쪽을 친다 (시간의 실)
 
 
 ## 거미 여왕의 거미줄. origin에서 날아가 delay 뒤 pos에 깔리고, time 동안 밟은 플레이어를 느리게 한다.

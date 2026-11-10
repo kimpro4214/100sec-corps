@@ -172,7 +172,7 @@ static func add_ghost(sim, index: int, hp_mult: float, damage_mult: float, is_co
 	ghost.contact = float(ghost_def.contact)
 	ghost.xp = int(ghost_def.xp)
 	ghost.build = BuildRules.copy_build(past) if is_copy else past
-	ghost.timers = {"bolt": 1.0, "aura": 1.0, "lightning": 1.0}
+	ghost.timers = {"bolt": 1.0, "aura": 1.0, "lightning": 1.0, "thread": 1.0}
 	ghost.damage_mult = float(ghost_def.damage_mult) * damage_mult
 	ghost.born = sim.time
 	# 복제본은 지금처럼 쫓기만 하고, 원본만 그 라운드의 내 경로를 따라 걷는다.

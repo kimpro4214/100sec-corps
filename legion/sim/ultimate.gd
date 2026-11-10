@@ -34,6 +34,15 @@ static func use(sim) -> bool:
 				Combat.damage_enemy(sim, enemy, damage, "ultimate")
 				if enemy.kind != "boss":
 					enemy.pos = sim.clamp_to_arena(enemy.pos + (enemy.pos - player_pos).normalized() * float(ult.knockback))
+		"thread":
+			var radius := float(ult.radius)
+			sim.emit_event({"type": "ult_blast", "pos": player_pos, "radius": radius})
+			for enemy: Entities.Enemy in sim.enemies:
+				if player_pos.distance_to(enemy.pos) > radius + enemy.radius:
+					continue
+				Combat.damage_enemy(sim, enemy, damage, "ultimate")
+				enemy.slow_time = float(ult.slow_seconds)
+				enemy.slow_amount = float(ult.slow)
 		"lightning":
 			var range_sq := float(ult.range) * float(ult.range)
 			var targets: Array[Entities.Enemy] = []
