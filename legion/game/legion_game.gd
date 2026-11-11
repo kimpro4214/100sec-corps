@@ -30,6 +30,7 @@ var sfx: Sfx
 var world_offset := Vector2.ZERO
 var world_scale := Vector2.ONE
 var paused := false
+var speed := 1.0 # 설정의 2배속. 한 프레임에 규칙을 몇 틱 돌릴지에만 곱한다.
 # 레벨 업 선택 중에 보스가 나오면 컷신이 선택 창 뒤에서 끝나 버리므로, 선택이 끝날 때까지 미뤄 둔다.
 var pending_boss_intro := {}
 
@@ -40,7 +41,10 @@ func _ready() -> void:
 	var settings := get_node_or_null("/root/Settings")
 	if settings != null:
 		director.motion = settings.screen_shake
-		settings.changed.connect(func() -> void: director.motion = settings.screen_shake)
+		speed = 2.0 if settings.double_speed else 1.0
+		settings.changed.connect(func() -> void:
+			director.motion = settings.screen_shake
+			speed = 2.0 if settings.double_speed else 1.0)
 	glow = DrawLayer.new()
 	glow.additive = true
 	glow.draw_fn = _draw_glow
@@ -142,7 +146,7 @@ func _process(delta: float) -> void:
 		_start_boss_intro(pending_boss_intro)
 		pending_boss_intro = {}
 	_update_cinema(delta)
-	var world_delta := director.world_delta(delta)
+	var world_delta := director.world_delta(delta) * speed
 	if not director.blocks_sim():
 		acc += world_delta
 	while acc >= sim.tick:

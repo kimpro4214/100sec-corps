@@ -44,6 +44,7 @@ static func build_settings(settings: Node, on_close: Callable) -> Control:
 	box.add_child(_slider_row("음악", settings.music_volume, func(v: float) -> void: settings.set_value("music_volume", v)))
 	box.add_child(_toggle("전체 화면", settings.fullscreen, func(on: bool) -> void: settings.set_value("fullscreen", on)))
 	box.add_child(_toggle("화면 흔들림과 번쩍임", settings.screen_shake, func(on: bool) -> void: settings.set_value("screen_shake", on)))
+	box.add_child(_toggle("2배속", settings.double_speed, func(on: bool) -> void: settings.set_value("double_speed", on)))
 	box.add_child(_text("조작키\n이동: WASD / 방향키    선택: 1, 2, 3\n궁극기, 컷신 건너뛰기, 다음 라운드: Space    메뉴로: Esc", UiTheme.FONT_SMALL * 2))
 	_add_close(window, box, on_close)
 	return window

@@ -11,6 +11,7 @@ var sfx_volume := 0.8 # 0~1
 var music_volume := 0.7 # 0~1
 var fullscreen := false
 var screen_shake := true # 끄면 흔들림이 없어지고 번쩍임이 약해진다
+var double_speed := false # 켜면 게임 속 시간이 두 배로 흐른다. 규칙과 수치는 그대로다.
 
 
 func _ready() -> void:
@@ -20,6 +21,7 @@ func _ready() -> void:
 		music_volume = float(file.get_value(SECTION, "music_volume", music_volume))
 		fullscreen = bool(file.get_value(SECTION, "fullscreen", fullscreen))
 		screen_shake = bool(file.get_value(SECTION, "screen_shake", screen_shake))
+		double_speed = bool(file.get_value(SECTION, "double_speed", double_speed))
 	apply()
 
 
@@ -27,7 +29,7 @@ func set_value(key: String, value) -> void:
 	set(key, value)
 	apply()
 	var file := ConfigFile.new()
-	for name in ["sfx_volume", "music_volume", "fullscreen", "screen_shake"]:
+	for name in ["sfx_volume", "music_volume", "fullscreen", "screen_shake", "double_speed"]:
 		file.set_value(SECTION, name, get(name))
 	file.save(PATH)
 	changed.emit()
