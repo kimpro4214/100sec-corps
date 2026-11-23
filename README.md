@@ -1,5 +1,7 @@
 # 100초 군단
 
+<p align="center"><img src="docs/images/cover.png" alt="100초 군단 표지" width="480"></p>
+
 100초마다, 내가 키운 빌드가 다음 라운드의 적이 되어 돌아오는 뱀서라이크.
 
 - **플레이:** (웹 빌드 링크)
@@ -12,16 +14,42 @@
 
 그래서 레벨업 선택지를 고를 때 "지금 나에게 좋은가"와 함께 "다음 라운드에 이걸 상대해야 한다"를 같이 따지게 된다.
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/levelup.png" alt="레벨업 선택 화면"></td>
+    <td width="50%"><img src="docs/images/past-self.png" alt="과거의 나와 싸우는 장면"></td>
+  </tr>
+  <tr>
+    <td align="center">레벨업 선택지마다 과거의 나가 얼마나 강해지는지 함께 보인다</td>
+    <td align="center">2라운드, 1라운드의 내 빌드를 쓰는 "과거의 나"(보라색)</td>
+  </tr>
+</table>
+
 - 한 판은 5라운드, 라운드마다 100초다. 70초에 보스 방 포탈이 열린다.
 - 메인 무기 4종: 마력탄, 가시 오라, 낙뢰, 시간의 실. 5레벨에 각성한다.
 - 과거의 나는 지난 라운드의 내 이동 경로를 그대로 걷는다.
 - 보스 5종, 웨이브, 상자·룰렛·제단 같은 상호작용, 처치 수로 충전하는 궁극기가 있다.
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/images/thorn-aura.png" alt="가시 오라로 적 무리를 상대하는 장면"></td>
+    <td width="33%"><img src="docs/images/boss-spider-queen.png" alt="보스 거미 여왕"></td>
+    <td width="33%"><img src="docs/images/ultimate.png" alt="궁극기 천라지망 연출"></td>
+  </tr>
+  <tr>
+    <td align="center">가시 오라와 몰려오는 적</td>
+    <td align="center">보스 방: 거미 여왕</td>
+    <td align="center">궁극기 "천라지망"</td>
+  </tr>
+</table>
 
 **조작:** 이동 WASD / 방향키, 공격 자동, 레벨업 선택 1·2·3, 궁극기 Space, 일시정지 Esc
 
 ### 시간의 실
 
 "남들과 다른 무기가 하나는 있어야 한다"는 문제에서 나온 고유 무기다. 조준 없이 걸어온 자리에 실이 남고, 실 끝이 실에 다시 닿아 고리가 닫히면 안쪽의 적이 터진다. 뱀서라이크의 유일한 조작인 이동이 곧 공격이 된다.
+
+<p align="center"><img src="docs/images/time-thread-loop.png" alt="시간의 실로 적을 둘러싸 고리를 닫기 직전" width="720"></p>
 
 과거의 나는 내 경로를 걷기 때문에, **이번 라운드에 내가 그린 고리가 다음 라운드에 적의 함정으로 다시 닫힌다.** 게임의 핵심 규칙과 무기가 맞물리도록 설계했다.
 
