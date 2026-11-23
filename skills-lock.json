@@ -1,0 +1,113 @@
+{
+  "skills": {
+    "audio-design": {
+      "computedHash": "bd51a53299313b91245ad13ee4d36c9581ed7cda936ac9b46e21438c23e3752d",
+      "skillPath": "skills/disciplines/audio-design/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "game-feel": {
+      "computedHash": "01752d01f59e08e583b79fa58a247d9b16774fde3d6716f9894f093d1072ee9b",
+      "skillPath": "skills/disciplines/game-feel/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "game-ui-ux": {
+      "computedHash": "490f2da7505775f88c4bbd7c98bc2552ea60821210f5ae8c1e00414161be60f7",
+      "skillPath": "skills/disciplines/game-ui-ux/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-2d-movement": {
+      "computedHash": "6a5ce94413b794880343234504524c12c932ece0b77df132ea4d57151c46ea24",
+      "skillPath": "skills/godot/godot-2d-movement/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-animation": {
+      "computedHash": "6880cca192c41ca9009809ac02eb7c20c78c4af44470e11e1e7cfe134a6e8b61",
+      "skillPath": "skills/godot/godot-animation/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-audio": {
+      "computedHash": "c989adf5206dfd7e07a4c883f5df3484eadb9c3ea241da438a1ab2f8a1a68c2c",
+      "skillPath": "skills/godot/godot-audio/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-export": {
+      "computedHash": "cd16cdd9d81d7d29fe8ea7823deeecc706a5b6f320a7648c42e54856c6f12fb6",
+      "skillPath": "skills/godot/godot-export/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-gdscript": {
+      "computedHash": "9cb999aaeb0154b16198d68fe491049e8450a42bb05224fe0ccacb21470c05bc",
+      "skillPath": "skills/godot/godot-gdscript/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-gdscript-headless-testing": {
+      "computedHash": "30dec804c953c75d650741f2a14703a5b7570831f8a8eaa54fc1276ea3a90409",
+      "skillPath": "skills/godot/godot-gdscript-headless-testing/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-nodes-scenes": {
+      "computedHash": "8c569972b597da2a3d4ace02f65d986d0b137d10a7c35f2b893406a0fa189595",
+      "skillPath": "skills/godot/godot-nodes-scenes/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-physics": {
+      "computedHash": "cfe9d6435a2915d3b6ddeae8d838dd1552b7139450edcc97672ea04989ef299e",
+      "skillPath": "skills/godot/godot-physics/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-resources": {
+      "computedHash": "5c7878d9f4423b376108ba382eb1ddb15ca5b7f274c76d560e2659106e895994",
+      "skillPath": "skills/godot/godot-resources/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-shaders": {
+      "computedHash": "2220e2ae88841d71b361231c24a349b18f0e6936542f29ce0fe4849d8916b33a",
+      "skillPath": "skills/godot/godot-shaders/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-signals-groups": {
+      "computedHash": "9c6570a906cd9ce7f24ef3723a8357aa80e096be413752f762ab2f5dd73856ed",
+      "skillPath": "skills/godot/godot-signals-groups/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-tilemap": {
+      "computedHash": "032613488f0b31bb5fc690fef24d695874a670202890322862d263681e91ab7b",
+      "skillPath": "skills/godot/godot-tilemap/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "godot-ui-control": {
+      "computedHash": "aff8b20287da04fe03e17b1ffc8c00016ad380367aa8e952a2d62d4b53cbf194",
+      "skillPath": "skills/godot/godot-ui-control/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "performance-optimization": {
+      "computedHash": "84dbdcb922a46e9d6a5ff9c1f670e05fdc9a442be893318cd0a57da78532546e",
+      "skillPath": "skills/disciplines/performance-optimization/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    },
+    "shader-programming": {
+      "computedHash": "9a3056e8572710da6ad89989940a4423905eae348914d300d21b6339cea549d8",
+      "skillPath": "skills/disciplines/shader-programming/SKILL.md",
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github"
+    }
+  },
+  "version": 1
+}
